@@ -1,0 +1,55 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "98912a2934a6dea8dd25bc569cc7cac3",
+    "packages": [
+        {
+            "name": "rockschtar/typed-arrays",
+            "version": "0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.com/rockschtar/typed-arrays.git",
+                "reference": "d45e4c3c7509b2c2a7b4373ac01c1f962166ac83"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/rockschtar%2Ftyped-arrays/repository/archive.zip?sha=d45e4c3c7509b2c2a7b4373ac01c1f962166ac83",
+                "reference": "d45e4c3c7509b2c2a7b4373ac01c1f962166ac83",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rockschtar\\TypedArrays\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stefan Helmer",
+                    "email": "rockschtar@gmail.com"
+                }
+            ],
+            "time": "2018-11-07T13:46:24+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=7.2"
+    },
+    "platform-dev": []
+}
