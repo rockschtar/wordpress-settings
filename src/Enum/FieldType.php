@@ -4,7 +4,7 @@
  */
 
 
-namespace Rockschtar\WordPress\Enum;
+namespace Rockschtar\WordPress\Settings\Enum;
 
 class FieldType {
 
