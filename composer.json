@@ -1,0 +1,17 @@
+{
+  "name": "rockschtar/wordpress-settings",
+  "license": "MIT",
+  "description": "WordPress Settings Utility/Helper",
+  "require": {
+    "php": ">=7.2",
+    "rockschtar/typed-arrays": "0.2.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Rockschtar\\WordPress\\Settings\\": "src/",
+      "Rockschtar\\WordPress\\Settings\\Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+  }
+}
