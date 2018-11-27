@@ -1,6 +1,6 @@
 <?php
 
-namespace Rockschtar\WordPress\Models;
+namespace Rockschtar\WordPress\Settings\Models;
 
 
 use Rockschtar\TypedArrays\TypedArray;
