@@ -23,20 +23,20 @@ abstract class AbstractSettingsController {
     final public function create_settings(): void {
         $page = $this->getPage();
         $callback = $page->getCallback() ?? array($this, 'settings_content');
-        add_menu_page($page->getPageTitle(), $page->getMenuTitel(), $page->getCapability(), $page->getSlug(), $callback, $page->getIcon(), $page->getPosition());
+        add_menu_page($page->getPageTitle(), $page->getMenuTitel(), $page->getCapability(), $page->getOptionGroup(), $callback, $page->getIcon(), $page->getPosition());
     }
 
     final public function setup_sections(): void {
         foreach($this->getPage()->getSections() as $section) {
-            add_settings_section($section->getId(), $section->getTitle(), $section->getCallback(), $section->getOptionGroup());
+            add_settings_section($section->getId(), $section->getTitle(), $section->getCallback(), $this->getPage()->getOptionGroup());
         }
     }
 
     final public function setup_fields() : void {
         foreach ($this->getPage()->getSections() as $section) {
             foreach($section->getFields() as $field) {
-                add_settings_field($field->getId(), $field->getLabel(),  array($this, 'field'), $section->getOptionGroup(), $section->getId(), ['field' => $field]);
-                register_setting($section->getOptionGroup(), $field->getId());
+                add_settings_field($field->getId(), $field->getLabel(),  array($this, 'field'), $this->getPage()->getOptionGroup(), $section->getId(), ['field' => $field]);
+                register_setting($this->getPage()->getOptionGroup(), $field->getId());
             }
         }
     }
@@ -54,8 +54,16 @@ abstract class AbstractSettingsController {
             <?php settings_errors(); ?>
             <form method="POST" action="options.php">
                 <?php
-                settings_fields('wph_custom');
-                do_settings_sections($this->getPage()->getSlug());
+
+                settings_fields($this->getPage()->getOptionGroup());
+
+                do_settings_sections($this->getPage()->getOptionGroup());
+
+
+
+
+
+
                 submit_button();
                 ?>
             </form>
