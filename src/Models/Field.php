@@ -46,9 +46,9 @@ abstract class Field {
 
     /**
      * @param mixed $label
-     * @return Field
+     * @return static
      */
-    public function setLabel($label): Field  {
+    public function setLabel($label)  {
         $this->label = $label;
         return $this;
     }
@@ -62,28 +62,14 @@ abstract class Field {
 
     /**
      * @param mixed $id
-     * @return Field
+     * @return static
      */
-    public function setId($id): Field {
+    public function setId($id) {
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * @return FieldType
-     */
-    public function getType(): FieldType {
-        return $this->type;
-    }
 
-    /**
-     * @param FieldType $type
-     * @return Field
-     */
-    public function setType(FieldType $type): Field {
-        $this->type = $type;
-        return $this;
-    }
 
     /**
      * @return mixed

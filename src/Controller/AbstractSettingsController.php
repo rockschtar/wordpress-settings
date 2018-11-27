@@ -68,12 +68,12 @@ abstract class AbstractSettingsController {
 
         $field_value = get_option($field->getId());
 
-        switch($field->getType()) {
-            case FieldType::TEXTFIELD:
+        switch(\get_class($field)) {
+            case Textfield::class:
                 /* @var Textfield $field; */
                 printf('<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $field->getId(), 'text', $field->getPlaceholder(), $field_value);
                 break;
-            case FieldType::CHECKBOX:
+            case Checkbox::class:
                 /* @var Checkbox $field; */
                 $checked = checked($field->getValue(), $field_value, false);
                 printf('<input name="%1$s" id="%1$s" type="%2$s" %3$s value="%4$s" />', $field->getId(), 'checkbox', $checked, $field->getValue());
