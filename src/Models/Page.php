@@ -9,6 +9,29 @@ namespace Rockschtar\WordPress\Settings\Models;
 class Page {
 
     /**
+     * @var string
+     */
+    private $option_group;
+
+    /**
+     * @return string
+     */
+    public function getOptionGroup(): string {
+        return $this->option_group;
+    }
+
+    /**
+     * @param string $option_group
+     * @return Page
+     */
+    public function setOptionGroup(string $option_group): Page {
+        $this->option_group = $option_group;
+        return $this;
+    }
+
+
+
+    /**
      * @var Sections
      */
     private $sections;
@@ -32,10 +55,7 @@ class Page {
      * @var int|float
      */
     private $position = 2;
-    /**
-     * @var ?string
-     */
-    private $slug;
+
     /**
      * @var ?array|?string|null
      */
@@ -64,23 +84,6 @@ class Page {
         $this->sections->append($section);
         return $this;
     }
-
-    /**
-     * @return string
-     */
-    public function getSlug(): string {
-        return $this->slug;
-    }
-
-    /**
-     * @param string $slug
-     * @return Page
-     */
-    public function setSlug(string $slug): Page {
-        $this->slug = $slug;
-        return $this;
-    }
-
 
     /**
      * @return string

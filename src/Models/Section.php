@@ -14,10 +14,6 @@ class Section {
     private $id;
 
     /**
-     * @var string
-     */
-    private $option_group = 'general';
-    /**
      * @var
      */
     private $title;
@@ -34,23 +30,7 @@ class Section {
     public static function create() : Section {
         return new self();
     }
-
-    /**
-     * @return string
-     */
-    public function getOptionGroup(): string {
-        return $this->option_group;
-    }
-
-    /**
-     * @param string $option_group
-     * @return Section
-     */
-    public function setOptionGroup(string $option_group): Section {
-        $this->option_group = $option_group;
-        return $this;
-    }
-
+    
     /**
      * @return mixed
      */
