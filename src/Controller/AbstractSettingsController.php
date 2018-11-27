@@ -3,10 +3,14 @@
  * @author: StefanHelmer
  */
 
-namespace Rockschtar\WordPress\Controller;
+namespace Rockschtar\WordPress\Settings\Controller;
 
-use Rockschtar\WordPress\Models\Page;
-use Rockschtar\WordPress\Models\Section;
+use Rockschtar\WordPress\Settings\Models\Checkbox;
+use Rockschtar\WordPress\Settings\Models\Page;
+use Rockschtar\WordPress\Settings\Models\Section;
+use Rockschtar\WordPress\Settings\Enum\FieldType;
+use Rockschtar\WordPress\Settings\Models\Field;
+use Rockschtar\WordPress\Settings\Models\Textfield;
 
 abstract class AbstractSettingsController {
 
@@ -31,7 +35,7 @@ abstract class AbstractSettingsController {
     final public function setup_fields() : void {
         foreach ($this->getPage()->getSections() as $section) {
             foreach($section->getFields() as $field) {
-                add_settings_field($field->getId(), $field->getLabel(),  array($this, 'wph_field_callback'), $section->getOptionGroup(), $section->getId());
+                add_settings_field($field->getId(), $field->getLabel(),  array($this, 'field'), $section->getOptionGroup(), $section->getId(), ['field' => $field]);
                 register_setting($section->getOptionGroup(), $field->getId());
             }
         }
@@ -58,18 +62,33 @@ abstract class AbstractSettingsController {
         </div> <?php
     }
 
+    public function field(array $args) : void {
+        /* @var Field $field; */
+        $field = $args['field'];
 
+        $field_value = get_option($field->getId());
 
-
-
-    public function wph_field_callback($field) {
-        $value = get_option($field['id']);
-        switch ($field['type']) {
+        switch($field->getType()) {
+            case FieldType::TEXTFIELD:
+                /* @var Textfield $field; */
+                printf('<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $field->getId(), 'text', $field->getPlaceholder(), $field_value);
+                break;
+            case FieldType::CHECKBOX:
+                /* @var Checkbox $field; */
+                $checked = checked($field->getValue(), $field_value, false);
+                printf('<input name="%1$s" id="%1$s" type="%2$s" %3$s value="%4$s" />', $field->getId(), 'checkbox', $checked, $field->getValue());
+                break;
+            case FieldType::CHECKBOX_LIST:
+            case FieldType::COLOR:
+            case FieldType::DATE:
+            case FieldType::EMAIL:
+            case FieldType::SELECT:
+            case FieldType::MULTISELECT:
+            case FieldType::MEDIA:
+            case FieldType::NUMBER:
+            case FieldType::WYSIWYG:
             default:
-                printf('<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $field['id'], $field['type'], $field['placeholder'], $value);
-        }
-        if ($desc = $field['desc']) {
-            printf('<p class="description">%s </p>', $desc);
+                echo 'Unknown field type';
         }
     }
 

@@ -3,9 +3,9 @@
  * @author: StefanHelmer
  */
 
-namespace Rockschtar\WordPress\Models;
+namespace Rockschtar\WordPress\Settings\Models;
 
-use Rockschtar\WordPress\Enum\FieldType;
+use Rockschtar\WordPress\Settings\Enum\FieldType;
 
 abstract class Field {
 
@@ -28,6 +28,14 @@ abstract class Field {
      * @var
      */
     private $description;
+
+    /**
+     * @return static
+     */
+    public static function create()  {
+        $class = \get_called_class();
+        return new $class;
+    }
 
     /**
      * @return mixed

@@ -3,7 +3,7 @@
  * @author: StefanHelmer
  */
 
-namespace Rockschtar\WordPress\Models;
+namespace Rockschtar\WordPress\Settings\Models;
 
 
 class Page {
@@ -41,6 +41,10 @@ class Page {
      */
     private $callback;
 
+    public static function create() : Page {
+        return new self();
+    }
+
     /**
      * @return Sections
      */
@@ -49,11 +53,15 @@ class Page {
     }
 
     /**
-     * @param mixed $sections
+     * @param Section $section
      * @return Page
      */
-    public function setSections($sections): Page {
-        $this->sections = $sections;
+    public function addSection(Section $section): Page {
+        if( $this->sections === null) {
+            $this->sections = new Sections();
+        }
+
+        $this->sections->append($section);
         return $this;
     }
 

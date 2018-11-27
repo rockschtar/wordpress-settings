@@ -3,7 +3,7 @@
  * @author: StefanHelmer
  */
 
-namespace Rockschtar\WordPress\Models;
+namespace Rockschtar\WordPress\Settings\Models;
 
 
 class Section {
@@ -17,6 +17,23 @@ class Section {
      * @var string
      */
     private $option_group = 'general';
+    /**
+     * @var
+     */
+    private $title;
+    /**
+     * @var string|array
+     */
+    private $callback = array();
+
+    /**
+     * @var Fields
+     */
+    private $fields;
+
+    public static function create() : Section {
+        return new self();
+    }
 
     /**
      * @return string
@@ -33,22 +50,6 @@ class Section {
         $this->option_group = $option_group;
         return $this;
     }
-
-
-    /**
-     * @var
-     */
-    private $title;
-
-    /**
-     * @var string|array
-     */
-    private $callback = array();
-
-    /**
-     * @var Fields
-     */
-    private $fields;
 
     /**
      * @return mixed
@@ -115,6 +116,11 @@ class Section {
     }
 
     public function addField(Field $field): Section {
+
+        if($this->fields === null) {
+            $this->fields = new Fields();
+        }
+
         $this->fields->append($field);
         return $this;
     }
