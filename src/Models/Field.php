@@ -5,8 +5,6 @@
 
 namespace Rockschtar\WordPress\Settings\Models;
 
-use Rockschtar\WordPress\Settings\Enum\FieldType;
-
 abstract class Field {
 
     /**
@@ -19,10 +17,6 @@ abstract class Field {
      */
     private $id;
 
-    /**
-     * @var FieldType
-     */
-    private $type;
 
     /**
      * @var
@@ -32,7 +26,7 @@ abstract class Field {
     /**
      * @return static
      */
-    public static function create()  {
+    public static function create() {
         $class = \get_called_class();
         return new $class;
     }
@@ -48,7 +42,7 @@ abstract class Field {
      * @param mixed $label
      * @return static
      */
-    public function setLabel($label)  {
+    public function setLabel($label) {
         $this->label = $label;
         return $this;
     }
@@ -68,7 +62,6 @@ abstract class Field {
         $this->id = $id;
         return $this;
     }
-
 
 
     /**
