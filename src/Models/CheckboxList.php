@@ -5,28 +5,23 @@
 
 namespace Rockschtar\WordPress\Settings\Models;
 
-use Rockschtar\TypedArrays\Hashmap;
-
 class CheckboxList extends Field {
 
     /**
-     * @var Hashmap
+     * @var FieldListItem[]
      */
-    private $values;
+    private $items = [];
 
     /**
-     * @return Hashmap
+     * @return FieldListItem[]
      */
-    public function getValues(): Hashmap {
-        return $this->values;
+    public function getItems(): array {
+        return $this->items;
     }
 
-    /**
-     * @param Hashmap $values
-     * @return CheckboxList
-     */
-    public function setValues(Hashmap $values): CheckboxList {
-        $this->values = $values;
+    public function addItem(FieldListItem $item): CheckboxList {
+        $this->items[] = $item;
+
         return $this;
     }
 }

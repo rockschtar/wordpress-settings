@@ -9,7 +9,14 @@
 namespace Rockschtar\WordPress\Settings\Models;
 
 
+use Rockschtar\WordPress\Settings\Enum\TextfieldType;
+
 class Textfield extends Field {
+
+    /**
+     * @var string
+     */
+    private $type = TextfieldType::TEXT;
 
     /**
      * @var String|null
@@ -50,6 +57,21 @@ class Textfield extends Field {
      */
     public function setSize(?int $size): Textfield {
         $this->size = $size;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type): Textfield {
+        $this->type = $type;
         return $this;
     }
 
