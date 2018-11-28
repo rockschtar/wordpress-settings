@@ -149,8 +149,9 @@ abstract class AbstractSettingsController {
                 break;
             case Upload::class;
                 /* @var Upload $field ; */
-                printf('<input style="width: 40%%" id="%s" name="%s" type="text" value="%s"> 
-                <input style="width: 19%%" class="button %s" id="%s_button" name="%s_button" type="button" value="Upload" />', $field->getId(), $field->getId(), $current_field_value, $this->getPage()
+                printf('<input style="width: 40%%" id="%s" name="%s[]" type="text" value="%s"> 
+                <input type="text" name="%s[]" id="%s_attachment_id" value="">
+                <input style="width: 19%%" class="button %s" id="%s_button" name="%s_button" type="button" value="Upload" />', $field->getId(), $field->getId(), $current_field_value, $field->getId(), $field->getId(), $this->getPage()
                                                                                                                                                                                                                                                                          ->getId(), $field->getId(), $field->getId());
                 break;
             case FieldType::WYSIWYG:
@@ -168,32 +169,31 @@ abstract class AbstractSettingsController {
         <script>
             jQuery(document).ready(function ($) {
 
+                var _custom_media = true;
+                var _orig_send_attachment = wp.media.editor.send.attachment;
                 var page_id = '<?php echo $this->getPage()->getId(); ?>';
 
-                if (typeof wp.media !== 'undefined') {
-                    var _custom_media = true,
-                        _orig_send_attachment = wp.media.editor.send.attachment;
-                    $('.' + page_id).bind('click', function (e) {
-                        var button = $(this);
-                        var id = button.attr('id').replace('_button', '');
-                        _custom_media = true;
+                $('.' + page_id).bind('click', function () {
+                    var button = $(this);
+                    var id = button.attr('id').replace('_button', '');
+                    var send_attachment_bkp = wp.media.editor.send.attachment;
 
-                        wp.media.editor.send.attachment = function (props, attachment) {
-                            if (_custom_media) {
-                                $('input#' + id).val(attachment.url);
-                            } else {
-                                return _orig_send_attachment.apply(this, [props, attachment]);
-                            }
-                            ;
+                    _custom_media = true;
+
+                    wp.media.editor.send.attachment = function(props, attachment) {
+
+                        if(_custom_media) {
+                            $('input#' + id).val(attachment.url);
+                            $('input#' + id + '_attachment_id').val(attachment.id);
+                        } else {
+                            return _orig_send_attachment.apply(this, [props, attachment]);
                         }
-                        wp.media.editor.open(button);
-                        return false;
-                    });
+                    }
 
-                    $('.add_media').on('click', function () {
-                        _custom_media = false;
-                    });
-                }
+                    wp.media.editor.open(button);
+                    return false;
+                });
+
             });
         </script><?php
     }
