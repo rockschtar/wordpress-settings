@@ -11,26 +11,7 @@ class Page {
     /**
      * @var string
      */
-    private $option_group;
-
-    /**
-     * @return string
-     */
-    public function getOptionGroup(): string {
-        return $this->option_group;
-    }
-
-    /**
-     * @param string $option_group
-     * @return Page
-     */
-    public function setOptionGroup(string $option_group): Page {
-        $this->option_group = $option_group;
-        return $this;
-    }
-
-
-
+    private $id;
     /**
      * @var Sections
      */
@@ -42,7 +23,7 @@ class Page {
     /**
      * @var string
      */
-    private $menu_titel = 'Custom Settings Page';
+    private $menu_title = 'Custom Settings Page';
     /**
      * @var string
      */
@@ -55,20 +36,35 @@ class Page {
      * @var int|float
      */
     private $position = 2;
-
     /**
      * @var ?array|?string|null
      */
     private $callback;
 
-    public static function create() : Page {
+    public static function create(): Page {
         return new self();
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     * @return Page
+     */
+    public function setId(string $id): Page {
+        $this->id = $id;
+        return $this;
     }
 
     /**
      * @return Sections
      */
-    public function getSections() : Sections {
+    public function getSections(): Sections {
         return $this->sections;
     }
 
@@ -77,7 +73,7 @@ class Page {
      * @return Page
      */
     public function addSection(Section $section): Page {
-        if( $this->sections === null) {
+        if ($this->sections === null) {
             $this->sections = new Sections();
         }
 
@@ -104,16 +100,16 @@ class Page {
     /**
      * @return string
      */
-    public function getMenuTitel(): string {
-        return $this->menu_titel;
+    public function getMenuTitle(): string {
+        return $this->menu_title;
     }
 
     /**
-     * @param string $menu_titel
+     * @param string $menu_title
      * @return Page
      */
-    public function setMenuTitel(string $menu_titel): Page {
-        $this->menu_titel = $menu_titel;
+    public function setMenuTitle(string $menu_title): Page {
+        $this->menu_title = $menu_title;
         return $this;
     }
 
