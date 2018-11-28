@@ -5,11 +5,12 @@
 
 namespace Rockschtar\WordPress\Settings\Controller;
 
+use Rockschtar\WordPress\Settings\Enum\FieldType;
 use Rockschtar\WordPress\Settings\Models\Checkbox;
+use Rockschtar\WordPress\Settings\Models\CheckboxList;
+use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\Page;
 use Rockschtar\WordPress\Settings\Models\Section;
-use Rockschtar\WordPress\Settings\Enum\FieldType;
-use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\Textfield;
 
 abstract class AbstractSettingsController {
@@ -54,16 +55,8 @@ abstract class AbstractSettingsController {
             <?php settings_errors(); ?>
             <form method="POST" action="options.php">
                 <?php
-
                 settings_fields($this->getPage()->getOptionGroup());
-
                 do_settings_sections($this->getPage()->getOptionGroup());
-
-
-
-
-
-
                 submit_button();
                 ?>
             </form>
@@ -86,7 +79,18 @@ abstract class AbstractSettingsController {
                 $checked = checked($field->getValue(), $field_value, false);
                 printf('<input name="%1$s" id="%1$s" type="%2$s" %3$s value="%4$s" />', $field->getId(), 'checkbox', $checked, $field->getValue());
                 break;
-            case FieldType::CHECKBOX_LIST:
+            case CheckboxList::class:
+                /* @var CheckboxList $field ; */
+                $options_markup = '';
+                $iterator = 0;
+                foreach ($field->getValues() as $field_value) {
+                    $iterator++;
+                    $options_markup .= sprintf('<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s /> %5$s</label><br/>', $field['id'], $field['type'], $field_value->getKey(), false, $field_value->getValue(), $iterator);
+                }
+                printf('<fieldset>%s</fieldset>', $options_markup);
+
+                break;
+
             case FieldType::COLOR:
             case FieldType::DATE:
             case FieldType::EMAIL:
