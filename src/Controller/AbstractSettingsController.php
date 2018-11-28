@@ -40,14 +40,14 @@ abstract class AbstractSettingsController {
     final public function create_settings(): void {
         $page = $this->getPage();
         $callback = $page->getCallback() ?? array($this, 'settings_content');
-        add_menu_page($page->getPageTitle(), $page->getMenuTitel(), $page->getCapability(), $page->getOptionGroup(), $callback, $page->getIcon(), $page->getPosition());
+        add_menu_page($page->getPageTitle(), $page->getMenuTitle(), $page->getCapability(), $page->getId(), $callback, $page->getIcon(), $page->getPosition());
     }
 
     final public function setup_sections(): void {
         foreach ($this->getPage()
                       ->getSections() as $section) {
             add_settings_section($section->getId(), $section->getTitle(), $section->getCallback(), $this->getPage()
-                                                                                                        ->getOptionGroup());
+                                                                                                        ->getId());
         }
     }
 
@@ -56,9 +56,9 @@ abstract class AbstractSettingsController {
                       ->getSections() as $section) {
             foreach ($section->getFields() as $field) {
                 add_settings_field($field->getId(), $field->getLabel(), array($this, 'field'), $this->getPage()
-                                                                                                    ->getOptionGroup(), $section->getId(), ['field' => $field]);
+                                                                                                    ->getId(), $section->getId(), ['field' => $field]);
                 register_setting($this->getPage()
-                                      ->getOptionGroup(), $field->getId());
+                                      ->getId(), $field->getId());
             }
         }
     }
@@ -77,9 +77,9 @@ abstract class AbstractSettingsController {
             <form method="POST" action="options.php">
                 <?php
                 settings_fields($this->getPage()
-                                     ->getOptionGroup());
+                                     ->getId());
                 do_settings_sections($this->getPage()
-                                          ->getOptionGroup());
+                                          ->getId());
                 submit_button();
                 ?>
             </form>
@@ -149,16 +149,10 @@ abstract class AbstractSettingsController {
                 break;
             case Upload::class;
                 /* @var Upload $field ; */
-                printf('<input style="width: 40%%" id="%s" name="%s" type="text" value="%s"> <input style="width: 19%%" class="button %s" id="%s_button" name="%s_button" type="button" value="Upload" />', $field->getId(), $field->getId(), $current_field_value, $this->getPage()
-                                                                                                                                                                                                                                                                         ->getOptionGroup(), $field->getId(), $field->getId());
+                printf('<input style="width: 40%%" id="%s" name="%s" type="text" value="%s"> 
+                <input style="width: 19%%" class="button %s" id="%s_button" name="%s_button" type="button" value="Upload" />', $field->getId(), $field->getId(), $current_field_value, $this->getPage()
+                                                                                                                                                                                                                                                                         ->getId(), $field->getId(), $field->getId());
                 break;
-            case FieldType::COLOR:
-            case FieldType::DATE:
-            case FieldType::EMAIL:
-            case FieldType::SELECT:
-            case FieldType::MULTISELECT:
-            case FieldType::MEDIA:
-            case FieldType::NUMBER:
             case FieldType::WYSIWYG:
             default:
                 echo 'Unknown field type';
@@ -169,19 +163,21 @@ abstract class AbstractSettingsController {
     }
 
 
-    public final function media_fields() {
+    final public function media_fields() : void {
         ?>
         <script>
             jQuery(document).ready(function ($) {
+
+                var page_id = '<?php echo $this->getPage()->getId(); ?>';
+
                 if (typeof wp.media !== 'undefined') {
                     var _custom_media = true,
                         _orig_send_attachment = wp.media.editor.send.attachment;
-                    $('.<?php echo $this->getPage()
-                                        ->getOptionGroup(); ?>').click(function (e) {
-                        var send_attachment_bkp = wp.media.editor.send.attachment;
+                    $('.' + page_id).bind('click', function (e) {
                         var button = $(this);
                         var id = button.attr('id').replace('_button', '');
                         _custom_media = true;
+
                         wp.media.editor.send.attachment = function (props, attachment) {
                             if (_custom_media) {
                                 $('input#' + id).val(attachment.url);
@@ -193,6 +189,7 @@ abstract class AbstractSettingsController {
                         wp.media.editor.open(button);
                         return false;
                     });
+
                     $('.add_media').on('click', function () {
                         _custom_media = false;
                     });
