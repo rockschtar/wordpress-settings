@@ -24,6 +24,11 @@ abstract class Field {
     private $description;
 
     /**
+     * @var array
+     */
+    private $arguments = [];
+
+    /**
      * @return static
      */
     public static function create() {
@@ -79,5 +84,23 @@ abstract class Field {
         $this->description = $description;
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getArguments(): array {
+        return $this->arguments;
+    }
+
+    /**
+     * @param array $arguments
+     * @return Field
+     */
+    public function setArguments(array $arguments): Field {
+        $this->arguments = $arguments;
+        return $this;
+    }
+
+    
 
 }

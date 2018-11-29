@@ -23,8 +23,7 @@ abstract class AbstractSettingsController {
         add_action('admin_init', array($this, 'setup_sections'));
         add_action('admin_init', array($this, 'setup_fields'));
 
-        foreach ($this->getPage()
-                      ->getSections() as $section) {
+        foreach ($this->getPage()->getSections() as $section) {
 
             foreach ($section->getFields() as $field) {
                 if (is_a($field, Upload::class)) {
@@ -44,21 +43,41 @@ abstract class AbstractSettingsController {
     }
 
     final public function setup_sections(): void {
-        foreach ($this->getPage()
-                      ->getSections() as $section) {
-            add_settings_section($section->getId(), $section->getTitle(), $section->getCallback(), $this->getPage()
-                                                                                                        ->getId());
+        foreach ($this->getPage()->getSections() as $section) {
+            add_settings_section($section->getId(), $section->getTitle(), $section->getCallback(), $this->getPage()->getId());
         }
     }
 
     final public function setup_fields(): void {
-        foreach ($this->getPage()
-                      ->getSections() as $section) {
+        foreach ($this->getPage()->getSections() as $section) {
             foreach ($section->getFields() as $field) {
-                add_settings_field($field->getId(), $field->getLabel(), array($this, 'field'), $this->getPage()
-                                                                                                    ->getId(), $section->getId(), ['field' => $field]);
-                register_setting($this->getPage()
-                                      ->getId(), $field->getId());
+                add_settings_field($field->getId(), $field->getLabel(), array($this, 'field'), $this->getPage()->getId(), $section->getId(), ['field' => $field]);
+                $arguments = $field->getArguments();
+
+                if (is_a($field, Upload::class)) {
+
+                    $sanitize_callback = function ($value) use ($arguments) {
+                        if (!is_array($value)) {
+                            $value = '';
+                        } else {
+                            if (isset($value['attachment_id']) && empty($value['attachment_id'])) {
+                                $value = '';
+                            }
+                        }
+
+                        if (array_key_exists('sanitize_callback', $arguments)) {
+                            $user_sanitize_callback = $arguments['sanitize_callback'];
+                            $value = call_user_func($user_sanitize_callback, $value);
+                        }
+
+                        return $value;
+                    };
+
+                    $arguments['sanitize_callback'] = $sanitize_callback;
+
+                }
+
+                register_setting($this->getPage()->getId(), $field->getId(), $arguments);
             }
         }
     }
@@ -76,10 +95,8 @@ abstract class AbstractSettingsController {
             <?php settings_errors(); ?>
             <form method="POST" action="options.php">
                 <?php
-                settings_fields($this->getPage()
-                                     ->getId());
-                do_settings_sections($this->getPage()
-                                          ->getId());
+                settings_fields($this->getPage()->getId());
+                do_settings_sections($this->getPage()->getId());
                 submit_button();
                 ?>
             </form>
@@ -149,10 +166,30 @@ abstract class AbstractSettingsController {
                 break;
             case Upload::class;
                 /* @var Upload $field ; */
-                printf('<input style="width: 40%%" id="%s" name="%s[]" type="text" value="%s"> 
-                <input type="text" name="%s[]" id="%s_attachment_id" value="">
-                <input style="width: 19%%" class="button %s" id="%s_button" name="%s_button" type="button" value="Upload" />', $field->getId(), $field->getId(), $current_field_value, $field->getId(), $field->getId(), $this->getPage()
-                                                                                                                                                                                                                                                                         ->getId(), $field->getId(), $field->getId());
+                $field_id = $field->getId();
+
+                $media_url = $attachment_id = $icon_url = '';
+
+                if (is_array($current_field_value)) {
+                    $attachment_id = isset($current_field_value['attachment_id']) ? $current_field_value['attachment_id'] : '';
+
+                    if (!empty($attachment_id)) {
+                        $media_url = isset($current_field_value['media_url']) ? $current_field_value['media_url'] : '';
+                        $icon_url = isset($current_field_value['icon_url']) ? $current_field_value['icon_url'] : '';
+                        $thumb_url = $this->mimeTypeIsImage(get_post_mime_type($attachment_id)) ? $media_url : $icon_url;
+                    }
+                }
+                ?>
+                <img style="max-height: 64px; max-width: 64px;" src="<?php echo $thumb_url; ?>" id="<?php echo $field_id ?>_thumb"/>
+                <input type="text" name="<?php echo $field_id; ?>[media_url]" id="<?php echo $field_id; ?>" value="<?php echo $media_url; ?>">
+                <input type="text" name="<?php echo $field_id; ?>[attachment_id]" id="<?php echo $field_id; ?>_attachment_id" value="<?php echo $attachment_id ?>">
+                <input type="text" name="<?php echo $field_id; ?>[icon_url]" id="<?php echo $field_id; ?>_attachment_icon" value="<?php echo $icon_url; ?>">
+                <input data-fieldid="<?php echo $field_id; ?>" class="button button-secondary rwps_button_add_media" name="<?php echo $field_id; ?>_button_add" type="button"
+                       value="<?php echo $field->getUploadButtonText(); ?>"/>
+                <input data-fieldid="<?php echo $field_id; ?>" class="button button-secondary rwps_button_remove_media" name="<?php echo $field_id; ?>_button_remove"
+                       type="button"
+                       value="<?php echo $field->getRemoveButtonText(); ?>"/>
+                <?php
                 break;
             case FieldType::WYSIWYG:
             default:
@@ -160,41 +197,123 @@ abstract class AbstractSettingsController {
         }
 
         printf('<p class="description">%s </p>', $field->getDescription());
-
     }
 
-
-    final public function media_fields() : void {
+    final public function media_fields(): void {
         ?>
         <script>
             jQuery(document).ready(function ($) {
 
-                var _custom_media = true;
-                var _orig_send_attachment = wp.media.editor.send.attachment;
-                var page_id = '<?php echo $this->getPage()->getId(); ?>';
+                var RWPSMediaUpload = (function () {
 
-                $('.' + page_id).bind('click', function () {
-                    var button = $(this);
-                    var id = button.attr('id').replace('_button', '');
-                    var send_attachment_bkp = wp.media.editor.send.attachment;
+                    var page_id = '<?php echo $this->getPage()->getId(); ?>';
 
-                    _custom_media = true;
+                    function init() {
+                        wp.media.UploadIt = {
+                            frame: function (buttonSender) {
 
-                    wp.media.editor.send.attachment = function(props, attachment) {
+                                if (this._frame)
+                                    return this._frame;
 
-                        if(_custom_media) {
-                            $('input#' + id).val(attachment.url);
-                            $('input#' + id + '_attachment_id').val(attachment.id);
+                                var that = this;
+
+                                this._frame = wp.media({
+                                    id: 'rwps-media-frame',
+                                    title: 'Upload Title',
+                                    editing: true,
+                                    multiple: false,
+                                });
+                                this._frame.on("select", function () {
+                                        var attachment = that._frame.state().get('selection').first().toJSON();
+                                        onSelectMedia(buttonSender, attachment);
+                                    }
+                                );
+                                return this._frame;
+                            },
+                            init: function () {
+
+                            }
+                        };
+
+                        $('.rwps_button_add_media').bind('click', function (event) {
+                            event.preventDefault();
+                            wp.media.UploadIt.frame($(this)).open();
+                        });
+
+                        $('.rwps_button_remove_media').bind('click', function (event) {
+                            event.preventDefault();
+                            onRemoveMedia($(this));
+                        });
+                    }
+
+                    function getElementsFromFieldId(fieldId) {
+                        var elements = [];
+                        elements['imageThumbnail'] = $('#' + fieldId + '_thumb');
+                        elements['inputAttachmentUrl'] = $('input#' + fieldId);
+                        elements['inputAttachmentId'] = $('input#' + fieldId + '_attachment_id');
+                        elements['inputAttachmentIconUrl'] = $('input#' + fieldId + '_attachment_icon');
+                        return elements;
+                    }
+
+                    function onSelectMedia(buttonSender, attachment) {
+                        var fieldId = buttonSender.data('fieldid');
+                        elements = getElementsFromFieldId(fieldId);
+                        elements['inputAttachmentId'].val(attachment.id);
+                        elements['inputAttachmentUrl'].val(attachment.url);
+                        elements['inputAttachmentIconUrl'].val(attachment.icon);
+
+                        if (mimeTypeIsImage(attachment.mime) === true) {
+                            elements['imageThumbnail'].attr('src', attachment.url);
                         } else {
-                            return _orig_send_attachment.apply(this, [props, attachment]);
+                            elements['imageThumbnail'].attr('src', attachment.icon);
                         }
                     }
 
-                    wp.media.editor.open(button);
-                    return false;
-                });
+                    function onRemoveMedia(buttonSender) {
+                        var fieldId = buttonSender.data('fieldid');
+                        elements = getElementsFromFieldId(fieldId);
+                        elements['imageThumbnail'].hide();
+                        elements['imageThumbnail'].attr('src', '');
+                        elements['inputAttachmentId'].val('');
+                        elements['inputAttachmentUrl'].val('');
+                        elements['inputAttachmentIconUrl'].val('');
+                    }
+
+                    function mimeTypeIsImage(mime_type) {
+                        var image_mime_types = ['image/bmp',
+                            'image/gif',
+                            'image/jpeg',
+                            'image/png',
+                            'image/svg+xml',
+                            'image/x-icon'];
+                        return $.inArray(mime_type, image_mime_types) > -1;
+                    }
+
+                    return {
+                        init: init
+                    }
+
+                })();
+
+
+                RWPSMediaUpload.init();
 
             });
         </script><?php
+    }
+
+    private function mimeTypeIsImage(string $mime_type): bool {
+
+
+        $image_mime_types = ['image/bmp',
+                             'image/gif',
+                             'image/jpeg',
+                             'image/png',
+                             'image/svg+xml',
+                             'image/x-icon',];
+
+        return in_array($mime_type, $image_mime_types, false);
+
+
     }
 }
