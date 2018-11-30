@@ -5,16 +5,17 @@
 
 namespace Rockschtar\WordPress\Settings\Controller;
 
-use Rockschtar\WordPress\Settings\Enum\FieldType;
 use Rockschtar\WordPress\Settings\Models\Checkbox;
 use Rockschtar\WordPress\Settings\Models\CheckboxList;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\Media;
 use Rockschtar\WordPress\Settings\Models\Page;
+use Rockschtar\WordPress\Settings\Models\Radio;
 use Rockschtar\WordPress\Settings\Models\Section;
 use Rockschtar\WordPress\Settings\Models\SelectBox;
 use Rockschtar\WordPress\Settings\Models\Textfield;
 use Rockschtar\WordPress\Settings\Models\Upload;
+use Rockschtar\WordPress\Settings\Models\WYSIWYG;
 
 abstract class AbstractSettingsController {
 
@@ -144,22 +145,32 @@ abstract class AbstractSettingsController {
                 printf('<select name="%1$s[]" id="%1$s" %2$s>%3$s</select>', $field->getId(), $attr, $options);
 
                 break;
+            case Radio::class:
             case CheckboxList::class:
                 /* @var CheckboxList $field ; */
                 $options_markup = '';
                 $iterator = 0;
 
+                if (\get_class($field) === Radio::class) {
+                    $type = 'radio';
+                } else {
+                    $type = 'checkbox';
+                }
+
                 foreach ($field->getItems() as $item) {
                     $iterator++;
                     $checked = false;
-                    foreach ($current_field_value as $current_value) {
-                        if ($item->getValue() === $current_value) {
-                            $checked = checked(true, true, false);
-                            break;
+
+                    if (is_array($current_field_value)) {
+                        foreach ($current_field_value as $current_value) {
+                            if ($item->getValue() === $current_value) {
+                                $checked = checked(true, true, false);
+                                break;
+                            }
                         }
                     }
 
-                    $options_markup .= sprintf('<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s /> %5$s</label><br/>', $field->getId(), 'checkbox', $item->getValue(), $checked, $item->getLabel(), $iterator);
+                    $options_markup .= sprintf('<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s /> %5$s</label><br/>', $field->getId(), $type, $item->getValue(), $checked, $item->getLabel(), $iterator);
                 }
                 printf('<fieldset>%s</fieldset>', $options_markup);
 
@@ -180,19 +191,49 @@ abstract class AbstractSettingsController {
                     }
                 }
                 ?>
-                <img style="max-height: 64px; max-width: 64px;" src="<?php echo $thumb_url; ?>" id="<?php echo $field_id ?>_thumb"/>
-                <input type="text" name="<?php echo $field_id; ?>[media_url]" id="<?php echo $field_id; ?>" value="<?php echo $media_url; ?>">
-                <input type="text" name="<?php echo $field_id; ?>[attachment_id]" id="<?php echo $field_id; ?>_attachment_id" value="<?php echo $attachment_id ?>">
-                <input type="text" name="<?php echo $field_id; ?>[icon_url]" id="<?php echo $field_id; ?>_attachment_icon" value="<?php echo $icon_url; ?>">
-                <input data-fieldid="<?php echo $field_id; ?>" class="button button-secondary rwps_button_add_media" name="<?php echo $field_id; ?>_button_add" type="button"
+
+                <img style="max-height: 64px; max-width: 64px;<?php if (empty($thumb_url)): ?> display: none;<?php endif; ?>"
+                     src="<?php echo $thumb_url; ?>" id="<?php echo $field_id ?>_thumb"/>
+                <input type="hidden" name="<?php echo $field_id; ?>[media_url]" id="<?php echo $field_id; ?>" value="<?php echo $media_url; ?>">
+                <input type="hidden" name="<?php echo $field_id; ?>[attachment_id]" id="<?php echo $field_id; ?>_attachment_id"
+                       value="<?php echo $attachment_id ?>">
+                <input type="hidden" name="<?php echo $field_id; ?>[icon_url]" id="<?php echo $field_id; ?>_attachment_icon"
+                       value="<?php echo $icon_url; ?>">
+                <input style="vertical-align: bottom;" data-fieldid="<?php echo $field_id; ?>" class="button button-secondary rwps_button_add_media"
+                       name="<?php echo $field_id; ?>_button_add"
+                       type="button"
                        value="<?php echo $field->getUploadButtonText(); ?>"/>
-                <input data-fieldid="<?php echo $field_id; ?>" class="button button-secondary rwps_button_remove_media" name="<?php echo $field_id; ?>_button_remove"
+                <input style="vertical-align: bottom;<?php if (empty($thumb_url)): ?> display: none;<?php endif; ?>"
+                       data-fieldid="<?php echo $field_id; ?>"
+                       class="button button-secondary rwps_button_remove_media" name="<?php echo $field_id; ?>_button_remove"
+                       id="<?php echo $field_id; ?>_button_remove"
                        type="button"
                        value="<?php echo $field->getRemoveButtonText(); ?>"/>
                 <?php
                 break;
-            case FieldType::WYSIWYG:
+            case WYSIWYG::class:
+                /* @var WYSIWYG $field ; */
+                ?>
+                <?php
+                if (!empty($field->getWidth())): ?>
+                    <style type="text/css">
+                        #wp-<?php echo $field->getId(); ?>-editor-container, #wp-<?php echo $field->getId(); ?>-editor-tools {
+                            width: <?php echo $field->getWidth(); ?>px;
+                        }
+                    </style>
+                <?php endif;
+
+                $editor_settings = $field->getSettings();
+
+                if (!empty($field->getHeight())) {
+                    $editor_settings['editor_height'] = $field->getHeight();
+                }
+
+                $field_id = $field->getId();
+                wp_editor($current_field_value, $field->getId(), $editor_settings);
+                break;
             default:
+
                 echo 'Unknown field type';
         }
 
@@ -209,7 +250,7 @@ abstract class AbstractSettingsController {
                     var page_id = '<?php echo $this->getPage()->getId(); ?>';
 
                     function init() {
-                        wp.media.UploadIt = {
+                        wp.media.RWPSUpload = {
                             frame: function (buttonSender) {
 
                                 if (this._frame)
@@ -237,7 +278,7 @@ abstract class AbstractSettingsController {
 
                         $('.rwps_button_add_media').bind('click', function (event) {
                             event.preventDefault();
-                            wp.media.UploadIt.frame($(this)).open();
+                            wp.media.RWPSUpload.frame($(this)).open();
                         });
 
                         $('.rwps_button_remove_media').bind('click', function (event) {
@@ -252,6 +293,7 @@ abstract class AbstractSettingsController {
                         elements['inputAttachmentUrl'] = $('input#' + fieldId);
                         elements['inputAttachmentId'] = $('input#' + fieldId + '_attachment_id');
                         elements['inputAttachmentIconUrl'] = $('input#' + fieldId + '_attachment_icon');
+                        elements['buttomRemove'] = $('input#' + fieldId + '_button_remove');
                         return elements;
                     }
 
@@ -261,12 +303,14 @@ abstract class AbstractSettingsController {
                         elements['inputAttachmentId'].val(attachment.id);
                         elements['inputAttachmentUrl'].val(attachment.url);
                         elements['inputAttachmentIconUrl'].val(attachment.icon);
-
                         if (mimeTypeIsImage(attachment.mime) === true) {
                             elements['imageThumbnail'].attr('src', attachment.url);
                         } else {
                             elements['imageThumbnail'].attr('src', attachment.icon);
                         }
+
+                        elements['buttomRemove'].show();
+                        elements['imageThumbnail'].show();
                     }
 
                     function onRemoveMedia(buttonSender) {
@@ -277,6 +321,7 @@ abstract class AbstractSettingsController {
                         elements['inputAttachmentId'].val('');
                         elements['inputAttachmentUrl'].val('');
                         elements['inputAttachmentIconUrl'].val('');
+                        elements['buttomRemove'].hide();
                     }
 
                     function mimeTypeIsImage(mime_type) {
