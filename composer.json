@@ -1,7 +1,8 @@
 {
   "name": "rockschtar/wordpress-settings",
   "license": "MIT",
-  "description": "WordPress Settings Utility/Helper",
+  "description": "Abstract WordPress Settings Utility/Helper for usage with roots/bedrock",
+  "type": "library",
   "require": {
     "php": ">=7.2",
     "rockschtar/typed-arrays": "0.2.*"
@@ -13,5 +14,6 @@
     }
   },
   "require-dev": {
+    "phpunit/phpunit": "6.0.*"
   }
 }

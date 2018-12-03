@@ -3,9 +3,7 @@
  * @author: StefanHelmer
  */
 
-namespace Rockschtar\WordPress\Models;
-
-use Rockschtar\WordPress\Enum\FieldType;
+namespace Rockschtar\WordPress\Settings\Models;
 
 abstract class Field {
 
@@ -19,15 +17,24 @@ abstract class Field {
      */
     private $id;
 
-    /**
-     * @var FieldType
-     */
-    private $type;
 
     /**
      * @var
      */
     private $description;
+
+    /**
+     * @var array
+     */
+    private $arguments = [];
+
+    /**
+     * @return static
+     */
+    public static function create() {
+        $class = \get_called_class();
+        return new $class;
+    }
 
     /**
      * @return mixed
@@ -38,9 +45,9 @@ abstract class Field {
 
     /**
      * @param mixed $label
-     * @return Field
+     * @return static
      */
-    public function setLabel($label): Field  {
+    public function setLabel($label) {
         $this->label = $label;
         return $this;
     }
@@ -54,28 +61,20 @@ abstract class Field {
 
     /**
      * @param mixed $id
-     * @return Field
+     * @return static
      */
-    public function setId($id): Field {
+    public function setId($id) {
+
+        $validate = preg_match_all('/^[a-zA-Z0-9_-]+$/i', $id, $result) === 1;
+
+        if (!$validate) {
+            throw new \InvalidArgumentException('Id ' . $id . ' is invalid. Allowed characters: A-Z, a-z, 0-9, _ and - ');
+        }
+
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * @return FieldType
-     */
-    public function getType(): FieldType {
-        return $this->type;
-    }
-
-    /**
-     * @param FieldType $type
-     * @return Field
-     */
-    public function setType(FieldType $type): Field {
-        $this->type = $type;
-        return $this;
-    }
 
     /**
      * @return mixed
@@ -90,6 +89,22 @@ abstract class Field {
      */
     public function setDescription($description): Field {
         $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getArguments(): array {
+        return $this->arguments;
+    }
+
+    /**
+     * @param array $arguments
+     * @return Field
+     */
+    public function setArguments(array $arguments): Field {
+        $this->arguments = $arguments;
         return $this;
     }
 
