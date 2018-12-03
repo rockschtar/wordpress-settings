@@ -5,36 +5,47 @@
 
 namespace Rockschtar\WordPress\Settings\Controller;
 
-use Rockschtar\WordPress\Settings\Models\Checkbox;
-use Rockschtar\WordPress\Settings\Models\CheckboxList;
+use Rockschtar\WordPress\Controller\Controller;
 use Rockschtar\WordPress\Settings\Models\Field;
-use Rockschtar\WordPress\Settings\Models\Media;
+use Rockschtar\WordPress\Settings\Models\Fields\AjaxButton;
+use Rockschtar\WordPress\Settings\Models\Fields\Checkbox;
+use Rockschtar\WordPress\Settings\Models\Fields\CheckboxList;
+use Rockschtar\WordPress\Settings\Models\Fields\Radio;
+use Rockschtar\WordPress\Settings\Models\Fields\SelectBox;
+use Rockschtar\WordPress\Settings\Models\Fields\Textfield;
+use Rockschtar\WordPress\Settings\Models\Fields\Upload;
+use Rockschtar\WordPress\Settings\Models\Fields\WYSIWYG;
 use Rockschtar\WordPress\Settings\Models\Page;
-use Rockschtar\WordPress\Settings\Models\Radio;
-use Rockschtar\WordPress\Settings\Models\Section;
-use Rockschtar\WordPress\Settings\Models\SelectBox;
-use Rockschtar\WordPress\Settings\Models\Textfield;
-use Rockschtar\WordPress\Settings\Models\Upload;
-use Rockschtar\WordPress\Settings\Models\WYSIWYG;
 
-abstract class AbstractSettingsController {
+abstract class AbstractSettingsController extends Controller {
 
-    public function __construct() {
+    public function hooks(): void {
         add_action('admin_menu', array($this, 'create_settings'));
         add_action('admin_init', array($this, 'setup_sections'));
         add_action('admin_init', array($this, 'setup_fields'));
 
         foreach ($this->getPage()->getSections() as $section) {
 
+            $upload_script_added = false;
+
             foreach ($section->getFields() as $field) {
-                if (is_a($field, Upload::class)) {
+                if ($upload_script_added === false && is_a($field, Upload::class)) {
                     add_action('admin_footer', array($this, 'media_fields'));
                     add_action('admin_enqueue_scripts', 'wp_enqueue_media');
+                    $upload_script_added = true;
+                }
+
+                if (is_a($field, AjaxButton::class)) {
+                    /* @var AjaxButton $field */
+                    //add_action('wp_ajax_' . $field->getAction(), $field->getFunction());
+                    add_action('wp_ajax_rwps_ajax_button_wrapper', function () use ($field) {
+                        check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
+                        \call_user_func($field->getFunction(), $field);
+                    });
+                    add_action('admin_footer', array(&$this, 'ajax_button_script'));
                 }
             }
-
         }
-
     }
 
     final public function create_settings(): void {
@@ -45,30 +56,30 @@ abstract class AbstractSettingsController {
 
     final public function setup_sections(): void {
         foreach ($this->getPage()->getSections() as $section) {
-            add_settings_section($section->getId(), $section->getTitle(), $section->getCallback(), $this->getPage()->getId());
+            add_settings_section($section->getId(), $section->getTitle(), $section->getCallback(), $this->getPage()
+                                                                                                        ->getId());
         }
     }
 
     final public function setup_fields(): void {
         foreach ($this->getPage()->getSections() as $section) {
             foreach ($section->getFields() as $field) {
-                add_settings_field($field->getId(), $field->getLabel(), array($this, 'field'), $this->getPage()->getId(), $section->getId(), ['field' => $field]);
+                add_settings_field($field->getId(), $field->getLabel(), array($this, 'field'), $this->getPage()
+                                                                                                    ->getId(), $section->getId(), ['field' => $field]);
                 $arguments = $field->getArguments();
 
                 if (is_a($field, Upload::class)) {
 
                     $sanitize_callback = function ($value) use ($arguments) {
-                        if (!is_array($value)) {
+                        if (!\is_array($value)) {
                             $value = '';
-                        } else {
-                            if (isset($value['attachment_id']) && empty($value['attachment_id'])) {
-                                $value = '';
-                            }
+                        } else if (isset($value['attachment_id']) && empty($value['attachment_id'])) {
+                            $value = '';
                         }
 
                         if (array_key_exists('sanitize_callback', $arguments)) {
                             $user_sanitize_callback = $arguments['sanitize_callback'];
-                            $value = call_user_func($user_sanitize_callback, $value);
+                            $value = $user_sanitize_callback($value);
                         }
 
                         return $value;
@@ -83,32 +94,39 @@ abstract class AbstractSettingsController {
         }
     }
 
-    /**
-     * @return Section[]
-     */
-    abstract public function getSections(): array;
-
     abstract public function getPage(): Page;
 
     public function settings_content(): void { ?>
+        <?php do_action('rwps-before-page-wrap', $this->getPage()); ?>
+        <?php do_action('rwps-before-page-wrap-' . $this->getPage()->getId()); ?>
         <div class="wrap">
-            <h1>Custom Settings Page</h1>
+            <h1><?php echo $this->getPage()->getPageTitle(); ?></h1>
             <?php settings_errors(); ?>
             <form method="POST" action="options.php">
+                <?php do_action('rwps-before-form-fields', $this->getPage()); ?>
+                <?php do_action('rwps-before-form-fields' . $this->getPage()->getId()); ?>
                 <?php
                 settings_fields($this->getPage()->getId());
                 do_settings_sections($this->getPage()->getId());
                 submit_button();
                 ?>
+                <?php do_action('rwps-after-form-fields', $this->getPage()); ?>
+                <?php do_action('rwps-after-form-fields' . $this->getPage()->getId()); ?>
             </form>
-        </div> <?php
+        </div>
+        <?php
+        do_action('rwps-after-page-wrap', $this->getPage());
+        do_action('rwps-after-page-wrap-' . $this->getPage()->getId());
     }
 
     public function field(array $args): void {
         /* @var Field $field ; */
         $field = $args['field'];
 
+        $html = '';
         $current_field_value = get_option($field->getId());
+
+        ob_start();
 
         switch (\get_class($field)) {
             case Textfield::class:
@@ -118,7 +136,7 @@ abstract class AbstractSettingsController {
             case Checkbox::class:
                 /* @var Checkbox $field ; */
                 $checked = checked($field->getValue(), $current_field_value, false);
-                printf('<input name="%1$s" id="%1$s" type="%2$s" %3$s value="%4$s" />', $field->getId(), 'checkbox', $checked, $field->getValue());
+                printf('<input name="%1$s" id="%1$s" type="checkbox" %2$s value="%3$s" />', $field->getId(), $checked, $field->getValue());
                 break;
             case SelectBox::class:
                 /* @var SelectBox $field ; */
@@ -161,7 +179,7 @@ abstract class AbstractSettingsController {
                     $iterator++;
                     $checked = false;
 
-                    if (is_array($current_field_value)) {
+                    if (\is_array($current_field_value)) {
                         foreach ($current_field_value as $current_value) {
                             if ($item->getValue() === $current_value) {
                                 $checked = checked(true, true, false);
@@ -172,6 +190,8 @@ abstract class AbstractSettingsController {
 
                     $options_markup .= sprintf('<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s /> %5$s</label><br/>', $field->getId(), $type, $item->getValue(), $checked, $item->getLabel(), $iterator);
                 }
+
+
                 printf('<fieldset>%s</fieldset>', $options_markup);
 
                 break;
@@ -179,14 +199,14 @@ abstract class AbstractSettingsController {
                 /* @var Upload $field ; */
                 $field_id = $field->getId();
 
-                $media_url = $attachment_id = $icon_url = '';
+                $media_url = $attachment_id = $thumb_url = $icon_url = '';
 
-                if (is_array($current_field_value)) {
-                    $attachment_id = isset($current_field_value['attachment_id']) ? $current_field_value['attachment_id'] : '';
+                if (\is_array($current_field_value)) {
+                    $attachment_id = $current_field_value['attachment_id'] ?? '';
 
                     if (!empty($attachment_id)) {
-                        $media_url = isset($current_field_value['media_url']) ? $current_field_value['media_url'] : '';
-                        $icon_url = isset($current_field_value['icon_url']) ? $current_field_value['icon_url'] : '';
+                        $media_url = $current_field_value['media_url'] ?? '';
+                        $icon_url = $current_field_value['icon_url'] ?? '';
                         $thumb_url = $this->mimeTypeIsImage(get_post_mime_type($attachment_id)) ? $media_url : $icon_url;
                     }
                 }
@@ -194,18 +214,23 @@ abstract class AbstractSettingsController {
 
                 <img style="max-height: 64px; max-width: 64px;<?php if (empty($thumb_url)): ?> display: none;<?php endif; ?>"
                      src="<?php echo $thumb_url; ?>" id="<?php echo $field_id ?>_thumb"/>
-                <input type="hidden" name="<?php echo $field_id; ?>[media_url]" id="<?php echo $field_id; ?>" value="<?php echo $media_url; ?>">
-                <input type="hidden" name="<?php echo $field_id; ?>[attachment_id]" id="<?php echo $field_id; ?>_attachment_id"
+                <input type="hidden" name="<?php echo $field_id; ?>[media_url]" id="<?php echo $field_id; ?>"
+                       value="<?php echo $media_url; ?>">
+                <input type="hidden" name="<?php echo $field_id; ?>[attachment_id]"
+                       id="<?php echo $field_id; ?>_attachment_id"
                        value="<?php echo $attachment_id ?>">
-                <input type="hidden" name="<?php echo $field_id; ?>[icon_url]" id="<?php echo $field_id; ?>_attachment_icon"
+                <input type="hidden" name="<?php echo $field_id; ?>[icon_url]"
+                       id="<?php echo $field_id; ?>_attachment_icon"
                        value="<?php echo $icon_url; ?>">
-                <input style="vertical-align: bottom;" data-fieldid="<?php echo $field_id; ?>" class="button button-secondary rwps_button_add_media"
+                <input style="vertical-align: bottom;" data-fieldid="<?php echo $field_id; ?>"
+                       class="button button-secondary rwps_button_add_media"
                        name="<?php echo $field_id; ?>_button_add"
                        type="button"
                        value="<?php echo $field->getUploadButtonText(); ?>"/>
                 <input style="vertical-align: bottom;<?php if (empty($thumb_url)): ?> display: none;<?php endif; ?>"
                        data-fieldid="<?php echo $field_id; ?>"
-                       class="button button-secondary rwps_button_remove_media" name="<?php echo $field_id; ?>_button_remove"
+                       class="button button-secondary rwps_button_remove_media"
+                       name="<?php echo $field_id; ?>_button_remove"
                        id="<?php echo $field_id; ?>_button_remove"
                        type="button"
                        value="<?php echo $field->getRemoveButtonText(); ?>"/>
@@ -215,7 +240,9 @@ abstract class AbstractSettingsController {
                 /* @var WYSIWYG $field ; */
                 ?>
                 <?php
+                /** @noinspection IsEmptyFunctionUsageInspection */
                 if (!empty($field->getWidth())): ?>
+                    <!--suppress CssUnusedSymbol -->
                     <style type="text/css">
                         #wp-<?php echo $field->getId(); ?>-editor-container, #wp-<?php echo $field->getId(); ?>-editor-tools {
                             width: <?php echo $field->getWidth(); ?>px;
@@ -225,19 +252,106 @@ abstract class AbstractSettingsController {
 
                 $editor_settings = $field->getSettings();
 
+                /** @noinspection IsEmptyFunctionUsageInspection */
                 if (!empty($field->getHeight())) {
                     $editor_settings['editor_height'] = $field->getHeight();
                 }
 
-                $field_id = $field->getId();
                 wp_editor($current_field_value, $field->getId(), $editor_settings);
                 break;
-            default:
+            case AjaxButton::class:
+                /* @var AjaxButton $field ; */
+                ?>
+                <button type="button" id="<?php $field->getId(); ?>"
+                        data-wait-text="<?php echo $field->getWaitText(); ?>"
+                        data-label-success="<?php echo $field->getButtonLabelSuccess(); ?>"
 
-                echo 'Unknown field type';
+                        class="button button-secondary rwps-ajax-button rwps-ajax-button-<?php $field->getId(); ?>"><?php echo $field->getButtonLabel(); ?></button>
+                <?php
+                break;
+
+            default:
+                do_action('rwps-custom-field', $field);
         }
 
-        printf('<p class="description">%s </p>', $field->getDescription());
+        $html = ob_get_clean();
+        $html .= sprintf('<p class="description">%s </p>', $field->getDescription());
+        $html = apply_filters('rwps-field', $html, $field->getId());
+        $html = apply_filters('rwps-field-' . $field->getId(), $html);
+        echo $html;
+    }
+
+    final public function ajax_button_script(): void {
+        ?>
+        <script>
+            jQuery(document).ready(function ($) {
+
+                var RWPSAjaxButtons = (function () {
+
+
+                    var ajax_nonce = '<?php echo wp_create_nonce('rwps-ajax-button-nonce'); ?>';
+
+                    function init() {
+
+                        jQuery('.rwps-ajax-button').bind('click', function () {
+
+                            var button = $(this);
+
+                            var button_text = button.html();
+                            var wait_text = button.data('wait-text');
+                            var label_success = button.data('label-success');
+
+                            button.html(wait_text);
+
+                            jQuery.ajax({
+                                type: 'POST',
+                                url: ajaxurl,
+                                data: {
+                                    nonce: ajax_nonce,
+                                    action: 'rwps_ajax_button_wrapper',
+                                },
+                                success: function (response, textStatus, XMLHttpRequest) {
+                                    console.log('hello world');
+                                    console.log(response);
+
+                                    if (label_success === '') {
+
+                                        if (typeof response.data === 'string') {
+                                            button.html(response.data);
+                                        } else {
+                                            button.html(button_text);
+                                        }
+
+                                    } else {
+                                        button.html(label_success);
+                                    }
+
+
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                    alert(errorThrown);
+                                }
+                            }).done(function () {
+                                console.log('done called');
+                                setTimeout(function () {
+                                    button.html(button_text);
+                                }, 3000);
+                            });
+
+                        });
+
+                    }
+
+                    return {
+                        init: init
+                    }
+
+                })();
+
+                RWPSAjaxButtons.init();
+            });
+        </script>
+        <?php
     }
 
     final public function media_fields(): void {
@@ -248,6 +362,7 @@ abstract class AbstractSettingsController {
                 var RWPSMediaUpload = (function () {
 
                     var page_id = '<?php echo $this->getPage()->getId(); ?>';
+
 
                     function init() {
                         wp.media.RWPSUpload = {
@@ -357,7 +472,7 @@ abstract class AbstractSettingsController {
                              'image/svg+xml',
                              'image/x-icon',];
 
-        return in_array($mime_type, $image_mime_types, false);
+        return \in_array($mime_type, $image_mime_types, false);
 
 
     }
