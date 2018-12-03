@@ -85,9 +85,9 @@ abstract class Field {
 
     /**
      * @param mixed $description
-     * @return Field
+     * @return static
      */
-    public function setDescription($description): Field {
+    public function setDescription($description) {
         $this->description = $description;
         return $this;
     }
@@ -101,9 +101,9 @@ abstract class Field {
 
     /**
      * @param array $arguments
-     * @return Field
+     * @return static
      */
-    public function setArguments(array $arguments): Field {
+    public function setArguments(array $arguments) {
         $this->arguments = $arguments;
         return $this;
     }
