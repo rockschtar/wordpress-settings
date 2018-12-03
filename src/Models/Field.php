@@ -64,6 +64,13 @@ abstract class Field {
      * @return static
      */
     public function setId($id) {
+
+        $validate = preg_match_all('/^[a-zA-Z0-9_-]+$/i', $id, $result) === 1;
+
+        if (!$validate) {
+            throw new \InvalidArgumentException('Id ' . $id . ' is invalid. Allowed characters: A-Z, a-z, 0-9, _ and - ');
+        }
+
         $this->id = $id;
         return $this;
     }
@@ -78,9 +85,9 @@ abstract class Field {
 
     /**
      * @param mixed $description
-     * @return Field
+     * @return static
      */
-    public function setDescription($description): Field {
+    public function setDescription($description) {
         $this->description = $description;
         return $this;
     }
@@ -94,13 +101,11 @@ abstract class Field {
 
     /**
      * @param array $arguments
-     * @return Field
+     * @return static
      */
-    public function setArguments(array $arguments): Field {
+    public function setArguments(array $arguments) {
         $this->arguments = $arguments;
         return $this;
     }
-
-    
 
 }
