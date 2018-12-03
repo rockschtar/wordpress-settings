@@ -5,6 +5,7 @@
 
 namespace Rockschtar\WordPress\Settings\Controller;
 
+use Rockschtar\WordPress\Controller\Controller;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\Fields\Checkbox;
 use Rockschtar\WordPress\Settings\Models\Fields\CheckboxList;
@@ -15,9 +16,9 @@ use Rockschtar\WordPress\Settings\Models\Fields\Upload;
 use Rockschtar\WordPress\Settings\Models\Fields\WYSIWYG;
 use Rockschtar\WordPress\Settings\Models\Page;
 
-abstract class AbstractSettingsController {
+abstract class AbstractSettingsController extends Controller {
 
-    public function __construct() {
+    public function hooks(): void {
         add_action('admin_menu', array($this, 'create_settings'));
         add_action('admin_init', array($this, 'setup_sections'));
         add_action('admin_init', array($this, 'setup_fields'));
@@ -34,7 +35,6 @@ abstract class AbstractSettingsController {
                 }
             }
         }
-
     }
 
     final public function create_settings(): void {
@@ -45,7 +45,8 @@ abstract class AbstractSettingsController {
 
     final public function setup_sections(): void {
         foreach ($this->getPage()->getSections() as $section) {
-            add_settings_section($section->getId(), $section->getTitle(), $section->getCallback(), $this->getPage()->getId());
+            add_settings_section($section->getId(), $section->getTitle(), $section->getCallback(), $this->getPage()
+                                                                                                        ->getId());
         }
     }
 
@@ -202,18 +203,23 @@ abstract class AbstractSettingsController {
 
                 <img style="max-height: 64px; max-width: 64px;<?php if (empty($thumb_url)): ?> display: none;<?php endif; ?>"
                      src="<?php echo $thumb_url; ?>" id="<?php echo $field_id ?>_thumb"/>
-                <input type="hidden" name="<?php echo $field_id; ?>[media_url]" id="<?php echo $field_id; ?>" value="<?php echo $media_url; ?>">
-                <input type="hidden" name="<?php echo $field_id; ?>[attachment_id]" id="<?php echo $field_id; ?>_attachment_id"
+                <input type="hidden" name="<?php echo $field_id; ?>[media_url]" id="<?php echo $field_id; ?>"
+                       value="<?php echo $media_url; ?>">
+                <input type="hidden" name="<?php echo $field_id; ?>[attachment_id]"
+                       id="<?php echo $field_id; ?>_attachment_id"
                        value="<?php echo $attachment_id ?>">
-                <input type="hidden" name="<?php echo $field_id; ?>[icon_url]" id="<?php echo $field_id; ?>_attachment_icon"
+                <input type="hidden" name="<?php echo $field_id; ?>[icon_url]"
+                       id="<?php echo $field_id; ?>_attachment_icon"
                        value="<?php echo $icon_url; ?>">
-                <input style="vertical-align: bottom;" data-fieldid="<?php echo $field_id; ?>" class="button button-secondary rwps_button_add_media"
+                <input style="vertical-align: bottom;" data-fieldid="<?php echo $field_id; ?>"
+                       class="button button-secondary rwps_button_add_media"
                        name="<?php echo $field_id; ?>_button_add"
                        type="button"
                        value="<?php echo $field->getUploadButtonText(); ?>"/>
                 <input style="vertical-align: bottom;<?php if (empty($thumb_url)): ?> display: none;<?php endif; ?>"
                        data-fieldid="<?php echo $field_id; ?>"
-                       class="button button-secondary rwps_button_remove_media" name="<?php echo $field_id; ?>_button_remove"
+                       class="button button-secondary rwps_button_remove_media"
+                       name="<?php echo $field_id; ?>_button_remove"
                        id="<?php echo $field_id; ?>_button_remove"
                        type="button"
                        value="<?php echo $field->getRemoveButtonText(); ?>"/>
