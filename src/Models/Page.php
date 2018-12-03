@@ -3,11 +3,15 @@
  * @author: StefanHelmer
  */
 
-namespace Rockschtar\WordPress\Models;
+namespace Rockschtar\WordPress\Settings\Models;
 
 
 class Page {
 
+    /**
+     * @var string
+     */
+    private $id;
     /**
      * @var Sections
      */
@@ -19,7 +23,7 @@ class Page {
     /**
      * @var string
      */
-    private $menu_titel = 'Custom Settings Page';
+    private $menu_title = 'Custom Settings Page';
     /**
      * @var string
      */
@@ -33,46 +37,49 @@ class Page {
      */
     private $position = 2;
     /**
-     * @var ?string
-     */
-    private $slug;
-    /**
      * @var ?array|?string|null
      */
     private $callback;
 
-    /**
-     * @return Sections
-     */
-    public function getSections() : Sections {
-        return $this->sections;
-    }
-
-    /**
-     * @param mixed $sections
-     * @return Page
-     */
-    public function setSections($sections): Page {
-        $this->sections = $sections;
-        return $this;
+    public static function create(): Page {
+        return new self();
     }
 
     /**
      * @return string
      */
-    public function getSlug(): string {
-        return $this->slug;
+    public function getId(): string {
+        return $this->id;
     }
 
     /**
-     * @param string $slug
+     * @param string $id
      * @return Page
      */
-    public function setSlug(string $slug): Page {
-        $this->slug = $slug;
+    public function setId(string $id): Page {
+        $this->id = $id;
         return $this;
     }
 
+    /**
+     * @return Sections
+     */
+    public function getSections(): Sections {
+        return $this->sections;
+    }
+
+    /**
+     * @param Section $section
+     * @return Page
+     */
+    public function addSection(Section $section): Page {
+        if ($this->sections === null) {
+            $this->sections = new Sections();
+        }
+
+        $this->sections->append($section);
+        return $this;
+    }
 
     /**
      * @return string
@@ -93,16 +100,16 @@ class Page {
     /**
      * @return string
      */
-    public function getMenuTitel(): string {
-        return $this->menu_titel;
+    public function getMenuTitle(): string {
+        return $this->menu_title;
     }
 
     /**
-     * @param string $menu_titel
+     * @param string $menu_title
      * @return Page
      */
-    public function setMenuTitel(string $menu_titel): Page {
-        $this->menu_titel = $menu_titel;
+    public function setMenuTitle(string $menu_title): Page {
+        $this->menu_title = $menu_title;
         return $this;
     }
 
