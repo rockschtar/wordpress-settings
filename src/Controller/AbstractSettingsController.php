@@ -7,6 +7,7 @@ namespace Rockschtar\WordPress\Settings\Controller;
 
 use Rockschtar\WordPress\Controller\Controller;
 use Rockschtar\WordPress\Settings\Models\Field;
+use Rockschtar\WordPress\Settings\Models\Fields\AjaxButton;
 use Rockschtar\WordPress\Settings\Models\Fields\Checkbox;
 use Rockschtar\WordPress\Settings\Models\Fields\CheckboxList;
 use Rockschtar\WordPress\Settings\Models\Fields\Radio;
@@ -32,6 +33,16 @@ abstract class AbstractSettingsController extends Controller {
                     add_action('admin_footer', array($this, 'media_fields'));
                     add_action('admin_enqueue_scripts', 'wp_enqueue_media');
                     $upload_script_added = true;
+                }
+
+                if (is_a($field, AjaxButton::class)) {
+                    /* @var AjaxButton $field */
+                    //add_action('wp_ajax_' . $field->getAction(), $field->getFunction());
+                    add_action('wp_ajax_rwps_ajax_button_wrapper', function () use ($field) {
+                        check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
+                        \call_user_func($field->getFunction(), $field);
+                    });
+                    add_action('admin_footer', array(&$this, 'ajax_button_script'));
                 }
             }
         }
@@ -89,7 +100,7 @@ abstract class AbstractSettingsController extends Controller {
         <?php do_action('rwps-before-page-wrap', $this->getPage()); ?>
         <?php do_action('rwps-before-page-wrap-' . $this->getPage()->getId()); ?>
         <div class="wrap">
-            <h1>Custom Settings Page</h1>
+            <h1><?php echo $this->getPage()->getPageTitle(); ?></h1>
             <?php settings_errors(); ?>
             <form method="POST" action="options.php">
                 <?php do_action('rwps-before-form-fields', $this->getPage()); ?>
@@ -248,6 +259,17 @@ abstract class AbstractSettingsController extends Controller {
 
                 wp_editor($current_field_value, $field->getId(), $editor_settings);
                 break;
+            case AjaxButton::class:
+                /* @var AjaxButton $field ; */
+                ?>
+                <button type="button" id="<?php $field->getId(); ?>"
+                        data-wait-text="<?php echo $field->getWaitText(); ?>"
+                        data-label-success="<?php echo $field->getButtonLabelSuccess(); ?>"
+
+                        class="button button-secondary rwps-ajax-button rwps-ajax-button-<?php $field->getId(); ?>"><?php echo $field->getButtonLabel(); ?></button>
+                <?php
+                break;
+
             default:
                 do_action('rwps-custom-field', $field);
         }
@@ -259,6 +281,79 @@ abstract class AbstractSettingsController extends Controller {
         echo $html;
     }
 
+    final public function ajax_button_script(): void {
+        ?>
+        <script>
+            jQuery(document).ready(function ($) {
+
+                var RWPSAjaxButtons = (function () {
+
+
+                    var ajax_nonce = '<?php echo wp_create_nonce('rwps-ajax-button-nonce'); ?>';
+
+                    function init() {
+
+                        jQuery('.rwps-ajax-button').bind('click', function () {
+
+                            var button = $(this);
+
+                            var button_text = button.html();
+                            var wait_text = button.data('wait-text');
+                            var label_success = button.data('label-success');
+
+                            button.html(wait_text);
+
+                            jQuery.ajax({
+                                type: 'POST',
+                                url: ajaxurl,
+                                data: {
+                                    nonce: ajax_nonce,
+                                    action: 'rwps_ajax_button_wrapper',
+                                },
+                                success: function (response, textStatus, XMLHttpRequest) {
+                                    console.log('hello world');
+                                    console.log(response);
+
+                                    if (label_success === '') {
+
+                                        if (typeof response.data === 'string') {
+                                            button.html(response.data);
+                                        } else {
+                                            button.html(button_text);
+                                        }
+
+                                    } else {
+                                        button.html(label_success);
+                                    }
+
+
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                    alert(errorThrown);
+                                }
+                            }).done(function () {
+                                console.log('done called');
+                                setTimeout(function () {
+                                    button.html(button_text);
+                                }, 3000);
+                            });
+
+                        });
+
+                    }
+
+                    return {
+                        init: init
+                    }
+
+                })();
+
+                RWPSAjaxButtons.init();
+            });
+        </script>
+        <?php
+    }
+
     final public function media_fields(): void {
         ?>
         <script>
@@ -267,6 +362,7 @@ abstract class AbstractSettingsController extends Controller {
                 var RWPSMediaUpload = (function () {
 
                     var page_id = '<?php echo $this->getPage()->getId(); ?>';
+
 
                     function init() {
                         wp.media.RWPSUpload = {
