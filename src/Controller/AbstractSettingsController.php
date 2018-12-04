@@ -265,7 +265,9 @@ abstract class AbstractSettingsController extends Controller {
                 <button type="button" id="<?php $field->getId(); ?>"
                         data-wait-text="<?php echo $field->getWaitText(); ?>"
                         data-label-success="<?php echo $field->getButtonLabelSuccess(); ?>"
-
+                        data-label-error="<?php echo $field->getButtonLabelError(); ?>"
+                        data-callback-success=""
+                        data-callback-error=""
                         class="button button-secondary rwps-ajax-button rwps-ajax-button-<?php $field->getId(); ?>"><?php echo $field->getButtonLabel(); ?></button>
                 <?php
                 break;
@@ -298,10 +300,13 @@ abstract class AbstractSettingsController extends Controller {
                             var button = $(this);
 
                             var button_text = button.html();
-                            var wait_text = button.data('wait-text');
+                            var label_wait = button.data('wait-text');
                             var label_success = button.data('label-success');
+                            var label_error = button.data('label-success');
+                            var callback_success = button.data('callback-success');
+                            var callback_error = button.data('callback-error');
 
-                            button.html(wait_text);
+                            button.html(label_wait);
 
                             jQuery.ajax({
                                 type: 'POST',
@@ -310,9 +315,7 @@ abstract class AbstractSettingsController extends Controller {
                                     nonce: ajax_nonce,
                                     action: 'rwps_ajax_button_wrapper',
                                 },
-                                success: function (response, textStatus, XMLHttpRequest) {
-                                    console.log('hello world');
-                                    console.log(response);
+                                success: function (response) {
 
                                     if (label_success === '') {
 
@@ -326,13 +329,22 @@ abstract class AbstractSettingsController extends Controller {
                                         button.html(label_success);
                                     }
 
-
+                                    if(callback_success !== '') {
+                                        window[callback_success](response);
+                                    }
                                 },
                                 error: function (XMLHttpRequest, textStatus, errorThrown) {
-                                    alert(errorThrown);
+                                    if (label_error === '') {
+                                        button.html(button_text);
+                                    } else {
+                                        button.html(label_error);
+                                    }
+
+                                    if(callback_error !== '') {
+                                        window[callback_error](XMLHttpRequest,textStatus, errorThrown);
+                                    }
                                 }
                             }).done(function () {
-                                console.log('done called');
                                 setTimeout(function () {
                                     button.html(button_text);
                                 }, 3000);
