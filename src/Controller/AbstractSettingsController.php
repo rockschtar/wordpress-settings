@@ -6,6 +6,7 @@
 namespace Rockschtar\WordPress\Settings\Controller;
 
 use Rockschtar\WordPress\Controller\Controller;
+use Rockschtar\WordPress\Settings\Models\ActionHook;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\Fields\AjaxButton;
 use Rockschtar\WordPress\Settings\Models\Fields\Checkbox;
@@ -17,12 +18,21 @@ use Rockschtar\WordPress\Settings\Models\Fields\Upload;
 use Rockschtar\WordPress\Settings\Models\Fields\WYSIWYG;
 use Rockschtar\WordPress\Settings\Models\Page;
 
-abstract class AbstractSettingsController extends Controller {
+abstract class AbstractSettingsController {
 
-    public function hooks(): void {
+    /**
+     * @var string
+     */
+    private $hook_suffix;
+
+    private function __construct() {
         add_action('admin_menu', array($this, 'create_settings'));
         add_action('admin_init', array($this, 'setup_sections'));
         add_action('admin_init', array($this, 'setup_fields'));
+
+
+
+
 
         foreach ($this->getPage()->getSections() as $section) {
 
@@ -48,10 +58,33 @@ abstract class AbstractSettingsController extends Controller {
         }
     }
 
+    /**
+     * @return static
+     */
+    public static function &init() {
+        static $instance = null;
+        /** @noinspection ClassConstantCanBeUsedInspection */
+        $class = \get_called_class();
+        if ($instance === null) {
+            $instance = new $class();
+        }
+        return $instance;
+    }
+
+    abstract public function getPage(): Page;
+
+    public function custom_hooks(): void {
+
+    }
+
     final public function create_settings(): void {
         $page = $this->getPage();
         $callback = $page->getCallback() ?? array($this, 'settings_content');
-        add_menu_page($page->getPageTitle(), $page->getMenuTitle(), $page->getCapability(), $page->getId(), $callback, $page->getIcon(), $page->getPosition());
+        $this->hook_suffix = add_menu_page($page->getPageTitle(), $page->getMenuTitle(), $page->getCapability(), $page->getId(), $callback, $page->getIcon(), $page->getPosition());
+
+        if($this->getPage()->getAdminFooterHook() !== null) {
+            add_action('admin_footer-' . $this->hook_suffix, $this->getPage()->getAdminFooterHook());
+        }
     }
 
     final public function setup_sections(): void {
@@ -94,9 +127,7 @@ abstract class AbstractSettingsController extends Controller {
         }
     }
 
-    abstract public function getPage(): Page;
-
-    public function settings_content(): void { ?>
+    final public function settings_content(): void { ?>
         <?php do_action('rwps-before-page-wrap', $this->getPage()); ?>
         <?php do_action('rwps-before-page-wrap-' . $this->getPage()->getId()); ?>
         <div class="wrap">
@@ -119,7 +150,7 @@ abstract class AbstractSettingsController extends Controller {
         do_action('rwps-after-page-wrap-' . $this->getPage()->getId());
     }
 
-    public function field(array $args): void {
+    final public function field(array $args): void {
         /* @var Field $field ; */
         $field = $args['field'];
 
@@ -263,11 +294,12 @@ abstract class AbstractSettingsController extends Controller {
                 /* @var AjaxButton $field ; */
                 ?>
                 <button type="button" id="<?php $field->getId(); ?>"
-                        data-wait-text="<?php echo $field->getWaitText(); ?>"
+                        data-wait-text="<?php echo $field->getButtonlabelWait(); ?>"
                         data-label-success="<?php echo $field->getButtonLabelSuccess(); ?>"
                         data-label-error="<?php echo $field->getButtonLabelError(); ?>"
-                        data-callback-success=""
-                        data-callback-error=""
+                        data-callback-success="<?php echo $field->getJSCallbackSuccess(); ?>"
+                        data-callback-error="<?php echo $field->getJSCallbackSuccess(); ?>"
+                        data-callback-done="<?php echo $field->getJSCallbackDone(); ?>"
                         class="button button-secondary rwps-ajax-button rwps-ajax-button-<?php $field->getId(); ?>"><?php echo $field->getButtonLabel(); ?></button>
                 <?php
                 break;
@@ -283,13 +315,27 @@ abstract class AbstractSettingsController extends Controller {
         echo $html;
     }
 
+    private function mimeTypeIsImage(string $mime_type): bool {
+
+
+        $image_mime_types = ['image/bmp',
+                             'image/gif',
+                             'image/jpeg',
+                             'image/png',
+                             'image/svg+xml',
+                             'image/x-icon',];
+
+        return \in_array($mime_type, $image_mime_types, false);
+
+
+    }
+
     final public function ajax_button_script(): void {
         ?>
         <script>
             jQuery(document).ready(function ($) {
 
                 var RWPSAjaxButtons = (function () {
-
 
                     var ajax_nonce = '<?php echo wp_create_nonce('rwps-ajax-button-nonce'); ?>';
 
@@ -305,6 +351,7 @@ abstract class AbstractSettingsController extends Controller {
                             var label_error = button.data('label-success');
                             var callback_success = button.data('callback-success');
                             var callback_error = button.data('callback-error');
+                            var callback_done = button.data('callback-done');
 
                             button.html(label_wait);
 
@@ -329,7 +376,7 @@ abstract class AbstractSettingsController extends Controller {
                                         button.html(label_success);
                                     }
 
-                                    if(callback_success !== '') {
+                                    if (callback_success !== '') {
                                         window[callback_success](response);
                                     }
                                 },
@@ -340,14 +387,19 @@ abstract class AbstractSettingsController extends Controller {
                                         button.html(label_error);
                                     }
 
-                                    if(callback_error !== '') {
-                                        window[callback_error](XMLHttpRequest,textStatus, errorThrown);
+                                    if (callback_error !== '') {
+                                        window[callback_error](XMLHttpRequest, textStatus, errorThrown);
                                     }
                                 }
                             }).done(function () {
                                 setTimeout(function () {
                                     button.html(button_text);
                                 }, 3000);
+
+                                if (callback_done !== '') {
+                                    window[callback_done]();
+                                }
+
                             });
 
                         });
@@ -474,18 +526,12 @@ abstract class AbstractSettingsController extends Controller {
         </script><?php
     }
 
-    private function mimeTypeIsImage(string $mime_type): bool {
-
-
-        $image_mime_types = ['image/bmp',
-                             'image/gif',
-                             'image/jpeg',
-                             'image/png',
-                             'image/svg+xml',
-                             'image/x-icon',];
-
-        return \in_array($mime_type, $image_mime_types, false);
-
-
+    /**
+     * @return string
+     */
+    public function getHookSuffix(): string {
+        return $this->hook_suffix;
     }
+
+
 }
