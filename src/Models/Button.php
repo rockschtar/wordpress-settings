@@ -99,6 +99,11 @@ abstract class Button extends Field {
      * @return string
      */
     public function getButtonLabel(): string {
+
+        if (empty($this->button_label)) {
+            return $this->getId();
+        }
+
         return $this->button_label;
     }
 
