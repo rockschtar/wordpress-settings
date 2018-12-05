@@ -16,6 +16,7 @@ class Page {
      * @var Sections
      */
     private $sections;
+
     /**
      * @var string
      */
@@ -41,10 +42,21 @@ class Page {
      */
     private $callback;
 
+
+    /**
+     * @var Assets
+     */
+    private $assets;
+
     /**
      * @var callable|null
      */
     private $admin_footer_hook;
+
+    /**
+     * @var Buttons
+     */
+    private $buttons;
 
     /**
      * Page constructor.
@@ -52,6 +64,8 @@ class Page {
      */
     private function __construct(string $id) {
         $this->id = $id;
+        $this->buttons = new Buttons();
+        $this->assets = new Assets();
     }
 
     /**
@@ -69,6 +83,23 @@ class Page {
         $this->admin_footer_hook = $admin_footer_hook;
         return $this;
     }
+
+    /**
+     * @param Asset $asset
+     * @return Page
+     */
+    public function addAsset(Asset $asset): Page {
+        $this->assets->append($asset);
+        return $this;
+    }
+
+    /**
+     * @return Assets
+     */
+    public function getAssets(): Assets {
+        return $this->assets;
+    }
+
 
     public static function create(string $id): Page {
         return new self($id);
@@ -206,8 +237,21 @@ class Page {
         return $this;
     }
 
+    /**
+     * @param Button $button
+     * @return Page
+     */
+    public function addButton(Button $button): Page {
+        $this->buttons->append($button);
+        return $this;
+    }
 
-
+    /**
+     * @return Buttons
+     */
+    public function getButtons(): Buttons {
+        return $this->buttons;
+    }
 
 
 }
