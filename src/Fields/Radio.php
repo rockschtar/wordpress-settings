@@ -3,7 +3,7 @@
  * @author: StefanHelmer
  */
 
-namespace Rockschtar\WordPress\Settings\Models\Fields;
+namespace Rockschtar\WordPress\Settings\Fields;
 
 
 class Radio extends CheckboxList {

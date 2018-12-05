@@ -6,7 +6,7 @@
  * Time: 19:35
  */
 
-namespace Rockschtar\WordPress\Settings\Models\Fields;
+namespace Rockschtar\WordPress\Settings\Fields;
 
 
 use Rockschtar\WordPress\Settings\Models\Field;
@@ -37,22 +37,6 @@ class Textfield extends Field {
     private $size;
 
     /**
-     * @return String|null
-     */
-    public function getPlaceholder(): ?String {
-        return $this->placeholder;
-    }
-
-    /**
-     * @param String|null $placeholder
-     * @return Textfield
-     */
-    public function setPlaceholder(?String $placeholder): Textfield {
-        $this->placeholder = $placeholder;
-        return $this;
-    }
-
-    /**
      * @return int|null
      */
     public function getSize(): ?int {
@@ -66,6 +50,15 @@ class Textfield extends Field {
     public function setSize(?int $size): Textfield {
         $this->size = $size;
         return $this;
+    }
+
+    /**
+     * @param $current_value
+     * @param array $args
+     * @return string
+     */
+    public function inputHTML($current_value, array $args = []): string {
+        return sprintf('<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $this->getId(), $this->getType(), $this->getPlaceholder(), $current_value);
     }
 
     /**
@@ -84,5 +77,19 @@ class Textfield extends Field {
         return $this;
     }
 
+    /**
+     * @return String|null
+     */
+    public function getPlaceholder(): ?String {
+        return $this->placeholder;
+    }
 
+    /**
+     * @param String|null $placeholder
+     * @return Textfield
+     */
+    public function setPlaceholder(?String $placeholder): Textfield {
+        $this->placeholder = $placeholder;
+        return $this;
+    }
 }

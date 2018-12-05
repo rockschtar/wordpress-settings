@@ -3,22 +3,16 @@
  * @author: StefanHelmer
  */
 
-namespace Rockschtar\WordPress\Settings\Models\Fields;
+namespace Rockschtar\WordPress\Settings\Fields;
 
-use Rockschtar\WordPress\Settings\Models\Field;
+use Rockschtar\WordPress\Settings\Models\Button;
 
-class AjaxButton extends Field {
+class AjaxButton extends Button {
 
     /**
      * @var String|null
      */
     private $button_label_wait = 'Please wait';
-
-    /**
-     * @var string
-     */
-    private $button_label;
-
 
     /**
      * @var string|null
@@ -30,17 +24,6 @@ class AjaxButton extends Field {
      * @var string|null
      */
     private $button_label_error;
-
-
-    /**
-     * @var String
-     */
-    private $action;
-
-    /**
-     * @var callable
-     */
-    private $function;
 
     /**
      * @var string|null
@@ -57,54 +40,21 @@ class AjaxButton extends Field {
      */
     private $js_callback_done;
 
+    public function inputHTML($current_value, array $args = []): string {
+        ob_start();
+        ?>
+        <button type="button" id="<?php $this->getId(); ?>"
+                data-wait-text="<?php echo $this->getButtonlabelWait(); ?>"
+                data-label-success="<?php echo $this->getButtonLabelSuccess(); ?>"
+                data-label-error="<?php echo $this->getButtonLabelError(); ?>"
+                data-callback-success="<?php echo $this->getJSCallbackSuccess(); ?>"
+                data-callback-error="<?php echo $this->getJSCallbackError(); ?>"
+                data-callback-done="<?php echo $this->getJSCallbackDone(); ?>"
+                class="button button-secondary rwps-ajax-button rwps-ajax-button-<?php $this->getId(); ?>"><?php echo $this->getButtonLabel(); ?></button>
+        <?php
 
-    /**
-     * @return callable
-     */
-    public function getFunction(): callable {
-        return $this->function;
+        return ob_get_clean();
 
-    }
-
-    /**
-     * @param callable $function
-     * @return AjaxButton
-     */
-    public function setFunction(callable $function): AjaxButton {
-        $this->function = $function;
-        return $this;
-    }
-
-    /**
-     * @return String
-     */
-    public function getAction(): String {
-        return $this->action;
-    }
-
-    /**
-     * @param String $action
-     * @return AjaxButton
-     */
-    public function setAction(String $action): AjaxButton {
-        $this->action = $action;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getButtonLabel(): string {
-        return $this->button_label;
-    }
-
-    /**
-     * @param string $button_label
-     * @return AjaxButton
-     */
-    public function setButtonLabel(string $button_label): AjaxButton {
-        $this->button_label = $button_label;
-        return $this;
     }
 
     /**
@@ -202,4 +152,5 @@ class AjaxButton extends Field {
         $this->js_callback_done = $js_callback_done;
         return $this;
     }
+
 }

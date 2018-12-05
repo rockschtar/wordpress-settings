@@ -29,11 +29,21 @@ abstract class Field {
     private $arguments = [];
 
     /**
+     * Field constructor.
+     * @param $id
+     */
+    public function __construct($id) {
+        $this->setId($id);
+    }
+
+
+    /**
+     * @param string $id
      * @return static
      */
-    public static function create() {
-        $class = \get_called_class();
-        return new $class;
+    public static function create(string $id) {
+        $class = static::class;
+        return new $class($id);
     }
 
     /**
@@ -62,13 +72,14 @@ abstract class Field {
     /**
      * @param mixed $id
      * @return static
+     * @throws \InvalidArgumentException
      */
     public function setId($id) {
 
         $validate = preg_match_all('/^[a-zA-Z0-9_-]+$/i', $id, $result) === 1;
 
         if (!$validate) {
-            throw new \InvalidArgumentException('Id ' . $id . ' is invalid. Allowed characters: A-Z, a-z, 0-9, _ and - ');
+            throw new \InvalidArgumentException('Id ' . $id . ' is invalid or missing. Allowed characters: A-Z, a-z, 0-9, _ and - ');
         }
 
         $this->id = $id;
@@ -107,5 +118,24 @@ abstract class Field {
         $this->arguments = $arguments;
         return $this;
     }
+
+    final public function output($current_value, array $args = []): string {
+        $output = apply_filters('rwps-field-html', $this->inputHTML($current_value, $args), $this->getId());
+        if (!empty($this->getDescription())) {
+            $output .= sprintf('<p class="description">%s </p>', $this->getDescription());
+
+        }
+        $output = apply_filters('rwps-field', $output, $this->getId());
+        $output = apply_filters('rwps-field-' . $this->getId(), $output);
+
+        return $output;
+    }
+
+    /**
+     * @param $current_value
+     * @param array $args
+     * @return string
+     */
+    abstract public function inputHTML($current_value, array $args = []): string;
 
 }
