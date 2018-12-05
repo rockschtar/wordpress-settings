@@ -5,7 +5,6 @@
   "type": "library",
   "require": {
     "php": ">=7.2",
-    "rockschtar/wordpress-controller": "1.0.*",
     "rockschtar/typed-arrays": "0.2.*"
   },
   "autoload": {
