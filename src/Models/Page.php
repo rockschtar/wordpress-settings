@@ -41,8 +41,37 @@ class Page {
      */
     private $callback;
 
-    public static function create(): Page {
-        return new self();
+    /**
+     * @var callable|null
+     */
+    private $admin_footer_hook;
+
+    /**
+     * Page constructor.
+     * @param string $id
+     */
+    private function __construct(string $id) {
+        $this->id = $id;
+    }
+
+    /**
+     * @return callable|null
+     */
+    public function getAdminFooterHook(): ?callable {
+        return $this->admin_footer_hook;
+    }
+
+    /**
+     * @param callable|null $admin_footer_hook
+     * @return Page
+     */
+    public function setAdminFooterHook(?callable $admin_footer_hook): Page {
+        $this->admin_footer_hook = $admin_footer_hook;
+        return $this;
+    }
+
+    public static function create(string $id): Page {
+        return new self($id);
     }
 
     /**
