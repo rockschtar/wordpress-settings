@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d6e9b7e9a70bca53566e288d86651771",
+  "content-hash": "e75186aa80745e2cebb481f602cca6ad",
     "packages": [
         {
             "name": "rockschtar/typed-arrays",
@@ -40,6 +40,36 @@
                 }
             ],
             "time": "2018-11-07T13:46:24+00:00"
+        },
+      {
+        "name": "rockschtar/wordpress-controller",
+        "version": "1.0.0",
+        "source": {
+          "type": "git",
+          "url": "https://gitlab.com/rockschtar/wordpress-controller.git",
+          "reference": "dcc53dd47cbd827e02f3e4106c46cb613c5a8d7b"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://gitlab.com/api/v4/projects/rockschtar%2Fwordpress-controller/repository/archive.zip?sha=dcc53dd47cbd827e02f3e4106c46cb613c5a8d7b",
+          "reference": "dcc53dd47cbd827e02f3e4106c46cb613c5a8d7b",
+          "shasum": ""
+        },
+        "require": {
+          "php": ">=7.1"
+        },
+        "type": "library",
+        "autoload": {
+          "psr-4": {
+            "Rockschtar\\WordPress\\Controller\\": "src/"
+          }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+          "MIT"
+        ],
+        "description": "Simple controller for wordpress development",
+        "time": "2018-09-04T07:37:38+00:00"
         }
     ],
     "packages-dev": [
