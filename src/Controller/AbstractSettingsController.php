@@ -35,7 +35,7 @@ abstract class AbstractSettingsController {
 
             if (is_a($button, AjaxButton::class)) {
                 /* @var AjaxButton $field */
-                add_action('wp_ajax_rwps_ajax_button_wrapper', function () use ($button) {
+                add_action('wp_ajax_rwps_ajax_button_' . $button->getId(), function () use ($button) {
                     check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
                     \call_user_func($button->getCallable(), $button);
                 });
@@ -258,7 +258,6 @@ abstract class AbstractSettingsController {
                                 data: {
                                     nonce: ajax_nonce,
                                     action: 'rwps_ajax_button_' + button.attr('id'),
-                                    some: 'value',
                                     fields: field_data
                                 }
 
