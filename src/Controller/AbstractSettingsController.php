@@ -262,8 +262,6 @@ abstract class AbstractSettingsController {
                                     button.html(label_error);
                                 }
 
-                                console.log(callback_error);
-
                                 if (callback_error !== '' && callback_error !== undefined) {
                                     executeCallback(callback_error, window, jqXHR, textStatus, errorThrown);
                                 }
