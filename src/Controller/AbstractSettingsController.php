@@ -90,7 +90,15 @@ abstract class AbstractSettingsController {
     final public function create_settings(): void {
         $page = $this->getPage();
         $callback = $page->getCallback() ?? array($this, 'settings_content');
-        $this->hook_suffix = add_menu_page($page->getPageTitle(), $page->getMenuTitle(), $page->getCapability(), $page->getId(), $callback, $page->getIcon(), $page->getPosition());
+
+        if ($this->getPage()->getParent() === null) {
+            $this->hook_suffix = add_menu_page($page->getPageTitle(), $page->getMenuTitle(), $page->getCapability(), $page->getId(), $callback, $page->getIcon(), $page->getPosition());
+        } else {
+            $this->hook_suffix = add_submenu_page($this->getPage()
+                                                       ->getParent(), $page->getPageTitle(), $page->getMenuTitle(), $page->getCapability(), $page->getId(), $callback);
+        }
+
+
 
         if ($this->getPage()->getAdminFooterHook() !== null) {
             add_action('admin_footer-' . $this->hook_suffix, $this->getPage()->getAdminFooterHook());
