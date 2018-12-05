@@ -27,10 +27,18 @@ class Section {
      */
     private $fields;
 
+    /**
+     * Section constructor.
+     */
+    public function __construct() {
+        $this->fields = new Fields();
+    }
+
+
     public static function create() : Section {
         return new self();
     }
-    
+
     /**
      * @return mixed
      */
@@ -104,8 +112,5 @@ class Section {
         $this->fields->append($field);
         return $this;
     }
-
-
-
 
 }

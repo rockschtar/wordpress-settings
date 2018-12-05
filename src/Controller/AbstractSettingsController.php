@@ -35,7 +35,7 @@ abstract class AbstractSettingsController {
 
             if (is_a($button, AjaxButton::class)) {
                 /* @var AjaxButton $field */
-                add_action('wp_ajax_rwps_ajax_button_wrapper', function () use ($button) {
+                add_action('wp_ajax_rwps_ajax_button_' . $button->getId(), function () use ($button) {
                     check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
                     \call_user_func($button->getCallable(), $button);
                 });
@@ -58,7 +58,7 @@ abstract class AbstractSettingsController {
 
                 if (is_a($field, AjaxButton::class)) {
                     /* @var AjaxButton $field */
-                    add_action('wp_ajax_rwps_ajax_button_wrapper', function () use ($field) {
+                    add_action('wp_ajax_rwps_ajax_button_' . $field->getId(), function () use ($field) {
                         check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
                         \call_user_func($field->getCallable(), $field);
                     });
@@ -97,7 +97,6 @@ abstract class AbstractSettingsController {
             $this->hook_suffix = add_submenu_page($this->getPage()
                                                        ->getParent(), $page->getPageTitle(), $page->getMenuTitle(), $page->getCapability(), $page->getId(), $callback);
         }
-
 
 
         if ($this->getPage()->getAdminFooterHook() !== null) {
@@ -173,6 +172,7 @@ abstract class AbstractSettingsController {
                 <?php
                 settings_fields($this->getPage()->getId());
                 do_settings_sections($this->getPage()->getId());
+
                 ?>
                 <p class="submit">
                     <?php foreach ($this->getPage()->getButtons() as $button) {
@@ -180,9 +180,10 @@ abstract class AbstractSettingsController {
                             echo $button->output('');
                         }
                     } ?>
+
                     <input type="submit"
                            class="button-primary"
-                           value="<?php _e('Save Changes', 'mailjet'); ?>"
+                           value="<?php _e('Save Changes') ?>"
                     />
                     <?php foreach ($this->getPage()->getButtons() as $button) {
                         if (is_a($button, AjaxButton::class) && $button->getPosition() === AjaxButton::POSITION_AFTER_SUBMIT) {
@@ -258,14 +259,17 @@ abstract class AbstractSettingsController {
                                 dataType: 'json',
                                 data: {
                                     nonce: ajax_nonce,
-                                    action: 'rwps_ajax_button_wrapper',
-                                    some: 'value',
+                                    action: 'rwps_ajax_button_' + button.attr('id'),
                                     fields: field_data
                                 }
 
                             }).fail(function (jqXHR, textStatus, errorThrown) {
                                 if (label_error === '') {
-                                    button.html(button_text);
+                                    if (typeof jqXHR.responseJSON === 'object' && typeof jqXHR.responseJSON.data === 'string') {
+                                        button.html(jqXHR.responseJSON.data);
+                                    } else {
+                                        button.html(button_text);
+                                    }
                                 } else {
                                     button.html(label_error);
                                 }
@@ -337,11 +341,13 @@ abstract class AbstractSettingsController {
 
                 var RWPSMediaUpload = (function () {
                     function init() {
+
                         wp.media.RWPSUpload = {
                             frame: function (buttonSender) {
 
-                                if (this._frame)
+                                if (this._frame) {
                                     return this._frame;
+                                }
 
                                 var that = this;
 
@@ -352,6 +358,10 @@ abstract class AbstractSettingsController {
                                     multiple: false,
                                 });
                                 this._frame.on("select", function () {
+
+                                    console.log(buttonSender);
+                                    console.log(buttonSender.data('fieldid'));
+
                                         var attachment = that._frame.state().get('selection').first().toJSON();
                                         onSelectMedia(buttonSender, attachment);
                                     }
@@ -364,8 +374,8 @@ abstract class AbstractSettingsController {
                         };
 
                         $('.rwps_button_add_media').bind('click', function (event) {
-                            event.preventDefault();
-                            wp.media.RWPSUpload.frame($(this)).open();
+                            var frame = new wp.media.RWPSUpload.frame($(this));
+                            frame.open();
                         });
 
                         $('.rwps_button_remove_media').bind('click', function (event) {
