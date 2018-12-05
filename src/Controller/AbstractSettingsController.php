@@ -341,11 +341,13 @@ abstract class AbstractSettingsController {
 
                 var RWPSMediaUpload = (function () {
                     function init() {
+
                         wp.media.RWPSUpload = {
                             frame: function (buttonSender) {
 
-                                if (this._frame)
+                                if (this._frame) {
                                     return this._frame;
+                                }
 
                                 var that = this;
 
@@ -356,6 +358,10 @@ abstract class AbstractSettingsController {
                                     multiple: false,
                                 });
                                 this._frame.on("select", function () {
+
+                                    console.log(buttonSender);
+                                    console.log(buttonSender.data('fieldid'));
+
                                         var attachment = that._frame.state().get('selection').first().toJSON();
                                         onSelectMedia(buttonSender, attachment);
                                     }
@@ -368,8 +374,8 @@ abstract class AbstractSettingsController {
                         };
 
                         $('.rwps_button_add_media').bind('click', function (event) {
-                            event.preventDefault();
-                            wp.media.RWPSUpload.frame($(this)).open();
+                            var frame = new wp.media.RWPSUpload.frame($(this));
+                            frame.open();
                         });
 
                         $('.rwps_button_remove_media').bind('click', function (event) {
