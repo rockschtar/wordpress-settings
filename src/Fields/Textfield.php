@@ -58,7 +58,7 @@ class Textfield extends Field {
      * @return string
      */
     public function inputHTML($current_value, array $args = []): string {
-        return sprintf('<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $this->getId(), $this->getType(), $this->getPlaceholder(), $current_value);
+        return sprintf('<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" size="%5$s" />', $this->getId(), $this->getType(), $this->getPlaceholder(), $current_value, $this->getSize());
     }
 
     /**
