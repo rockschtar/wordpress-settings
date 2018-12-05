@@ -5,8 +5,6 @@
 
 namespace Rockschtar\WordPress\Settings\Models\Fields;
 
-
-use PHP_CodeSniffer\Standards\Generic\Sniffs\Functions\FunctionCallArgumentSpacingSniff;
 use Rockschtar\WordPress\Settings\Models\Field;
 
 class AjaxButton extends Field {
@@ -14,7 +12,7 @@ class AjaxButton extends Field {
     /**
      * @var String|null
      */
-    private $wait_text = 'Please wait';
+    private $button_label_wait = 'Please wait';
 
     /**
      * @var string
@@ -43,6 +41,22 @@ class AjaxButton extends Field {
      * @var callable
      */
     private $function;
+
+    /**
+     * @var string|null
+     */
+    private $js_callback_success;
+
+    /**
+     * @var string|null
+     */
+    private $js_callback_error;
+
+    /**
+     * @var string|null
+     */
+    private $js_callback_done;
+
 
     /**
      * @return callable
@@ -96,16 +110,16 @@ class AjaxButton extends Field {
     /**
      * @return String|null
      */
-    public function getWaitText(): ?String {
-        return $this->wait_text;
+    public function getButtonlabelWait(): ?String {
+        return $this->button_label_wait;
     }
 
     /**
-     * @param String|null $wait_text
+     * @param String|null $button_label_wait
      * @return AjaxButton
      */
-    public function setWaitText(?String $wait_text): AjaxButton {
-        $this->wait_text = $wait_text;
+    public function setButtonlabelWait(?String $button_label_wait): AjaxButton {
+        $this->button_label_wait = $button_label_wait;
         return $this;
     }
 
@@ -141,5 +155,51 @@ class AjaxButton extends Field {
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getJSCallbackSuccess(): ?string {
+        return $this->js_callback_success;
+    }
 
+    /**
+     * @param string|null $js_callback_success
+     * @return AjaxButton
+     */
+    public function setJSCallbackSuccess(?string $js_callback_success): AjaxButton {
+        $this->js_callback_success = $js_callback_success;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getJSCallbackError(): ?string {
+        return $this->js_callback_error;
+    }
+
+    /**
+     * @param string|null $js_callback_error
+     * @return AjaxButton
+     */
+    public function setJSCallbackError(?string $js_callback_error): AjaxButton {
+        $this->js_callback_error = $js_callback_error;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getJSCallbackDone(): ?string {
+        return $this->js_callback_done;
+    }
+
+    /**
+     * @param string|null $js_callback_done
+     * @return AjaxButton
+     */
+    public function setJSCallbackDone(?string $js_callback_done): AjaxButton {
+        $this->js_callback_done = $js_callback_done;
+        return $this;
+    }
 }
