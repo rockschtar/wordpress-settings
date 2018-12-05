@@ -172,6 +172,7 @@ abstract class AbstractSettingsController {
                 <?php
                 settings_fields($this->getPage()->getId());
                 do_settings_sections($this->getPage()->getId());
+
                 ?>
                 <p class="submit">
                     <?php foreach ($this->getPage()->getButtons() as $button) {
@@ -179,9 +180,10 @@ abstract class AbstractSettingsController {
                             echo $button->output('');
                         }
                     } ?>
+
                     <input type="submit"
                            class="button-primary"
-                           value="<?php _e('Save Changes', 'mailjet'); ?>"
+                           value="<?php _e('Save Changes') ?>"
                     />
                     <?php foreach ($this->getPage()->getButtons() as $button) {
                         if (is_a($button, AjaxButton::class) && $button->getPosition() === AjaxButton::POSITION_AFTER_SUBMIT) {
