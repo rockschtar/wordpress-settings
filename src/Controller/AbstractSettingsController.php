@@ -33,6 +33,7 @@ abstract class AbstractSettingsController {
         foreach ($this->getPage()->getSections() as $section) {
 
             $upload_script_added = false;
+            $ajax_button_script_added = false;
 
             foreach ($section->getFields() as $field) {
                 if ($upload_script_added === false && is_a($field, Upload::class)) {
@@ -41,14 +42,16 @@ abstract class AbstractSettingsController {
                     $upload_script_added = true;
                 }
 
-                if (is_a($field, AjaxButton::class)) {
+                if ($ajax_button_script_added === false && is_a($field, AjaxButton::class)) {
                     /* @var AjaxButton $field */
-                    //add_action('wp_ajax_' . $field->getAction(), $field->getFunction());
                     add_action('wp_ajax_rwps_ajax_button_wrapper', function () use ($field) {
                         check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
                         \call_user_func($field->getFunction(), $field);
                     });
                     add_action('admin_footer', array(&$this, 'ajax_button_script'));
+
+                    $ajax_button_script_added = true;
+
                 }
             }
         }
