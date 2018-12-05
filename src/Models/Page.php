@@ -59,6 +59,27 @@ class Page {
     private $buttons;
 
     /**
+     * @var string|null
+     */
+    private $parent;
+
+    /**
+     * @return string|null
+     */
+    public function getParent(): ?string {
+        return $this->parent;
+    }
+
+    /**
+     * @param string|null $parent
+     * @return Page
+     */
+    public function setParent(?string $parent): Page {
+        $this->parent = $parent;
+        return $this;
+    }
+
+    /**
      * Page constructor.
      * @param string $id
      */
