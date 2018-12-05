@@ -43,7 +43,7 @@ class AjaxButton extends Button {
     public function inputHTML($current_value, array $args = []): string {
         ob_start();
         ?>
-        <button type="button" id="<?php $this->getId(); ?>"
+        <button type="button" id="<?php echo $this->getId(); ?>"
                 data-wait-text="<?php echo $this->getButtonlabelWait(); ?>"
                 data-label-success="<?php echo $this->getButtonLabelSuccess(); ?>"
                 data-label-error="<?php echo $this->getButtonLabelError(); ?>"

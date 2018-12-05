@@ -58,7 +58,7 @@ abstract class AbstractSettingsController {
 
                 if (is_a($field, AjaxButton::class)) {
                     /* @var AjaxButton $field */
-                    add_action('wp_ajax_rwps_ajax_button_wrapper', function () use ($field) {
+                    add_action('wp_ajax_rwps_ajax_button_' . $field->getId(), function () use ($field) {
                         check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
                         \call_user_func($field->getCallable(), $field);
                     });
@@ -97,7 +97,6 @@ abstract class AbstractSettingsController {
             $this->hook_suffix = add_submenu_page($this->getPage()
                                                        ->getParent(), $page->getPageTitle(), $page->getMenuTitle(), $page->getCapability(), $page->getId(), $callback);
         }
-
 
 
         if ($this->getPage()->getAdminFooterHook() !== null) {
@@ -258,14 +257,18 @@ abstract class AbstractSettingsController {
                                 dataType: 'json',
                                 data: {
                                     nonce: ajax_nonce,
-                                    action: 'rwps_ajax_button_wrapper',
+                                    action: 'rwps_ajax_button_' + button.attr('id'),
                                     some: 'value',
                                     fields: field_data
                                 }
 
                             }).fail(function (jqXHR, textStatus, errorThrown) {
                                 if (label_error === '') {
-                                    button.html(button_text);
+                                    if (typeof jqXHR.responseJSON === 'object' && typeof jqXHR.responseJSON.data === 'string') {
+                                        button.html(jqXHR.responseJSON.data);
+                                    } else {
+                                        button.html(button_text);
+                                    }
                                 } else {
                                     button.html(label_error);
                                 }
