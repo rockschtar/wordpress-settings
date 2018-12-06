@@ -166,7 +166,10 @@ abstract class AbstractSettingsController {
         <?php do_action('rwps-before-page-wrap-' . $this->getPage()->getId()); ?>
         <div class="wrap">
             <h1><?php echo $this->getPage()->getPageTitle(); ?></h1>
-            <?php settings_errors(); ?>
+            <?php if ($this->getPage()->getParent() === null) {
+                settings_errors();
+            }
+            ?>
             <!--suppress HtmlUnknownTarget -->
             <form method="POST" action="options.php">
                 <?php do_action('rwps-before-form-fields', $this->getPage()); ?>
