@@ -9,17 +9,17 @@
 namespace Rockschtar\WordPress\Settings\Fields;
 
 
+use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Field;
+use Rockschtar\WordPress\Settings\Models\HTMLTag;
 
 class Textfield extends Field {
 
     public const TEXT = 'text';
     public const COLOR = 'color';
     public const DATE = 'date';
-    public const PHONE = 'tel';
-    public const NUMBER = 'number';
+    public const EMAIL = 'email';
     public const PASSWORD = 'password';
-    public const URL = 'url';
 
     /**
      * @var string
@@ -37,6 +37,12 @@ class Textfield extends Field {
     private $size;
 
     /**
+     * @var Datalist|null
+     */
+    private $datalist;
+
+
+    /**
      * @return int|null
      */
     public function getSize(): ?int {
@@ -45,11 +51,20 @@ class Textfield extends Field {
 
     /**
      * @param int|null $size
-     * @return Textfield
+     * @return static
      */
-    public function setSize(?int $size): Textfield {
+    public function setSize(?int $size) {
         $this->size = $size;
         return $this;
+    }
+
+    public function getHTMLTag($current_value): HTMLTag {
+        $html_tag = parent::getHTMLTag($current_value);
+        $html_tag->setAttribute('list', $this->getDatalistId());
+        $html_tag->setAttribute('type', $this->getType());
+        $html_tag->setAttribute('placeholder', $this->getPlaceholder());
+        $html_tag->setAttribute('size', $this->getSize());
+        return $html_tag;
     }
 
     /**
@@ -58,7 +73,8 @@ class Textfield extends Field {
      * @return string
      */
     public function inputHTML($current_value, array $args = []): string {
-        return sprintf('<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" size="%5$s" />', $this->getId(), $this->getType(), $this->getPlaceholder(), $current_value, $this->getSize());
+        $html = $this->getHTMLTag($current_value)->buildTag();
+        return $html . $this->getDatalistHTML();
     }
 
     /**
@@ -86,10 +102,54 @@ class Textfield extends Field {
 
     /**
      * @param String|null $placeholder
-     * @return Textfield
+     * @return static
      */
-    public function setPlaceholder(?String $placeholder): Textfield {
+    public function setPlaceholder(?String $placeholder) {
         $this->placeholder = $placeholder;
         return $this;
     }
+
+    /**
+     * @return Datalist|null
+     */
+    public function getDatalist(): ?Datalist {
+        return $this->datalist;
+    }
+
+    /**
+     * @param Datalist|null $datalist
+     * @return static
+     */
+    public function setDatalist(?Datalist $datalist) {
+        $this->datalist = $datalist;
+        return $this;
+    }
+
+    public function getDatalistId(): ?string {
+
+        if ($this->getDatalist() === null) {
+            return null;
+        }
+
+        return $this->getDatalist()->getId() ?? 'datalist_' . $this->getId();
+    }
+
+    public function getDatalistHTML(): string {
+        if ($this->getDatalist() !== null) {
+            $datalist_id = $this->getDatalistId();
+            $datalist = sprintf('<datalist id="%s">', $datalist_id);
+
+            foreach ($this->getDatalist()->getItems() as $item) {
+                $datalist .= sprintf('<option value="%s">', $item);
+            }
+
+            $datalist .= '</datalist>';
+
+            return $datalist;
+        }
+
+        return '';
+    }
+
+
 }

@@ -50,7 +50,23 @@ class WYSIWYG extends Field {
             $editor_settings['editor_height'] = $this->getHeight();
         }
 
+        $editor_settings['readonly'] = $this->isDisabled();
+
+        $is_disabled = $this->isDisabled();
+
+        $tiny_mce_before_init = function ($args) use ($is_disabled) {
+
+            if ($is_disabled)
+                $args['readonly'] = 1;
+
+            return $args;
+        };
+
+        add_filter('tiny_mce_before_init', $tiny_mce_before_init);
+
         wp_editor($current_value, $this->getId(), $editor_settings);
+
+        remove_filter('tiny_mce_before_init', $tiny_mce_before_init);
 
         return ob_get_clean();
     }

@@ -44,12 +44,17 @@ class SelectBox extends Field {
                 }
             }
 
-            $options .= sprintf('<option value="%s" %s>%s</option>', $item->getValue(), $selected, $item->getLabel());
+            $disabled = $this->isDisabled() ? true : $item->isDisabled();
+
+
+            $options .= sprintf('<option value="%s" %s %s>%s</option>', $item->getValue(), $selected, disabled($disabled, true, false), $item->getLabel());
         }
 
         if ($this->isMultiselect()) {
             $attr = ' multiple="multiple" ';
         }
+
+
         return sprintf('<select name="%1$s[]" id="%1$s" %2$s>%3$s</select>', $this->getId(), $attr, $options);
     }
 

@@ -10,13 +10,27 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 
 use Rockschtar\WordPress\Settings\Models\Field;
+use Rockschtar\WordPress\Settings\Models\HTMLTag;
 
-class Checkbox extends Field {
+class CheckBox extends Field {
 
     /**
      * @var String|null
      */
     private $value;
+
+    public function getHTMLTag($current_value): HTMLTag {
+        $html_tag = parent::getHTMLTag($current_value);
+
+        $html_tag->setAttribute('type', 'checkbox');
+
+        if ($this->getValue() === $current_value) {
+            $html_tag->setAttribute('checked', null);
+        }
+
+        return $html_tag;
+    }
+
 
     /**
      * @param $current_value
@@ -24,8 +38,7 @@ class Checkbox extends Field {
      * @return string
      */
     public function inputHTML($current_value, array $args = []): string {
-        $checked = checked($this->getValue(), $current_value, false);
-        return sprintf('<input name="%1$s" id="%1$s" type="checkbox" %2$s value="%3$s" />', $this->getId(), $checked, $this->getValue());
+        return $this->getHTMLTag($current_value)->buildTag();
     }
 
     /**
@@ -37,9 +50,9 @@ class Checkbox extends Field {
 
     /**
      * @param String|null $value
-     * @return Checkbox
+     * @return CheckBox
      */
-    public function setValue(?String $value): Checkbox {
+    public function setValue(?String $value): CheckBox {
         $this->value = $value;
         return $this;
     }
