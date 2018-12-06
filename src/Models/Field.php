@@ -40,6 +40,12 @@ abstract class Field {
     private $disabled = false;
 
     /**
+     * @var bool
+     */
+    private $readonly = false;
+
+
+    /**
      * @var callable
      */
     private $sanitize_callback;
@@ -206,6 +212,22 @@ abstract class Field {
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isReadonly(): bool {
+        return $this->readonly;
+    }
+
+    /**
+     * @param bool $readonly
+     * @return Field
+     */
+    public function setReadonly(bool $readonly): Field {
+        $this->readonly = $readonly;
+        return $this;
+    }
+
 
     /**
      * @param $current_value
@@ -214,5 +236,28 @@ abstract class Field {
      */
     abstract public function inputHTML($current_value, array $args = []): string;
 
+
+    /**
+     * @param $current_value
+     * @return HTMLTag
+     */
+    public function getHTMLTag($current_value): HTMLTag {
+        $html_tag = new HTMLTag('input');
+        $html_tag->setAttribute('type', 'text');
+
+        $html_tag->setAttribute('id', $this->getId());
+        $html_tag->setAttribute('name', $this->getId());
+
+        if ($this->isReadonly()) {
+            $html_tag->setAttribute('readonly', null);
+        }
+
+        if ($this->isDisabled()) {
+            $html_tag->setAttribute('disabled', null);
+        }
+
+        $html_tag->setAttribute('value', $current_value);
+        return apply_filters('rwps_html_tag', $html_tag);
+    }
 
 }

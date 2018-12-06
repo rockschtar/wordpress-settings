@@ -6,6 +6,8 @@
 namespace Rockschtar\WordPress\Settings\Fields;
 
 
+use Rockschtar\WordPress\Settings\Models\HTMLTag;
+
 class Number extends Textfield {
 
     /**
@@ -23,13 +25,13 @@ class Number extends Textfield {
      */
     private $step;
 
-    public function inputHTML($current_value, array $args = []): string {
-
-        $min = $this->getMin() !== null ? 'min="' . $this->getMin() . '"' : '';
-        $max = $this->getMax() !== null ? 'max="' . $this->getMax() . '"' : '';
-        $step = $this->getStep() !== null ? 'step="' . $this->getStep() . '"' : '';
-
-        return sprintf('<input name="%1$s" id="%1$s" type="number" placeholder="%2$s" value="%3$s" size="%4$s" %5$s %6$s %7$s %8$s />', $this->getId(), $this->getPlaceholder(), $current_value, $this->getSize(), disabled($this->isDisabled(), true, false), $min, $max, $step);
+    public function getHTMLTag($current_value): HTMLTag {
+        $html_tag = parent::getHTMLTag($current_value);
+        $html_tag->setAttribute('type', 'number');
+        $html_tag->setAttribute('min', $this->getMin());
+        $html_tag->setAttribute('max', $this->getMax());
+        $html_tag->setAttribute('step', $this->getStep());
+        return $html_tag;
     }
 
     /**
