@@ -28,6 +28,39 @@ abstract class Field {
      */
     private $arguments = [];
 
+
+    /**
+     * @var mixed|null
+     */
+    private $default_option;
+
+    /**
+     * @var bool
+     */
+    private $disabled = false;
+
+    /**
+     * @var callable
+     */
+    private $sanitize_callback;
+
+    /**
+     * @return bool
+     */
+    public function isDisabled(): bool {
+        return $this->disabled;
+    }
+
+    /**
+     * @param bool $disabled
+     * @return static
+     */
+    public function setDisabled(bool $disabled) {
+
+        $this->disabled = $disabled;
+        return $this;
+    }
+
     /**
      * Field constructor.
      * @param $id
@@ -35,7 +68,6 @@ abstract class Field {
     public function __construct($id) {
         $this->setId($id);
     }
-
 
     /**
      * @param string $id
@@ -132,10 +164,55 @@ abstract class Field {
     }
 
     /**
+     * @return mixed|null
+     */
+    public function getDefaultOption() {
+        return $this->default_option;
+    }
+
+    /**
+     * @param mixed $default_option
+     * @return static
+     */
+    public function setDefaultOption($default_option) {
+        $this->default_option = $default_option;
+
+        add_filter('default_option_' . $this->getId(), function ($default, $id, $passed_default) use ($default_option) {
+
+            if ($default === false) {
+                return $default_option;
+            }
+            return $default;
+
+
+        }, 10, 3);
+
+        return $this;
+    }
+
+    /**
+     * @return callable|null
+     */
+    public function getSanitizeCallback(): ?callable {
+        return $this->sanitize_callback;
+    }
+
+    /**
+     * @param callable $sanitize_callback
+     * @return static
+     */
+    public function setSanitizeCallback(callable $sanitize_callback) {
+        $this->sanitize_callback = $sanitize_callback;
+        return $this;
+    }
+
+
+    /**
      * @param $current_value
      * @param array $args
      * @return string
      */
     abstract public function inputHTML($current_value, array $args = []): string;
+
 
 }

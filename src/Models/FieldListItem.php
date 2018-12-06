@@ -19,14 +19,45 @@ class FieldListItem {
      */
     private $value;
 
+    private $disabled;
+
+    /**
+     * @return bool
+     */
+    public function isDisabled(): bool {
+        return $this->disabled;
+    }
+
+    /**
+     * @param bool $disabled
+     * @return FieldListItem
+     */
+    public function setDisabled(bool $disabled): FieldListItem {
+        $this->disabled = $disabled;
+        return $this;
+    }
+
+
     /**
      * CheckboxListItem constructor.
      * @param string $label
      * @param string $value
+     * @param bool $disabled
      */
-    public function __construct(string $label, string $value) {
+    public function __construct(string $label, string $value, bool $disabled = false) {
         $this->label = $label;
         $this->value = $value;
+        $this->disabled = $disabled;
+    }
+
+    /**
+     * @param string $label
+     * @param string $value
+     * @param bool $disabled
+     * @return static
+     */
+    public static function create(string $label, string $value, bool $disabled = false) {
+        return new self($label, $value, $disabled);
     }
 
     /**
@@ -38,9 +69,9 @@ class FieldListItem {
 
     /**
      * @param string $label
-     * @return CheckboxListItem
+     * @return FieldListItem
      */
-    public function setLabel(string $label): CheckboxListItem {
+    public function setLabel(string $label): FieldListItem {
         $this->label = $label;
         return $this;
     }
@@ -54,9 +85,9 @@ class FieldListItem {
 
     /**
      * @param string $value
-     * @return CheckboxListItem
+     * @return FieldListItem
      */
-    public function setValue(string $value): CheckboxListItem {
+    public function setValue(string $value): FieldListItem {
         $this->value = $value;
         return $this;
     }
