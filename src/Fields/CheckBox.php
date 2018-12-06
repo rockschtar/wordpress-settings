@@ -28,6 +28,8 @@ class CheckBox extends Field {
             $html_tag->setAttribute('checked', null);
         }
 
+        $html_tag->setAttribute('value', $this->getValue());
+
         return $html_tag;
     }
 
