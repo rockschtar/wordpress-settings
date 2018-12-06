@@ -10,6 +10,7 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 
 use Rockschtar\WordPress\Settings\Models\Field;
+use Rockschtar\WordPress\Settings\Models\HTMLTag;
 
 class CheckBox extends Field {
 
@@ -18,14 +19,26 @@ class CheckBox extends Field {
      */
     private $value;
 
+    public function getHTMLTag($current_value): HTMLTag {
+        $html_tag = parent::getHTMLTag($current_value);
+
+        $html_tag->setAttribute('type', 'checkbox');
+
+        if ($this->getValue() === $current_value) {
+            $html_tag->setAttribute('checked', null);
+        }
+
+        return $html_tag;
+    }
+
+
     /**
      * @param $current_value
      * @param array $args
      * @return string
      */
     public function inputHTML($current_value, array $args = []): string {
-        $checked = checked($this->getValue(), $current_value, false);
-        return sprintf('<input name="%1$s" id="%1$s" type="checkbox" %2$s value="%3$s" %4$s />', $this->getId(), $checked, $this->getValue(), disabled($this->isDisabled(), true, false));
+        return $this->getHTMLTag($current_value)->buildTag();
     }
 
     /**

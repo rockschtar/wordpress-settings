@@ -6,6 +6,8 @@
 namespace Rockschtar\WordPress\Settings\Fields;
 
 
+use Rockschtar\WordPress\Settings\Models\HTMLTag;
+
 class Phone extends Textfield {
 
     /**
@@ -23,23 +25,15 @@ class Phone extends Textfield {
      */
     private $pattern;
 
-    public function inputHTML($current_value, array $args = []): string {
-
-        $minlength = $this->getMinlength() !== null ? 'minlength="' . $this->getMinlength() . '"' : '';
-        $maxlength = $this->getMaxlength() !== null ? 'maxlength="' . $this->getMaxlength() . '"' : '';
-        $pattern = $this->getPattern() !== null ? 'pattern="' . $this->getPattern() . '"' : '';
-        $list = '';
-        $datalist = '';
-
-        if ($this->getDatalist() !== null) {
-            $datalist_id = $this->getDatalist()->getId() ?? 'datalist_' . $this->getId();
-            $list = 'list="' . $datalist_id . '"';
-        }
-
-        $input = sprintf('<input name="%1$s" id="%1$s" type="tel" placeholder="%2$s" value="%3$s" size="%4$s" %5$s %6$s %7$s %8$s %9$s/>', $this->getId(), $this->getPlaceholder(), $current_value, $this->getSize(), disabled($this->isDisabled(), true, false), $minlength, $maxlength, $pattern, $list);
-
-        return $input . $this->getDatalistHTML();
+    public function getHTMLTag($current_value): HTMLTag {
+        $html_tag = parent::getHTMLTag($current_value);
+        $html_tag->setAttribute('type', 'tel');
+        $html_tag->setAttribute('minlength', $this->getMaxlength());
+        $html_tag->setAttribute('maxlength', $this->getMinlength());
+        $html_tag->setAttribute('pattern', $this->getPattern());
+        return $html_tag;
     }
+
 
     /**
      * @return int|null

@@ -61,6 +61,7 @@ class CheckBoxList extends Field {
 
             $disabled = $this->isDisabled() ? true : $item->isDisabled();
 
+
             $options_markup .= sprintf('<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s %5$s %7$s /> %5$s</label><br/>', $this->getId(), $type, $item->getValue(), $checked, $item->getLabel(), $iterator, disabled($disabled, true, false));
         }
 

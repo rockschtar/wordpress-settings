@@ -32,7 +32,8 @@ class Upload extends Field {
             if (!empty($attachment_id)) {
                 $media_url = $current_value['media_url'] ?? '';
                 $icon_url = $current_value['icon_url'] ?? '';
-                $thumb_url = $this->mimeTypeIsImage(get_post_mime_type($attachment_id)) ? $media_url : $icon_url;
+                $mime_type = get_post_mime_type($attachment_id) === false ? '' : get_post_mime_type($attachment_id);
+                $thumb_url = $this->mimeTypeIsImage($mime_type) ? $media_url : $icon_url;
             }
         }
         ?>
@@ -48,6 +49,7 @@ class Upload extends Field {
                id="<?php echo $field_id; ?>_attachment_icon"
                value="<?php echo $icon_url; ?>">
         <input style="vertical-align: bottom;" data-fieldid="<?php echo $field_id; ?>"
+            <?php disabled($this->isDisabled(), true); ?>
                class="button button-secondary rwps_button_add_media"
                name="<?php echo $field_id; ?>_button_add"
                type="button"

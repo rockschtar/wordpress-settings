@@ -21,6 +21,7 @@ class FieldListItem {
 
     private $disabled;
 
+
     /**
      * @return bool
      */
