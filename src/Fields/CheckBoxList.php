@@ -8,14 +8,24 @@ namespace Rockschtar\WordPress\Settings\Fields;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\FieldListItem;
 
-class CheckboxList extends Field {
+class CheckBoxList extends Field {
 
     /**
      * @var FieldListItem[]
      */
     private $items = [];
 
-    public function addItem(FieldListItem $item): CheckboxList {
+    /**
+     * @param FieldListItem[] $items
+     * @return CheckBoxList
+     */
+    public function setItems(array $items): CheckBoxList {
+        $this->items = $items;
+        return $this;
+    }
+
+
+    public function addItem(FieldListItem $item): CheckBoxList {
         $this->items[] = $item;
 
         return $this;
@@ -49,9 +59,10 @@ class CheckboxList extends Field {
                 }
             }
 
-            $options_markup .= sprintf('<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s /> %5$s</label><br/>', $this->getId(), $type, $item->getValue(), $checked, $item->getLabel(), $iterator);
-        }
+            $disabled = $this->isDisabled() ? true : $item->isDisabled();
 
+            $options_markup .= sprintf('<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s %5$s %7$s /> %5$s</label><br/>', $this->getId(), $type, $item->getValue(), $checked, $item->getLabel(), $iterator, disabled($disabled, true, false));
+        }
 
         return sprintf('<fieldset>%s</fieldset>', $options_markup);
     }

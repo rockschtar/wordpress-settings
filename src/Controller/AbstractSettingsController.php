@@ -135,15 +135,15 @@ abstract class AbstractSettingsController {
 
                 if (is_a($field, Upload::class)) {
 
-                    $sanitize_callback = function ($value) use ($arguments) {
+                    $sanitize_callback = function ($value) use ($field, $arguments) {
                         if (!\is_array($value)) {
                             $value = '';
                         } else if (isset($value['attachment_id']) && empty($value['attachment_id'])) {
                             $value = '';
                         }
 
-                        if (array_key_exists('sanitize_callback', $arguments)) {
-                            $user_sanitize_callback = $arguments['sanitize_callback'];
+                        if ($field->getSanitizeCallback() !== null) {
+                            $user_sanitize_callback = $field->getSanitizeCallback();
                             $value = $user_sanitize_callback($value);
                         }
 
@@ -152,6 +152,8 @@ abstract class AbstractSettingsController {
 
                     $arguments['sanitize_callback'] = $sanitize_callback;
 
+                } else if ($field->getSanitizeCallback() !== null) {
+                    $arguments['sanitize_callback'] = $field->getSanitizeCallback();
                 }
 
                 register_setting($this->getPage()->getId(), $field->getId(), $arguments);

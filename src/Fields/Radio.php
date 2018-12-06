@@ -6,6 +6,6 @@
 namespace Rockschtar\WordPress\Settings\Fields;
 
 
-class Radio extends CheckboxList {
+class Radio extends CheckBoxList {
 
 }
