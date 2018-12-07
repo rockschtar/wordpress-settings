@@ -4,7 +4,7 @@
   "description": "Abstract WordPress Settings Utility/Helper for usage with roots/bedrock",
   "type": "library",
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.1",
     "rockschtar/typed-arrays": "0.2.*"
   },
   "autoload": {
