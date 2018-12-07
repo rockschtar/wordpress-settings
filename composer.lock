@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-  "content-hash": "d6e9b7e9a70bca53566e288d86651771",
+  "content-hash": "9699a73e3d61b853b093ae4f8adac7b5",
     "packages": [
         {
             "name": "rockschtar/typed-arrays",
@@ -1407,7 +1407,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.2"
+      "php": ">=7.1"
     },
     "platform-dev": []
 }
