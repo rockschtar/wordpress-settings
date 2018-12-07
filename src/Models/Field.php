@@ -34,6 +34,14 @@ abstract class Field {
      */
     private $default_option;
 
+
+    /**
+     * @var mixed|null
+     */
+    private $override_option;
+
+
+
     /**
      * @var bool
      */
@@ -195,6 +203,31 @@ abstract class Field {
 
         return $this;
     }
+
+    /**
+     * @return mixed|null
+     */
+    public function getOverrideOption() {
+        return $this->override_option;
+    }
+
+    /**
+     * @param mixed|null $override_option
+     * @return static
+     */
+    public function setOverrideOption($override_option) {
+        $this->override_option = $override_option;
+
+        $filter = function () use ($override_option) {
+            return $override_option;
+        };
+
+        remove_filter('option_' . $this->getId(), $filter);
+        add_filter('option_' . $this->getId(), $filter);
+
+        return $this;
+    }
+
 
     /**
      * @return callable|null
