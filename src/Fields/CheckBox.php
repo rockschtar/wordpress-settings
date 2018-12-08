@@ -31,7 +31,7 @@ class CheckBox extends Field {
         $html_tag->setAttribute('value', $this->getValue());
 
         if ($this->isReadonly()) {
-            $this->setDisabled(true);
+            $html_tag->setAttribute('disabled', null);
         }
 
         return $html_tag;
