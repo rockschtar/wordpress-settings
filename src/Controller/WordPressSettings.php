@@ -84,6 +84,7 @@ class WordPressSettings {
     public static function init(Page $page): WordPressSettings {
         return new WordPressSettings($page);
     }
+
     public function custom_hooks(): void {
     }
 
