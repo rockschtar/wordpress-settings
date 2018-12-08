@@ -9,4 +9,10 @@ Author URI:   https://validio.io/
 License:      MIT License
 */
 
+
 require_once 'vendor/autoload.php';
+require_once 'bootstrap.php';
+
+add_action('init', function () {
+    do_action('rwps_create_settings');
+});
