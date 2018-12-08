@@ -1,7 +1,7 @@
 {
   "name": "rockschtar/wordpress-settings",
   "license": "MIT",
-  "description": "Abstract WordPress Settings Utility/Helper for usage with roots/bedrock",
+  "description": "WordPress Settings Utility/Helper for usage with roots/bedrock (mu-plugin)",
   "type": "wordpress-muplugin",
   "require": {
     "php": ">=7.1",
