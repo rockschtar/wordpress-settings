@@ -16,8 +16,6 @@ before_script:
     paths:
       - src/
       - vendor/
-      - composer.json
-      - composer.lock
       - wordpress-settings.php
     expire_in: 4 weeks
 build:develop:
