@@ -2,7 +2,7 @@
   "name": "rockschtar/wordpress-settings",
   "license": "MIT",
   "description": "Abstract WordPress Settings Utility/Helper for usage with roots/bedrock",
-  "type": "library",
+  "type": "wordpress-muplugin",
   "require": {
     "php": ">=7.1",
     "rockschtar/typed-arrays": "0.2.*"
