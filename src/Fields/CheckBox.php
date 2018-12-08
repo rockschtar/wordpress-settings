@@ -30,6 +30,10 @@ class CheckBox extends Field {
 
         $html_tag->setAttribute('value', $this->getValue());
 
+        if ($this->isReadonly()) {
+            $html_tag->setAttribute('disabled', null);
+        }
+
         return $html_tag;
     }
 
@@ -40,7 +44,15 @@ class CheckBox extends Field {
      * @return string
      */
     public function inputHTML($current_value, array $args = []): string {
-        return $this->getHTMLTag($current_value)->buildTag();
+        $html_tag = $this->getHTMLTag($current_value);
+
+        $hidden_tag = new HTMLTag('input');
+        $hidden_tag->setAttribute('type', 'hidden');
+        $hidden_tag->setAttribute('name', $this->getId());
+        $hidden_tag->setAttribute('value', $this->getValue());
+
+        return $html_tag->buildTag() . $hidden_tag->buildTag();
+
     }
 
     /**
