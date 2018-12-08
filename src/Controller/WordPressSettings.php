@@ -79,12 +79,11 @@ class WordPressSettings {
 
     /**
      * @param Page $page
-     * @return static
+     * @return WordPressSettings
      */
-    public static function &init(Page $page) {
+    public static function init(Page $page): WordPressSettings {
         return new WordPressSettings($page);
     }
-
     public function custom_hooks(): void {
     }
 
