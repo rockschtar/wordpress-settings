@@ -290,7 +290,7 @@ abstract class Field {
         }
 
         $html_tag->setAttribute('value', $current_value);
-        return apply_filters('rwps_html_tag', $html_tag);
+        return apply_filters('rwps_html_tag', $html_tag, $this->getId());
     }
 
 }
