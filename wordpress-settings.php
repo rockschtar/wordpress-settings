@@ -9,9 +9,10 @@ Author URI:   https://validio.io/
 License:      MIT License
 */
 
+
 require_once 'vendor/autoload.php';
+require_once 'bootstrap.php';
 
-
-function rwps_create_settings(\Rockschtar\WordPress\Settings\Models\Page $page): void {
-    \Rockschtar\WordPress\Settings\Controller\WordPressSettings::init($page);
-}
+add_action('init', function () {
+    do_action('rwps_create_settings');
+});

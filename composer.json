@@ -8,6 +8,9 @@
     "rockschtar/typed-arrays": "0.2.*"
   },
   "autoload": {
+    "files": [
+      "bootstrap.php"
+    ],
     "psr-4": {
       "Rockschtar\\WordPress\\Settings\\": "src/",
       "Rockschtar\\WordPress\\Settings\\Tests\\": "tests/"
