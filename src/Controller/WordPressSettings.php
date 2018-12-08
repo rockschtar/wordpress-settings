@@ -12,14 +12,22 @@ use Rockschtar\WordPress\Settings\Models\AssetStyle;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\Page;
 
-abstract class AbstractSettingsController {
+class WordPressSettings {
+
+    /**
+     * @var Page
+     */
+    private $page;
 
     /**
      * @var string
      */
     private $hook_suffix;
 
-    private function __construct() {
+    private function __construct(Page $page) {
+
+        $this->page = $page;
+
         add_action('admin_menu', array($this, 'create_settings'));
         add_action('admin_init', array($this, 'setup_sections'));
         add_action('admin_init', array($this, 'setup_fields'));
@@ -70,21 +78,21 @@ abstract class AbstractSettingsController {
     }
 
     /**
+     * @param Page $page
      * @return static
      */
-    public static function &init() {
-        static $instance = null;
-        /** @noinspection ClassConstantCanBeUsedInspection */
-        $class = \get_called_class();
-        if ($instance === null) {
-            $instance = new $class();
-        }
-        return $instance;
+    public static function &init(Page $page) {
+        return new WordPressSettings($page);
     }
 
-    abstract public function getPage(): Page;
-
     public function custom_hooks(): void {
+    }
+
+    /**
+     * @return Page
+     */
+    public function getPage(): Page {
+        return $this->page;
     }
 
     final public function create_settings(): void {
