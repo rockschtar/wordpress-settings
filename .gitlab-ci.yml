@@ -32,4 +32,4 @@ build:tag:
     <<: *artifacts
     expire_in: 10 yrs
   script:
-    - composer install --no-ansi --no-dev
+    - php composer.phar install --no-ansi --no-dev
