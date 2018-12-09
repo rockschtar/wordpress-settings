@@ -14,4 +14,8 @@ if (file_exists(RWPS_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEP
     require_once 'vendor/autoload.php';
 }
 
+add_action('init', function () {
+    do_action('rwps_create_settings');
+});
+
 require_once 'bootstrap.php';
