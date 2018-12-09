@@ -10,8 +10,8 @@ namespace Rockschtar\WordPress\Settings\Tests;
 
 
 use PHPUnit\Framework\TestCase;
-use Rockschtar\WordPress\Settings\Models\Page;
 use Rockschtar\WordPress\Settings\Models\Section;
+use Rockschtar\WordPress\Settings\Models\SettingsPage;
 use Rockschtar\WordPress\Settings\Models\Textfield;
 
 class SuperTest extends TestCase {
@@ -19,7 +19,7 @@ class SuperTest extends TestCase {
 
     public function testAbstractFieldList() : void {
 
-        $x = new Page();
+        $x = new SettingsPage();
 
          $a = new Section();
 

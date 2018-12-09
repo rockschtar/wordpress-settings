@@ -6,7 +6,7 @@
 namespace Rockschtar\WordPress\Settings\Models;
 
 
-class Page {
+class SettingsPage {
 
     /**
      * @var string
@@ -73,9 +73,9 @@ class Page {
 
     /**
      * @param string|null $parent
-     * @return Page
+     * @return SettingsPage
      */
-    public function setParent(?string $parent): Page {
+    public function setParent(?string $parent): SettingsPage {
         $this->parent = $parent;
         return $this;
     }
@@ -100,18 +100,18 @@ class Page {
 
     /**
      * @param callable|null $admin_footer_hook
-     * @return Page
+     * @return SettingsPage
      */
-    public function setAdminFooterHook(?callable $admin_footer_hook): Page {
+    public function setAdminFooterHook(?callable $admin_footer_hook): SettingsPage {
         $this->admin_footer_hook = $admin_footer_hook;
         return $this;
     }
 
     /**
      * @param Asset $asset
-     * @return Page
+     * @return SettingsPage
      */
-    public function addAsset(Asset $asset): Page {
+    public function addAsset(Asset $asset): SettingsPage {
         $this->assets->append($asset);
         return $this;
     }
@@ -124,7 +124,7 @@ class Page {
     }
 
 
-    public static function create(string $id): Page {
+    public static function create(string $id): SettingsPage {
         return new self($id);
     }
 
@@ -137,9 +137,9 @@ class Page {
 
     /**
      * @param string $id
-     * @return Page
+     * @return SettingsPage
      */
-    public function setId(string $id): Page {
+    public function setId(string $id): SettingsPage {
         $this->id = $id;
         return $this;
     }
@@ -153,9 +153,9 @@ class Page {
 
     /**
      * @param Section $section
-     * @return Page
+     * @return SettingsPage
      */
-    public function addSection(Section $section): Page {
+    public function addSection(Section $section): SettingsPage {
         if ($this->sections === null) {
             $this->sections = new Sections();
         }
@@ -173,9 +173,9 @@ class Page {
 
     /**
      * @param string $page_title
-     * @return Page
+     * @return SettingsPage
      */
-    public function setPageTitle(string $page_title): Page {
+    public function setPageTitle(string $page_title): SettingsPage {
         $this->page_title = $page_title;
         return $this;
     }
@@ -189,9 +189,9 @@ class Page {
 
     /**
      * @param string $menu_title
-     * @return Page
+     * @return SettingsPage
      */
-    public function setMenuTitle(string $menu_title): Page {
+    public function setMenuTitle(string $menu_title): SettingsPage {
         $this->menu_title = $menu_title;
         return $this;
     }
@@ -205,9 +205,9 @@ class Page {
 
     /**
      * @param string $capability
-     * @return Page
+     * @return SettingsPage
      */
-    public function setCapability(string $capability): Page {
+    public function setCapability(string $capability): SettingsPage {
         $this->capability = $capability;
         return $this;
     }
@@ -221,9 +221,9 @@ class Page {
 
     /**
      * @param string $icon
-     * @return Page
+     * @return SettingsPage
      */
-    public function setIcon(string $icon): Page {
+    public function setIcon(string $icon): SettingsPage {
         $this->icon = $icon;
         return $this;
     }
@@ -237,9 +237,9 @@ class Page {
 
     /**
      * @param float|int $position
-     * @return Page
+     * @return SettingsPage
      */
-    public function setPosition($position): Page {
+    public function setPosition($position): SettingsPage {
         $this->position = $position;
         return $this;
     }
@@ -253,18 +253,18 @@ class Page {
 
     /**
      * @param mixed $callback
-     * @return Page
+     * @return SettingsPage
      */
-    public function setCallback($callback): Page {
+    public function setCallback($callback): SettingsPage {
         $this->callback = $callback;
         return $this;
     }
 
     /**
      * @param Button $button
-     * @return Page
+     * @return SettingsPage
      */
-    public function addButton(Button $button): Page {
+    public function addButton(Button $button): SettingsPage {
         $this->buttons->append($button);
         return $this;
     }
@@ -277,7 +277,7 @@ class Page {
     }
 
 
-    public function addField(Field $field): Page {
+    public function addField(Field $field): SettingsPage {
 
         $section_id = $this->getId() . '_section';
 
@@ -306,9 +306,9 @@ class Page {
 
     /**
      * @param mixed $fields
-     * @return Page
+     * @return SettingsPage
      */
-    public function setFields($fields): Page {
+    public function setFields($fields): SettingsPage {
         $this->section->setFields($fields);
         return $this;
     }
