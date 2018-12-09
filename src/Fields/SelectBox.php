@@ -77,9 +77,11 @@ class SelectBox extends Field {
 
     /**
      * @param FieldListItems $items
+     * @return SelectBox
      */
-    public function setItems(FieldListItems $items): void {
+    public function setItems(FieldListItems $items): SelectBox {
         $this->items = $items;
+        return $this;
     }
 
 
