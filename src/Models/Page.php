@@ -17,10 +17,6 @@ class Page {
      */
     private $sections;
 
-    /**
-     * @var Section
-     */
-    private $section;
 
     /**
      * @var string
@@ -92,7 +88,7 @@ class Page {
         $this->id = $id;
         $this->buttons = new Buttons();
         $this->assets = new Assets();
-        $this->section = Section::create()->setId($this->getId() . '_section');
+        $this->sections = new Sections();
     }
 
     /**
@@ -283,11 +279,19 @@ class Page {
 
     public function addField(Field $field): Page {
 
-        if ($this->section === null) {
-            $this->section = Section::create()->setId($this->getId() . '_section');
-        }
+        $section_id = $this->getId() . '_section';
 
-        $this->section->addField($field);
+        $section = $this->sections->getSection($section_id);
+
+        if ($section === null) {
+            $section = Section::create()->setId($section_id);
+            $section->addField($field);
+            $this->addSection($section);
+        } else {
+            $index = $this->sections->getSectionIndex($section_id);
+            $section->addField($field);
+            $this->sections->offsetSet($index, $section);
+        }
 
         return $this;
     }
