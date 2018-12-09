@@ -7,18 +7,28 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\FieldListItem;
+use Rockschtar\WordPress\Settings\Models\FieldListItems;
 
 class SelectBox extends Field {
 
     private $multiselect = false;
 
     /**
-     * @var FieldListItem[]
+     * @var FieldListItems
      */
     private $items = [];
 
+    /**
+     * SelectBox constructor.
+     * @param string $id
+     */
+    public function __construct(string $id) {
+        $this->items = new FieldListItems();
+        parent::__construct($id);
+    }
+
     public function addItem(FieldListItem $item): SelectBox {
-        $this->items[] = $item;
+        $this->items->append($item);
         return $this;
     }
 
@@ -59,11 +69,22 @@ class SelectBox extends Field {
     }
 
     /**
-     * @return FieldListItem[]
+     * @return FieldListItems
      */
-    public function getItems(): array {
+    public function getItems(): FieldListItems {
         return $this->items;
     }
+
+    /**
+     * @param FieldListItems $items
+     * @return SelectBox
+     */
+    public function setItems(FieldListItems $items): SelectBox {
+        $this->items = $items;
+        return $this;
+    }
+
+
 
     /**
      * @return bool

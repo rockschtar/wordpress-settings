@@ -104,11 +104,6 @@ class Section {
     }
 
     public function addField(Field $field): Section {
-
-        if($this->fields === null) {
-            $this->fields = new Fields();
-        }
-
         $this->fields->append($field);
         return $this;
     }
