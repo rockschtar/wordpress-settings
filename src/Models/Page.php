@@ -18,6 +18,11 @@ class Page {
     private $sections;
 
     /**
+     * @var Section
+     */
+    private $section;
+
+    /**
      * @var string
      */
     private $page_title = 'Custom Settings Page';
@@ -87,6 +92,7 @@ class Page {
         $this->id = $id;
         $this->buttons = new Buttons();
         $this->assets = new Assets();
+        $this->section = Section::create()->setId($this->getId() . '_section');
     }
 
     /**
@@ -274,5 +280,33 @@ class Page {
         return $this->buttons;
     }
 
+
+    public function addField(Field $field): Page {
+
+        if ($this->section === null) {
+            $this->section = Section::create()->setId($this->getId() . '_section');
+        }
+
+        $this->section->addField($field);
+
+        return $this;
+    }
+
+
+    /**
+     * @return Fields
+     */
+    public function getFields(): Fields {
+        return $this->section->getFields();
+    }
+
+    /**
+     * @param mixed $fields
+     * @return Page
+     */
+    public function setFields($fields): Page {
+        $this->section->setFields($fields);
+        return $this;
+    }
 
 }
