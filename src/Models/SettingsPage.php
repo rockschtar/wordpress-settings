@@ -65,6 +65,21 @@ class SettingsPage {
     private $parent;
 
     /**
+     * Page constructor.
+     * @param string $id
+     */
+    private function __construct(string $id) {
+        $this->id = $id;
+        $this->buttons = new Buttons();
+        $this->assets = new Assets();
+        $this->sections = new Sections();
+    }
+
+    public static function create(string $id): SettingsPage {
+        return new self($id);
+    }
+
+    /**
      * @return string|null
      */
     public function getParent(): ?string {
@@ -78,17 +93,6 @@ class SettingsPage {
     public function setParent(?string $parent): SettingsPage {
         $this->parent = $parent;
         return $this;
-    }
-
-    /**
-     * Page constructor.
-     * @param string $id
-     */
-    private function __construct(string $id) {
-        $this->id = $id;
-        $this->buttons = new Buttons();
-        $this->assets = new Assets();
-        $this->sections = new Sections();
     }
 
     /**
@@ -123,45 +127,11 @@ class SettingsPage {
         return $this->assets;
     }
 
-
-    public static function create(string $id): SettingsPage {
-        return new self($id);
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string {
-        return $this->id;
-    }
-
-    /**
-     * @param string $id
-     * @return SettingsPage
-     */
-    public function setId(string $id): SettingsPage {
-        $this->id = $id;
-        return $this;
-    }
-
     /**
      * @return Sections
      */
     public function getSections(): Sections {
         return $this->sections;
-    }
-
-    /**
-     * @param Section $section
-     * @return SettingsPage
-     */
-    public function addSection(Section $section): SettingsPage {
-        if ($this->sections === null) {
-            $this->sections = new Sections();
-        }
-
-        $this->sections->append($section);
-        return $this;
     }
 
     /**
@@ -276,32 +246,62 @@ class SettingsPage {
         return $this->buttons;
     }
 
-
     public function addField(Field $field): SettingsPage {
 
-        $section_id = $this->getId() . '_section';
+        $section = $this->getOrCreateDefaultSection($index);
+        $section->addField($field);
+
+        return $this;
+    }
+
+    private function getOrCreateDefaultSection(?int &$index = null): Section {
+        $section_id = $this->getId() . '-default';
 
         $section = $this->sections->getSection($section_id);
 
         if ($section === null) {
             $section = Section::create()->setId($section_id);
-            $section->addField($field);
             $this->addSection($section);
-        } else {
-            $index = $this->sections->getSectionIndex($section_id);
-            $section->addField($field);
-            $this->sections->offsetSet($index, $section);
         }
 
+        $index = $this->sections->getSectionIndex($section_id);
+        return $section;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     * @return SettingsPage
+     */
+    public function setId(string $id): SettingsPage {
+        $this->id = $id;
         return $this;
     }
 
+    /**
+     * @param Section $section
+     * @return SettingsPage
+     */
+    public function addSection(Section $section): SettingsPage {
+        if ($this->sections === null) {
+            $this->sections = new Sections();
+        }
+
+        $this->sections->append($section);
+        return $this;
+    }
 
     /**
      * @return Fields
      */
     public function getFields(): Fields {
-        return $this->section->getFields();
+        return $this->getOrCreateDefaultSection()->getFields();
     }
 
     /**
@@ -309,7 +309,7 @@ class SettingsPage {
      * @return SettingsPage
      */
     public function setFields($fields): SettingsPage {
-        $this->section->setFields($fields);
+        $this->getOrCreateDefaultSection()->setFields($fields);
         return $this;
     }
 
