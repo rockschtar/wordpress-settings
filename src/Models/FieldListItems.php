@@ -16,6 +16,10 @@ class FieldListItems extends TypedArray {
         return parent::current();
     }
 
+    public function add(string $label, string $value): FieldListItems {
+        $this->append(FieldListItem::create($label, $value));
+        return $this;
+    }
 
     public function getType(): string {
         return FieldListItem::class;
