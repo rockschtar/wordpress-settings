@@ -10,12 +10,12 @@ use Rockschtar\WordPress\Settings\Fields\Upload;
 use Rockschtar\WordPress\Settings\Models\AssetScript;
 use Rockschtar\WordPress\Settings\Models\AssetStyle;
 use Rockschtar\WordPress\Settings\Models\Field;
-use Rockschtar\WordPress\Settings\Models\Page;
+use Rockschtar\WordPress\Settings\Models\SettingsPage;
 
 class WordPressSettings {
 
     /**
-     * @var Page
+     * @var SettingsPage
      */
     private $page;
 
@@ -24,7 +24,7 @@ class WordPressSettings {
      */
     private $hook_suffix;
 
-    private function __construct(Page $page) {
+    private function __construct(SettingsPage $page) {
 
         $this->page = $page;
 
@@ -78,10 +78,10 @@ class WordPressSettings {
     }
 
     /**
-     * @param Page $page
+     * @param SettingsPage $page
      * @return WordPressSettings
      */
-    public static function init(Page $page): WordPressSettings {
+    public static function init(SettingsPage $page): WordPressSettings {
         return new WordPressSettings($page);
     }
 
@@ -89,9 +89,9 @@ class WordPressSettings {
     }
 
     /**
-     * @return Page
+     * @return SettingsPage
      */
-    public function getPage(): Page {
+    public function getPage(): SettingsPage {
         return $this->page;
     }
 
