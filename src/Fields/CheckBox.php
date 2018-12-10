@@ -46,13 +46,15 @@ class CheckBox extends Field {
     public function inputHTML($current_value, array $args = []): string {
         $html_tag = $this->getHTMLTag($current_value);
 
-        $hidden_tag = new HTMLTag('input');
-        $hidden_tag->setAttribute('type', 'hidden');
-        $hidden_tag->setAttribute('name', $this->getId());
-        $hidden_tag->setAttribute('value', $this->getValue());
+        if ($this->isReadonly()) {
+            $hidden_tag = new HTMLTag('input');
+            $hidden_tag->setAttribute('type', 'hidden');
+            $hidden_tag->setAttribute('name', $this->getId());
+            $hidden_tag->setAttribute('value', $this->getValue());
+            return $html_tag->buildTag() . $hidden_tag->buildTag();
+        }
 
-        return $html_tag->buildTag() . $hidden_tag->buildTag();
-
+        return $html_tag->buildTag();
     }
 
     /**
