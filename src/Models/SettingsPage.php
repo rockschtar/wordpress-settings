@@ -6,7 +6,7 @@
 namespace Rockschtar\WordPress\Settings\Models;
 
 
-class Page {
+class SettingsPage {
 
     /**
      * @var string
@@ -65,22 +65,6 @@ class Page {
     private $parent;
 
     /**
-     * @return string|null
-     */
-    public function getParent(): ?string {
-        return $this->parent;
-    }
-
-    /**
-     * @param string|null $parent
-     * @return Page
-     */
-    public function setParent(?string $parent): Page {
-        $this->parent = $parent;
-        return $this;
-    }
-
-    /**
      * Page constructor.
      * @param string $id
      */
@@ -89,6 +73,26 @@ class Page {
         $this->buttons = new Buttons();
         $this->assets = new Assets();
         $this->sections = new Sections();
+    }
+
+    public static function create(string $id): SettingsPage {
+        return new self($id);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getParent(): ?string {
+        return $this->parent;
+    }
+
+    /**
+     * @param string|null $parent
+     * @return SettingsPage
+     */
+    public function setParent(?string $parent): SettingsPage {
+        $this->parent = $parent;
+        return $this;
     }
 
     /**
@@ -100,18 +104,18 @@ class Page {
 
     /**
      * @param callable|null $admin_footer_hook
-     * @return Page
+     * @return SettingsPage
      */
-    public function setAdminFooterHook(?callable $admin_footer_hook): Page {
+    public function setAdminFooterHook(?callable $admin_footer_hook): SettingsPage {
         $this->admin_footer_hook = $admin_footer_hook;
         return $this;
     }
 
     /**
      * @param Asset $asset
-     * @return Page
+     * @return SettingsPage
      */
-    public function addAsset(Asset $asset): Page {
+    public function addAsset(Asset $asset): SettingsPage {
         $this->assets->append($asset);
         return $this;
     }
@@ -123,45 +127,11 @@ class Page {
         return $this->assets;
     }
 
-
-    public static function create(string $id): Page {
-        return new self($id);
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string {
-        return $this->id;
-    }
-
-    /**
-     * @param string $id
-     * @return Page
-     */
-    public function setId(string $id): Page {
-        $this->id = $id;
-        return $this;
-    }
-
     /**
      * @return Sections
      */
     public function getSections(): Sections {
         return $this->sections;
-    }
-
-    /**
-     * @param Section $section
-     * @return Page
-     */
-    public function addSection(Section $section): Page {
-        if ($this->sections === null) {
-            $this->sections = new Sections();
-        }
-
-        $this->sections->append($section);
-        return $this;
     }
 
     /**
@@ -173,9 +143,9 @@ class Page {
 
     /**
      * @param string $page_title
-     * @return Page
+     * @return SettingsPage
      */
-    public function setPageTitle(string $page_title): Page {
+    public function setPageTitle(string $page_title): SettingsPage {
         $this->page_title = $page_title;
         return $this;
     }
@@ -189,9 +159,9 @@ class Page {
 
     /**
      * @param string $menu_title
-     * @return Page
+     * @return SettingsPage
      */
-    public function setMenuTitle(string $menu_title): Page {
+    public function setMenuTitle(string $menu_title): SettingsPage {
         $this->menu_title = $menu_title;
         return $this;
     }
@@ -205,9 +175,9 @@ class Page {
 
     /**
      * @param string $capability
-     * @return Page
+     * @return SettingsPage
      */
-    public function setCapability(string $capability): Page {
+    public function setCapability(string $capability): SettingsPage {
         $this->capability = $capability;
         return $this;
     }
@@ -221,9 +191,9 @@ class Page {
 
     /**
      * @param string $icon
-     * @return Page
+     * @return SettingsPage
      */
-    public function setIcon(string $icon): Page {
+    public function setIcon(string $icon): SettingsPage {
         $this->icon = $icon;
         return $this;
     }
@@ -237,9 +207,9 @@ class Page {
 
     /**
      * @param float|int $position
-     * @return Page
+     * @return SettingsPage
      */
-    public function setPosition($position): Page {
+    public function setPosition($position): SettingsPage {
         $this->position = $position;
         return $this;
     }
@@ -253,18 +223,18 @@ class Page {
 
     /**
      * @param mixed $callback
-     * @return Page
+     * @return SettingsPage
      */
-    public function setCallback($callback): Page {
+    public function setCallback($callback): SettingsPage {
         $this->callback = $callback;
         return $this;
     }
 
     /**
      * @param Button $button
-     * @return Page
+     * @return SettingsPage
      */
-    public function addButton(Button $button): Page {
+    public function addButton(Button $button): SettingsPage {
         $this->buttons->append($button);
         return $this;
     }
@@ -276,40 +246,70 @@ class Page {
         return $this->buttons;
     }
 
+    public function addField(Field $field): SettingsPage {
 
-    public function addField(Field $field): Page {
+        $section = $this->getOrCreateDefaultSection($index);
+        $section->addField($field);
 
-        $section_id = $this->getId() . '_section';
+        return $this;
+    }
+
+    private function getOrCreateDefaultSection(?int &$index = null): Section {
+        $section_id = $this->getId() . '-default';
 
         $section = $this->sections->getSection($section_id);
 
         if ($section === null) {
             $section = Section::create()->setId($section_id);
-            $section->addField($field);
             $this->addSection($section);
-        } else {
-            $index = $this->sections->getSectionIndex($section_id);
-            $section->addField($field);
-            $this->sections->offsetSet($index, $section);
         }
 
+        $index = $this->sections->getSectionIndex($section_id);
+        return $section;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     * @return SettingsPage
+     */
+    public function setId(string $id): SettingsPage {
+        $this->id = $id;
         return $this;
     }
 
+    /**
+     * @param Section $section
+     * @return SettingsPage
+     */
+    public function addSection(Section $section): SettingsPage {
+        if ($this->sections === null) {
+            $this->sections = new Sections();
+        }
+
+        $this->sections->append($section);
+        return $this;
+    }
 
     /**
      * @return Fields
      */
     public function getFields(): Fields {
-        return $this->section->getFields();
+        return $this->getOrCreateDefaultSection()->getFields();
     }
 
     /**
      * @param mixed $fields
-     * @return Page
+     * @return SettingsPage
      */
-    public function setFields($fields): Page {
-        $this->section->setFields($fields);
+    public function setFields($fields): SettingsPage {
+        $this->getOrCreateDefaultSection()->setFields($fields);
         return $this;
     }
 
