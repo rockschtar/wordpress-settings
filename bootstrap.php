@@ -9,6 +9,8 @@ if (function_exists('add_action')) {
     }, 1);
 }
 
-function rswp_register_settings_page(SettingsPage $page): void {
-    WordPressSettings::registerSettingsPage($page);
+if (!function_exists('rswp_register_settings_page')) {
+    function rswp_register_settings_page(SettingsPage $page): void {
+        WordPressSettings::registerSettingsPage($page);
+    }
 }

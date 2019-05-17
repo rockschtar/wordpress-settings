@@ -15,4 +15,4 @@ if (file_exists(RWPS_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEP
     require_once 'vendor/autoload.php';
 }
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'bootstrap.php';
+require __DIR__ . DIRECTORY_SEPARATOR . 'bootstrap.php';
