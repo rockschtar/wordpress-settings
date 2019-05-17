@@ -8,6 +8,10 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 
+/**
+ * Class Custom
+ * @package Rockschtar\WordPress\Settings
+ */
 class Custom extends Field {
 
     /**

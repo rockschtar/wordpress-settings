@@ -1,11 +1,11 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Models;
 
-
+/**
+ * Class Asset
+ * @package Rockschtar\WordPress\Settings
+ */
 abstract class Asset {
 
     public const TYPE_SCRIPT = 'script';

@@ -2,6 +2,10 @@
 
 namespace Rockschtar\WordPress\Settings\Models;
 
+/**
+ * Class SettingsPage
+ * @package Rockschtar\WordPress\Settings
+ */
 class SettingsPage {
 
     /**
@@ -72,6 +76,10 @@ class SettingsPage {
         $this->id = $id;
     }
 
+    /**
+     * @param string $id
+     * @return SettingsPage
+     */
     public static function create(string $id): SettingsPage {
         return new self($id);
     }
@@ -243,6 +251,10 @@ class SettingsPage {
         return $this->buttons;
     }
 
+    /**
+     * @param Field $field
+     * @return SettingsPage
+     */
     public function addField(Field $field): SettingsPage {
 
         $section = $this->getOrCreateDefaultSection($index);
@@ -251,6 +263,10 @@ class SettingsPage {
         return $this;
     }
 
+    /**
+     * @param int|null $index
+     * @return Section
+     */
     private function getOrCreateDefaultSection(?int &$index = null): Section {
         $section_id = $this->getId() . '-default';
 
