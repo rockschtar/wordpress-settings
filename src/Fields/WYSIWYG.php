@@ -1,13 +1,13 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
-
 use Rockschtar\WordPress\Settings\Models\Field;
 
+/**
+ * Class WYSIWYG
+ * @package Rockschtar\WordPress\Settings
+ */
 class WYSIWYG extends Field {
 
     /**
@@ -54,10 +54,11 @@ class WYSIWYG extends Field {
 
         $is_disabled = $this->isDisabled();
 
-        $tiny_mce_before_init = function ($args) use ($is_disabled) {
+        $tiny_mce_before_init = static function ($args) use ($is_disabled) {
 
-            if ($is_disabled)
+            if ($is_disabled) {
                 $args['readonly'] = 1;
+            }
 
             return $args;
         };

@@ -2,6 +2,10 @@
 
 namespace Rockschtar\WordPress\Settings\Models;
 
+/**
+ * Class SelectBoxItem
+ * @package Rockschtar\WordPress\Settings
+ */
 class SelectBoxItem {
 
     /**

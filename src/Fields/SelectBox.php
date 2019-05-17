@@ -1,15 +1,20 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
+use function is_array;
 
+/**
+ * Class SelectBox
+ * @package Rockschtar\WordPress\Settings\Fields
+ */
 class SelectBox extends Field {
 
+    /**
+     * @var bool
+     */
     private $multiselect = false;
 
     /**
@@ -25,6 +30,10 @@ class SelectBox extends Field {
         parent::__construct($id);
     }
 
+    /**
+     * @param SelectBoxItem $item
+     * @return SelectBox
+     */
     public function addItem(SelectBoxItem $item): SelectBox {
         $this->items[] = $item;
         return $this;
@@ -42,7 +51,7 @@ class SelectBox extends Field {
         foreach ($this->getItems() as $item) {
             $selected = false;
 
-            if (\is_array($current_value)) {
+            if (is_array($current_value)) {
                 foreach ($current_value as $value) {
                     $selected = selected($item->getValue(), $value, false);
 

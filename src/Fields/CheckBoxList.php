@@ -1,13 +1,13 @@
 <?php
-/**
- * @author: StefanHelmer
- */
-
 namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
 
+/**
+ * Class CheckBoxList
+ * @package Rockschtar\WordPress\Settings
+ */
 class CheckBoxList extends Field {
 
     /**
@@ -15,6 +15,10 @@ class CheckBoxList extends Field {
      */
     private $items = [];
 
+    /**
+     * @param SelectBoxItem $item
+     * @return CheckBoxList
+     */
     public function addItem(SelectBoxItem $item): CheckBoxList {
         $this->items[] = $item;
 

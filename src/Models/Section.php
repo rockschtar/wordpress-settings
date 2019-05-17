@@ -1,19 +1,20 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Models;
 
+/**
+ * Class Section
+ * @package Rockschtar\WordPress\Settings
+ */
 class Section {
 
     /**
-     * @var
+     * @var string
      */
     private $id;
 
     /**
-     * @var
+     * @var string
      */
     private $title;
 
@@ -34,6 +35,9 @@ class Section {
 
     }
 
+    /**
+     * @return Section
+     */
     public static function create(): Section {
         return new self();
     }
@@ -102,6 +106,10 @@ class Section {
         return $this;
     }
 
+    /**
+     * @param Field $field
+     * @return Section
+     */
     public function addField(Field $field): Section {
         $this->fields[] = $field;
         return $this;

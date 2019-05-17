@@ -12,6 +12,10 @@ use Rockschtar\WordPress\Settings\Models\AssetStyle;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
 
+/**
+ * Class WordPressSettings
+ * @package Rockschtar\WordPress\Settings
+ */
 class WordPressSettings {
 
     /**
