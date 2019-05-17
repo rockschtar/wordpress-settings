@@ -5,7 +5,6 @@
 
 namespace Rockschtar\WordPress\Settings\Models;
 
-
 class Section {
 
     /**
@@ -17,25 +16,25 @@ class Section {
      * @var
      */
     private $title;
+
     /**
      * @var string|array
      */
     private $callback = array();
 
     /**
-     * @var Fields
+     * @var Field[]
      */
-    private $fields;
+    private $fields = [];
 
     /**
      * Section constructor.
      */
     public function __construct() {
-        $this->fields = new Fields();
+
     }
 
-
-    public static function create() : Section {
+    public static function create(): Section {
         return new self();
     }
 
@@ -88,9 +87,9 @@ class Section {
     }
 
     /**
-     * @return Fields
+     * @return Field[]
      */
-    public function getFields(): Fields {
+    public function getFields(): array {
         return $this->fields;
     }
 
@@ -104,7 +103,7 @@ class Section {
     }
 
     public function addField(Field $field): Section {
-        $this->fields->append($field);
+        $this->fields[] = $field;
         return $this;
     }
 

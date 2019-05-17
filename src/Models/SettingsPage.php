@@ -1,10 +1,6 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Models;
-
 
 class SettingsPage {
 
@@ -12,40 +8,44 @@ class SettingsPage {
      * @var string
      */
     private $id;
+
     /**
-     * @var Sections
+     * @var Section[]
      */
     private $sections;
-
 
     /**
      * @var string
      */
     private $page_title = 'Custom Settings Page';
+
     /**
      * @var string
      */
     private $menu_title = 'Custom Settings Page';
+
     /**
      * @var string
      */
     private $capability = 'manage_options';
+
     /**
      * @var string
      */
     private $icon = 'dashicons-admin-settings';
+
     /**
      * @var int|float
      */
     private $position = 2;
+
     /**
      * @var ?array|?string|null
      */
     private $callback;
 
-
     /**
-     * @var Assets
+     * @var Asset[]
      */
     private $assets;
 
@@ -55,9 +55,9 @@ class SettingsPage {
     private $admin_footer_hook;
 
     /**
-     * @var Buttons
+     * @var Button[]
      */
-    private $buttons;
+    private $buttons = [];
 
     /**
      * @var string|null
@@ -70,9 +70,6 @@ class SettingsPage {
      */
     private function __construct(string $id) {
         $this->id = $id;
-        $this->buttons = new Buttons();
-        $this->assets = new Assets();
-        $this->sections = new Sections();
     }
 
     public static function create(string $id): SettingsPage {
@@ -116,21 +113,21 @@ class SettingsPage {
      * @return SettingsPage
      */
     public function addAsset(Asset $asset): SettingsPage {
-        $this->assets->append($asset);
+        $this->assets[] = $asset;
         return $this;
     }
 
     /**
-     * @return Assets
+     * @return Asset[]
      */
-    public function getAssets(): Assets {
+    public function getAssets(): array {
         return $this->assets;
     }
 
     /**
-     * @return Sections
+     * @return Section[]
      */
-    public function getSections(): Sections {
+    public function getSections(): array {
         return $this->sections;
     }
 
@@ -235,14 +232,14 @@ class SettingsPage {
      * @return SettingsPage
      */
     public function addButton(Button $button): SettingsPage {
-        $this->buttons->append($button);
+        $this->buttons[] = $button;
         return $this;
     }
 
     /**
-     * @return Buttons
+     * @return Button[]
      */
-    public function getButtons(): Buttons {
+    public function getButtons(): array {
         return $this->buttons;
     }
 
@@ -257,14 +254,26 @@ class SettingsPage {
     private function getOrCreateDefaultSection(?int &$index = null): Section {
         $section_id = $this->getId() . '-default';
 
-        $section = $this->sections->getSection($section_id);
+        $section = null;
+
+        foreach ($this->sections as $section) {
+            if ($section_id === $section->getId()) {
+                $section = $section->getId();
+                break;
+            }
+        }
 
         if ($section === null) {
             $section = Section::create()->setId($section_id);
             $this->addSection($section);
         }
 
-        $index = $this->sections->getSectionIndex($section_id);
+        foreach ($this->sections as $current_index => $section) {
+            if ($section->getId() === $section_id) {
+                $index = (int)$current_index;
+            }
+        }
+
         return $section;
     }
 
@@ -289,18 +298,14 @@ class SettingsPage {
      * @return SettingsPage
      */
     public function addSection(Section $section): SettingsPage {
-        if ($this->sections === null) {
-            $this->sections = new Sections();
-        }
-
-        $this->sections->append($section);
+        $this->sections[] = $section;
         return $this;
     }
 
     /**
-     * @return Fields
+     * @return Field[]
      */
-    public function getFields(): Fields {
+    public function getFields(): array {
         return $this->getOrCreateDefaultSection()->getFields();
     }
 
@@ -312,5 +317,4 @@ class SettingsPage {
         $this->getOrCreateDefaultSection()->setFields($fields);
         return $this;
     }
-
 }

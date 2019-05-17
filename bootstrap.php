@@ -1,5 +1,8 @@
 <?php
 
-function rwps_create_settings(\Rockschtar\WordPress\Settings\Models\SettingsPage $page): void {
-    \Rockschtar\WordPress\Settings\Controller\WordPressSettings::init($page);
+use Rockschtar\WordPress\Settings\Controller\WordPressSettings;
+use Rockschtar\WordPress\Settings\Models\SettingsPage;
+
+function rswp_register_settings_page(SettingsPage $page): void {
+    WordPressSettings::registerSettingsPage($page);
 }
