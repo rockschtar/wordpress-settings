@@ -15,8 +15,4 @@ if (file_exists(RWPS_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEP
     require_once 'vendor/autoload.php';
 }
 
-add_action('_admin_menu', static function () {
-    do_action('rswp_create_settings');
-}, 1);
-
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'bootstrap.php';

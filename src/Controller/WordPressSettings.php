@@ -81,7 +81,7 @@ class WordPressSettings {
      * @param SettingsPage $page
      * @return WordPressSettings
      */
-    public static function init(SettingsPage $page): WordPressSettings {
+    public static function registerSettingsPage(SettingsPage $page): WordPressSettings {
         return new WordPressSettings($page);
     }
 
