@@ -21,9 +21,9 @@ class Attribute {
     /**
      * Attribute constructor.
      * @param string $name
-     * @param string $value
+     * @param string|null $value
      */
-    public function __construct(string $name, string $value) {
+    public function __construct(string $name, string $value = null) {
         $this->name = $name;
         $this->value = $value;
     }
@@ -47,7 +47,7 @@ class Attribute {
     /**
      * @return string
      */
-    public function getValue(): string {
+    public function getValue(): ?string {
         return $this->value;
     }
 
