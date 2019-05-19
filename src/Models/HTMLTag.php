@@ -50,9 +50,9 @@ class HTMLTag {
         foreach ($this->attributes as $attribute) {
 
             if ($attribute->getValue() === null) {
-                $attributes[] = $attribute->getKey();
+                $attributes[] = $attribute->getName();
             } else {
-                $attributes[] = $attribute->getKey() . '="' . $attribute->getValue() . '"';
+                $attributes[] = $attribute->getName() . '="' . $attribute->getValue() . '"';
             }
 
         }
