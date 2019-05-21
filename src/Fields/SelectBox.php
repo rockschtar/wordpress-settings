@@ -64,7 +64,7 @@ class SelectBox extends Field {
             $disabled = $this->isDisabled() ? true : $item->isDisabled();
 
 
-            $options .= sprintf('<option value="%s" %s %s>%s</option>', $item->getValue(), $selected, disabled($disabled, true, false), $item->getLabel());
+            $options .= sprintf('<option value="%s" %s %s>%s</option>', $item->getValue(), $selected, disabled($disabled, true, false), $item->getName());
         }
 
         if ($this->isMultiselect()) {
