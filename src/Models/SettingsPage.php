@@ -51,7 +51,7 @@ class SettingsPage {
     /**
      * @var Asset[]
      */
-    private $assets;
+    private $assets = [];
 
     /**
      * @var callable|null
