@@ -11,6 +11,8 @@ use Rockschtar\WordPress\Settings\Models\AssetScript;
 use Rockschtar\WordPress\Settings\Models\AssetStyle;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
+use function call_user_func;
+use function is_array;
 
 /**
  * Class WordPressSettings
@@ -47,9 +49,9 @@ class WordPressSettings {
 
             if (is_a($button, AjaxButton::class)) {
                 /* @var AjaxButton $field */
-                add_action('wp_ajax_rwps_ajax_button_' . $button->getId(), function () use ($button) {
+                add_action('wp_ajax_rwps_ajax_button_' . $button->getId(), static function () use ($button) {
                     check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
-                    \call_user_func($button->getCallable(), $button);
+                    call_user_func($button->getCallable(), $button);
                 });
             }
         }
@@ -70,9 +72,9 @@ class WordPressSettings {
 
                 if (is_a($field, AjaxButton::class)) {
                     /* @var AjaxButton $field */
-                    add_action('wp_ajax_rwps_ajax_button_' . $field->getId(), function () use ($field) {
+                    add_action('wp_ajax_rwps_ajax_button_' . $field->getId(), static function () use ($field) {
                         check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
-                        \call_user_func($field->getCallable(), $field);
+                        call_user_func($field->getCallable(), $field);
                     });
                 }
             }
@@ -115,7 +117,7 @@ class WordPressSettings {
             add_action('admin_footer-' . $this->hook_suffix, $this->getPage()->getAdminFooterHook());
         }
 
-        if ($this->getPage()->getAssets()->count() > 0) {
+        if (count($this->getPage()->getAssets()) > 0) {
             add_action('admin_enqueue_scripts', array(&$this, 'admin_enqueue_scripts'));
         }
 
@@ -131,13 +133,9 @@ class WordPressSettings {
     final public function setup_fields(): void {
         foreach ($this->getPage()->getSections() as $section) {
             foreach ($section->getFields() as $field) {
-                if (is_a($field, AjaxButton::class)) {
-                    /* @var AjaxButton $field */
-
-                    if ($field->getPosition() !== AjaxButton::POSITION_FORM) {
-                        continue;
-                    }
-
+                /* @var AjaxButton $field */
+                if (is_a($field, AjaxButton::class) && $field->getPosition() !== AjaxButton::POSITION_FORM) {
+                    continue;
                 }
 
                 /* @var Field $field */
@@ -147,8 +145,8 @@ class WordPressSettings {
 
                 if (is_a($field, Upload::class)) {
 
-                    $sanitize_callback = function ($value) use ($field, $arguments) {
-                        if (!\is_array($value)) {
+                    $sanitize_callback = static function ($value) use ($field, $arguments) {
+                        if (!is_array($value)) {
                             $value = '';
                         } else if (isset($value['attachment_id']) && empty($value['attachment_id'])) {
                             $value = '';
@@ -372,7 +370,7 @@ class WordPressSettings {
                                     id: 'rwps-media-frame',
                                     title: 'Upload Title',
                                     editing: true,
-                                    multiple: false,
+                                    multiple: false
                                 });
                                 this._frame.on("select", function () {
 
