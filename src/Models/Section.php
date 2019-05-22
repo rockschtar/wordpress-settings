@@ -30,16 +30,18 @@ class Section {
 
     /**
      * Section constructor.
+     * @param string $id
      */
-    public function __construct() {
-
+    public function __construct(string $id) {
+        $this->id = $id;
     }
 
     /**
+     * @param string $id
      * @return Section
      */
-    public static function create(): Section {
-        return new self();
+    public static function create(string $id): Section {
+        return new self($id);
     }
 
     /**

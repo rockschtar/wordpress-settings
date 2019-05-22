@@ -9,6 +9,8 @@
 namespace Rockschtar\WordPress\Settings\Tests;
 
 use Rockschtar\WordPress\Settings\Fields\Textfield;
+use Rockschtar\WordPress\Settings\Models\Section;
+use Rockschtar\WordPress\Settings\Models\SettingsPage;
 use WP_Mock\Tools\TestCase;
 
 class WordPressIntegrationTest extends TestCase {
@@ -20,6 +22,17 @@ class WordPressIntegrationTest extends TestCase {
 
     public function tearDown(): void {
         \WP_Mock::tearDown();
+    }
+
+    public function testSettingsPage() {
+
+        $page = SettingsPage::create('ut-settingspage')->setPageTitle('Unit Test Page Title');
+
+        $section = Section::create('ut-section');
+
+        $this->assertEquals('ut-settingspage', $page->getId());
+
+
     }
 
     public function testTextfield(): void {
