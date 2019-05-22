@@ -280,7 +280,7 @@ class SettingsPage {
         }
 
         if ($section === null) {
-            $section = Section::create()->setId($section_id);
+            $section = Section::create($section_id);
             $this->addSection($section);
         }
 
