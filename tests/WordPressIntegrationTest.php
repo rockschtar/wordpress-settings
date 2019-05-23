@@ -8,21 +8,23 @@
 
 namespace Rockschtar\WordPress\Settings\Tests;
 
+use function Brain\Monkey\setUp;
+use function Brain\Monkey\tearDown;
+use PHPUnit\Framework\TestCase;
 use Rockschtar\WordPress\Settings\Fields\Textfield;
 use Rockschtar\WordPress\Settings\Models\Section;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
-use WP_Mock;
-use WP_Mock\Tools\TestCase;
+
 
 class WordPressIntegrationTest extends TestCase {
 
     public function setUp(): void {
-        WP_Mock::setUp();
+        setUp();
 
     }
 
     public function tearDown(): void {
-        WP_Mock::tearDown();
+        tearDown();
     }
 
     /**
@@ -32,9 +34,9 @@ class WordPressIntegrationTest extends TestCase {
     public function testSettingsPage(): SettingsPage {
 
         $settingsPage = SettingsPage::create('ut-settingspage')
-            ->setPageTitle('Unit Test Page Title')
-            ->setCapability('manage_options')
-            ->setMenuTitle('Unit Test Menu Title');
+                                    ->setPageTitle('Unit Test Page Title')
+                                    ->setCapability('manage_options')
+                                    ->setMenuTitle('Unit Test Menu Title');
 
         $this->assertEquals('ut-settingspage', $settingsPage->getId());
 
@@ -53,6 +55,7 @@ class WordPressIntegrationTest extends TestCase {
         $section = Section::create('ut-section');
         $this->assertEquals('ut-section', $section->getId());
         $settingsPage->addSection($section);
+
         return $settingsPage;
 
     }
@@ -73,9 +76,17 @@ class WordPressIntegrationTest extends TestCase {
         $textField->setPlaceholder('UT Placeholder');
         $this->assertStringContainsString('placeholder="UT Placeholder"', $textField->output(''));
 
-        $this->assertEquals('ut-testfield', $textField->getId());
+        $textField->setDescription('Description');
+        $this->assertStringContainsString('<p class="description">Description</p>', $textField->output(''));
+
+        $textField->setLabel('Textfield');
+
         $section = $settingsPage->getSections()[0];
         $section->addField($textField);
+    }
+
+    public function testAdminInit() {
+
     }
 
 }

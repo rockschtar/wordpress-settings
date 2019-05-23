@@ -5,4 +5,4 @@ require_once __DIR__ . '/../vendor/autoload.php';
 define('WP_DEBUG', true);
 
 // Now call the bootstrap method of WP Mock
-WP_Mock::bootstrap();
+//WP_Mock::bootstrap();

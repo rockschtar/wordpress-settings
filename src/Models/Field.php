@@ -169,7 +169,7 @@ abstract class Field {
     final public function output($current_value, array $args = []): string {
         $output = apply_filters('rwps-field-html', $this->inputHTML($current_value, $args), $this->getId());
         if (!empty($this->getDescription())) {
-            $output .= sprintf('<p class="description">%s </p>', $this->getDescription());
+            $output .= sprintf('<p class="description">%s</p>', $this->getDescription());
 
         }
         $output = apply_filters('rwps-field', $output, $this->getId());
