@@ -1,13 +1,6 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Models;
-
-
-use Rockschtar\TypedArrays\Hashmap;
-use Rockschtar\TypedArrays\Models\KeyValuePair;
 
 class HTMLTag {
 
@@ -17,35 +10,35 @@ class HTMLTag {
     private $tag;
 
     /**
-     * @var Hashmap
+     * @var Attribute[]
      */
     private $attributes;
 
     /**
      * HTMLTag constructor.
      * @param String|null $tag
+     * @param Attribute[] $attributes
      */
-    public function __construct(?String $tag) {
+    public function __construct(?String $tag, array $attributes = []) {
         $this->tag = $tag;
-        $this->attributes = new Hashmap();
+        $this->attributes = $attributes;
     }
 
     /**
-     * @param string $attribute
+     * @param string $name
      * @param string $value
      * @return HTMLTag
      */
-    public function setAttribute(string $attribute, ?string $value): HTMLTag {
+    public function setAttribute(string $name, ?string $value = null): HTMLTag {
 
-        foreach ($this->attributes as $index => $item) {
-            if ($item->getKey() === $attribute) {
-                $this->attributes->offsetSet($index, new KeyValuePair($attribute, $value));
-
+        foreach ($this->attributes as $index => $attribute) {
+            if ($attribute->getName() === $name) {
+                $this->attributes[$index] = new Attribute($name, $value);
                 return $this;
             }
         }
 
-        $this->attributes->append(new KeyValuePair($attribute, $value));
+        $this->attributes[] = new Attribute($name, $value);
 
         return $this;
 
@@ -57,9 +50,9 @@ class HTMLTag {
         foreach ($this->attributes as $attribute) {
 
             if ($attribute->getValue() === null) {
-                $attributes[] = $attribute->getKey();
+                $attributes[] = $attribute->getName();
             } else {
-                $attributes[] = $attribute->getKey() . '="' . $attribute->getValue() . '"';
+                $attributes[] = $attribute->getName() . '="' . $attribute->getValue() . '"';
             }
 
         }

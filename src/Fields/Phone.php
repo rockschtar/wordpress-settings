@@ -1,13 +1,13 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
-
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
 
+/**
+ * Class Phone
+ * @package Rockschtar\WordPress\Settings
+ */
 class Phone extends Textfield {
 
     /**
@@ -25,6 +25,10 @@ class Phone extends Textfield {
      */
     private $pattern;
 
+    /**
+     * @param $current_value
+     * @return HTMLTag
+     */
     public function getHTMLTag($current_value): HTMLTag {
         $html_tag = parent::getHTMLTag($current_value);
         $html_tag->setAttribute('type', 'tel');

@@ -1,18 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Stefan Helmer
- * Date: 27.11.2018
- * Time: 19:35
- */
 
 namespace Rockschtar\WordPress\Settings\Fields;
-
 
 use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
 
+/**
+ * Class Textfield
+ * @package Rockschtar\WordPress\Settings
+ */
 class Textfield extends Field {
 
     public const TEXT = 'text';
@@ -58,6 +55,10 @@ class Textfield extends Field {
         return $this;
     }
 
+    /**
+     * @param $current_value
+     * @return HTMLTag
+     */
     public function getHTMLTag($current_value): HTMLTag {
         $html_tag = parent::getHTMLTag($current_value);
         $html_tag->setAttribute('list', $this->getDatalistId());
@@ -125,6 +126,9 @@ class Textfield extends Field {
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getDatalistId(): ?string {
 
         if ($this->getDatalist() === null) {
@@ -134,6 +138,9 @@ class Textfield extends Field {
         return $this->getDatalist()->getId() ?? 'datalist_' . $this->getId();
     }
 
+    /**
+     * @return string
+     */
     public function getDatalistHTML(): string {
         if ($this->getDatalist() !== null) {
             $datalist_id = $this->getDatalistId();

@@ -1,17 +1,25 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
-
 use Rockschtar\WordPress\Settings\Models\Field;
+use function in_array;
+use function is_array;
 
+/**
+ * Class Upload
+ * @package Rockschtar\WordPress\Settings
+ */
 class Upload extends Field {
 
+    /**
+     * @var string
+     */
     private $upload_button_text = 'Upload';
 
+    /**
+     * @var string
+     */
     private $remove_button_text = 'Remove';
 
     /**
@@ -26,7 +34,7 @@ class Upload extends Field {
 
         $media_url = $attachment_id = $thumb_url = $icon_url = '';
 
-        if (\is_array($current_value)) {
+        if (is_array($current_value)) {
             $attachment_id = $current_value['attachment_id'] ?? '';
 
             if (!empty($attachment_id)) {
@@ -38,8 +46,7 @@ class Upload extends Field {
         }
         ?>
 
-        <img style="max-height: 64px; max-width: 64px;<?php if (empty($thumb_url)): ?> display: none;<?php endif; ?>"
-             src="<?php echo $thumb_url; ?>" id="<?php echo $field_id ?>_thumb"/>
+        <img style="max-height: 64px; max-width: 64px;<?php if (empty($thumb_url)): ?> display: none;<?php endif; ?>" alt="" src="<?php echo $thumb_url; ?>" id="<?php echo $field_id ?>_thumb"/>
         <input type="hidden" name="<?php echo $field_id; ?>[media_url]" id="<?php echo $field_id; ?>"
                value="<?php echo $media_url; ?>">
         <input type="hidden" name="<?php echo $field_id; ?>[attachment_id]"
@@ -49,7 +56,7 @@ class Upload extends Field {
                id="<?php echo $field_id; ?>_attachment_icon"
                value="<?php echo $icon_url; ?>">
         <input style="vertical-align: bottom;" data-fieldid="<?php echo $field_id; ?>"
-            <?php disabled($this->isDisabled(), true); ?>
+            <?php disabled($this->isDisabled()); ?>
                class="button button-secondary rwps_button_add_media"
                name="<?php echo $field_id; ?>_button_add"
                type="button"
@@ -68,6 +75,10 @@ class Upload extends Field {
 
     }
 
+    /**
+     * @param string $mime_type
+     * @return bool
+     */
     private function mimeTypeIsImage(string $mime_type): bool {
 
 
@@ -78,7 +89,7 @@ class Upload extends Field {
                              'image/svg+xml',
                              'image/x-icon',];
 
-        return \in_array($mime_type, $image_mime_types, false);
+        return in_array($mime_type, $image_mime_types, false);
 
 
     }

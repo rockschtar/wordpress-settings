@@ -1,25 +1,27 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Models;
 
+use InvalidArgumentException;
+
+/**
+ * Class Field
+ * @package Rockschtar\WordPress\Settings
+ */
 abstract class Field {
 
     /**
-     * @var
+     * @var string
      */
     private $label;
 
     /**
-     * @var
+     * @var string
      */
     private $id;
 
-
     /**
-     * @var
+     * @var string
      */
     private $description;
 
@@ -28,19 +30,15 @@ abstract class Field {
      */
     private $arguments = [];
 
-
     /**
      * @var mixed|null
      */
     private $default_option;
 
-
     /**
      * @var mixed|null
      */
     private $override_option;
-
-
 
     /**
      * @var bool
@@ -51,7 +49,6 @@ abstract class Field {
      * @var bool
      */
     private $readonly = false;
-
 
     /**
      * @var callable
@@ -118,20 +115,19 @@ abstract class Field {
     /**
      * @param mixed $id
      * @return static
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setId($id) {
 
         $validate = preg_match_all('/^[a-zA-Z0-9_-]+$/i', $id, $result) === 1;
 
         if (!$validate) {
-            throw new \InvalidArgumentException('Id ' . $id . ' is invalid or missing. Allowed characters: A-Z, a-z, 0-9, _ and - ');
+            throw new InvalidArgumentException('Id ' . $id . ' is invalid or missing. Allowed characters: A-Z, a-z, 0-9, _ and - ');
         }
 
         $this->id = $id;
         return $this;
     }
-
 
     /**
      * @return mixed
@@ -165,10 +161,15 @@ abstract class Field {
         return $this;
     }
 
+    /**
+     * @param $current_value
+     * @param array $args
+     * @return string
+     */
     final public function output($current_value, array $args = []): string {
         $output = apply_filters('rwps-field-html', $this->inputHTML($current_value, $args), $this->getId());
         if (!empty($this->getDescription())) {
-            $output .= sprintf('<p class="description">%s </p>', $this->getDescription());
+            $output .= sprintf('<p class="description">%s</p>', $this->getDescription());
 
         }
         $output = apply_filters('rwps-field', $output, $this->getId());
@@ -191,13 +192,13 @@ abstract class Field {
     public function setDefaultOption($default_option) {
         $this->default_option = $default_option;
 
-        add_filter('default_option_' . $this->getId(), function ($default, $id, $passed_default) use ($default_option) {
+        add_filter('default_option_' . $this->getId(), static function ($default, $id, $passed_default) use ($default_option) {
 
             if ($default === false) {
                 return $default_option;
             }
-            return $default;
 
+            return $default;
 
         }, 10, 3);
 
@@ -218,7 +219,7 @@ abstract class Field {
     public function setOverrideOption($override_option) {
         $this->override_option = $override_option;
 
-        $filter = function () use ($override_option) {
+        $filter = static function () use ($override_option) {
             return $override_option;
         };
 
@@ -227,7 +228,6 @@ abstract class Field {
 
         return $this;
     }
-
 
     /**
      * @return callable|null
@@ -261,14 +261,12 @@ abstract class Field {
         return $this;
     }
 
-
     /**
      * @param $current_value
      * @param array $args
      * @return string
      */
     abstract public function inputHTML($current_value, array $args = []): string;
-
 
     /**
      * @param $current_value

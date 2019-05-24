@@ -1,10 +1,11 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Models;
 
+/**
+ * Class AssetStyle
+ * @package Rockschtar\WordPress\Settings
+ */
 class AssetStyle extends Asset {
 
     /**
@@ -12,6 +13,14 @@ class AssetStyle extends Asset {
      */
     private $media;
 
+    /**
+     * AssetStyle constructor.
+     * @param string $handle
+     * @param string $src
+     * @param bool $ver
+     * @param array $deps
+     * @param bool $media
+     */
     public function __construct(string $handle, string $src, $ver = false, array $deps = [], $media = false) {
         parent::__construct($handle, $src, $ver, $deps);
         $this->type = Asset::TYPE_STYLE;
@@ -33,6 +42,5 @@ class AssetStyle extends Asset {
         $this->media = $media;
         return $this;
     }
-
 
 }
