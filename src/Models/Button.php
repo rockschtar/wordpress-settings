@@ -1,11 +1,11 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Models;
 
-
+/**
+ * Class Button
+ * @package Rockschtar\WordPress\Settings
+ */
 abstract class Button extends Field {
     public const POSITION_FORM = 'form';
     public const POSITION_BEFORE_SUBMIT = 'before_submit';

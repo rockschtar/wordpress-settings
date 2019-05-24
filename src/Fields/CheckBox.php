@@ -1,17 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Stefan Helmer
- * Date: 27.11.2018
- * Time: 19:54
- */
 
 namespace Rockschtar\WordPress\Settings\Fields;
-
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
 
+/**
+ * Class CheckBox
+ * @package Rockschtar\WordPress\Settings
+ */
 class CheckBox extends Field {
 
     /**
@@ -19,6 +16,10 @@ class CheckBox extends Field {
      */
     private $value;
 
+    /**
+     * @param $current_value
+     * @return HTMLTag
+     */
     public function getHTMLTag($current_value): HTMLTag {
         $html_tag = parent::getHTMLTag($current_value);
 
@@ -36,7 +37,6 @@ class CheckBox extends Field {
 
         return $html_tag;
     }
-
 
     /**
      * @param $current_value

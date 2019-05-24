@@ -1,13 +1,11 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Models;
 
-
-use Rockschtar\TypedArrays\StringArray;
-
+/**
+ * Class Datalist
+ * @package Rockschtar\WordPress\Settings
+ */
 class Datalist {
 
     /**
@@ -15,28 +13,27 @@ class Datalist {
      */
     private $id;
 
-
     /**
-     * @var StringArray
+     * @var String[]
      */
     private $items;
 
     /**
      * Datalist constructor.
      * @param string $id
-     * @param StringArray $items
+     * @param String[] $items
      */
-    public function __construct(string $id = null, StringArray $items = null) {
+    public function __construct(string $id = null, array $items = []) {
         $this->id = $id;
-        $this->items = $items ?? new StringArray();
+        $this->items = $items;
     }
 
     /**
      * @param string $id
-     * @param StringArray|null $items
+     * @param String[] $items
      * @return static
      */
-    public static function create(string $id = null, StringArray $items = null) {
+    public static function create(string $id = null, array $items = []) {
         $class = static::class;
         return new $class($id, $items);
     }
@@ -46,10 +43,14 @@ class Datalist {
      * @return Datalist
      */
     public function addItem(string $item): Datalist {
-        $this->items->append($item);
+        $this->items[] = $item;
         return $this;
     }
 
+    /**
+     * @param string $id
+     * @return string
+     */
     public function getHTML(string $id): string {
 
         $datalist_id = $this->getId() ?? 'datalist_' . $id;
@@ -81,20 +82,19 @@ class Datalist {
     }
 
     /**
-     * @return StringArray
+     * @return String[]
      */
-    public function getItems(): StringArray {
+    public function getItems(): array {
         return $this->items;
     }
 
     /**
-     * @param StringArray $items
+     * @param String[] $items
      * @return Datalist
      */
-    public function setItems(StringArray $items): Datalist {
+    public function setItems(array $items): Datalist {
         $this->items = $items;
         return $this;
     }
-
 
 }

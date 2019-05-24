@@ -1,31 +1,25 @@
 <?php
-/**
- * @author: StefanHelmer
- */
-
 namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
-use Rockschtar\WordPress\Settings\Models\FieldListItem;
+use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
 
+/**
+ * Class CheckBoxList
+ * @package Rockschtar\WordPress\Settings
+ */
 class CheckBoxList extends Field {
 
     /**
-     * @var FieldListItem[]
+     * @var SelectBoxItem[]
      */
     private $items = [];
 
     /**
-     * @param FieldListItem[] $items
+     * @param SelectBoxItem $item
      * @return CheckBoxList
      */
-    public function setItems(array $items): CheckBoxList {
-        $this->items = $items;
-        return $this;
-    }
-
-
-    public function addItem(FieldListItem $item): CheckBoxList {
+    public function addItem(SelectBoxItem $item): CheckBoxList {
         $this->items[] = $item;
 
         return $this;
@@ -69,7 +63,7 @@ class CheckBoxList extends Field {
     }
 
     /**
-     * @return FieldListItem[]
+     * @return SelectBoxItem[]
      */
     public function getItems(): array {
         return $this->items;

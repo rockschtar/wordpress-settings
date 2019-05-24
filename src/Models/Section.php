@@ -1,42 +1,47 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Models;
 
-
+/**
+ * Class Section
+ * @package Rockschtar\WordPress\Settings
+ */
 class Section {
 
     /**
-     * @var
+     * @var string
      */
     private $id;
 
     /**
-     * @var
+     * @var string
      */
     private $title;
+
     /**
      * @var string|array
      */
     private $callback = array();
 
     /**
-     * @var Fields
+     * @var Field[]
      */
-    private $fields;
+    private $fields = [];
 
     /**
      * Section constructor.
+     * @param string $id
      */
-    public function __construct() {
-        $this->fields = new Fields();
+    public function __construct(string $id) {
+        $this->id = $id;
     }
 
-
-    public static function create() : Section {
-        return new self();
+    /**
+     * @param string $id
+     * @return Section
+     */
+    public static function create(string $id): Section {
+        return new self($id);
     }
 
     /**
@@ -88,9 +93,9 @@ class Section {
     }
 
     /**
-     * @return Fields
+     * @return Field[]
      */
-    public function getFields(): Fields {
+    public function getFields(): array {
         return $this->fields;
     }
 
@@ -103,8 +108,12 @@ class Section {
         return $this;
     }
 
+    /**
+     * @param Field $field
+     * @return Section
+     */
     public function addField(Field $field): Section {
-        $this->fields->append($field);
+        $this->fields[] = $field;
         return $this;
     }
 

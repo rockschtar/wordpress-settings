@@ -4,8 +4,7 @@
   "description": "WordPress Settings Utility/Helper for usage with roots/bedrock (mu-plugin)",
   "type": "wordpress-muplugin",
   "require": {
-    "php": ">=7.1",
-    "rockschtar/typed-arrays": "0.2.*"
+    "php": ">=7.1"
   },
   "autoload": {
     "files": [
@@ -17,5 +16,7 @@
     }
   },
   "require-dev": {
+    "phpunit/phpunit": "7.5.*",
+    "brain/monkey": "^2.2"
   }
 }

@@ -1,12 +1,13 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Button;
 
+/**
+ * Class AjaxButton
+ * @package Rockschtar\WordPress\Settings
+ */
 class AjaxButton extends Button {
 
     /**
@@ -40,17 +41,22 @@ class AjaxButton extends Button {
      */
     private $js_callback_done;
 
+    /**
+     * @param mixed $current_value
+     * @param array $args
+     * @return string
+     */
     public function inputHTML($current_value, array $args = []): string {
         ob_start();
         ?>
-        <button <?php disabled($this->isDisabled(), true); ?> type="button" id="<?php echo $this->getId(); ?>"
-                                                              data-wait-text="<?php echo $this->getButtonlabelWait(); ?>"
-                                                              data-label-success="<?php echo $this->getButtonLabelSuccess(); ?>"
-                                                              data-label-error="<?php echo $this->getButtonLabelError(); ?>"
-                                                              data-callback-success="<?php echo $this->getJSCallbackSuccess(); ?>"
-                                                              data-callback-error="<?php echo $this->getJSCallbackError(); ?>"
-                                                              data-callback-done="<?php echo $this->getJSCallbackDone(); ?>"
-                                                              class="button button-secondary rwps-ajax-button rwps-ajax-button-<?php $this->getId(); ?>"><?php echo $this->getButtonLabel(); ?></button>
+        <button <?php disabled($this->isDisabled()); ?> type="button" id="<?php echo $this->getId(); ?>"
+                                                        data-wait-text="<?php echo $this->getButtonlabelWait(); ?>"
+                                                        data-label-success="<?php echo $this->getButtonLabelSuccess(); ?>"
+                                                        data-label-error="<?php echo $this->getButtonLabelError(); ?>"
+                                                        data-callback-success="<?php echo $this->getJSCallbackSuccess(); ?>"
+                                                        data-callback-error="<?php echo $this->getJSCallbackError(); ?>"
+                                                        data-callback-done="<?php echo $this->getJSCallbackDone(); ?>"
+                                                        class="button button-secondary rwps-ajax-button rwps-ajax-button-<?php $this->getId(); ?>"><?php echo $this->getButtonLabel(); ?></button>
         <?php
 
         return ob_get_clean();

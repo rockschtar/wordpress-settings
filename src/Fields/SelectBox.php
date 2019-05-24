@@ -1,20 +1,24 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
-use Rockschtar\WordPress\Settings\Models\FieldListItem;
-use Rockschtar\WordPress\Settings\Models\FieldListItems;
+use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
+use function is_array;
 
+/**
+ * Class SelectBox
+ * @package Rockschtar\WordPress\Settings\Fields
+ */
 class SelectBox extends Field {
 
+    /**
+     * @var bool
+     */
     private $multiselect = false;
 
     /**
-     * @var FieldListItems
+     * @var SelectBoxItem[]
      */
     private $items = [];
 
@@ -23,12 +27,15 @@ class SelectBox extends Field {
      * @param string $id
      */
     public function __construct(string $id) {
-        $this->items = new FieldListItems();
         parent::__construct($id);
     }
 
-    public function addItem(FieldListItem $item): SelectBox {
-        $this->items->append($item);
+    /**
+     * @param SelectBoxItem $item
+     * @return SelectBox
+     */
+    public function addItem(SelectBoxItem $item): SelectBox {
+        $this->items[] = $item;
         return $this;
     }
 
@@ -44,7 +51,7 @@ class SelectBox extends Field {
         foreach ($this->getItems() as $item) {
             $selected = false;
 
-            if (\is_array($current_value)) {
+            if (is_array($current_value)) {
                 foreach ($current_value as $value) {
                     $selected = selected($item->getValue(), $value, false);
 
@@ -57,7 +64,7 @@ class SelectBox extends Field {
             $disabled = $this->isDisabled() ? true : $item->isDisabled();
 
 
-            $options .= sprintf('<option value="%s" %s %s>%s</option>', $item->getValue(), $selected, disabled($disabled, true, false), $item->getLabel());
+            $options .= sprintf('<option value="%s" %s %s>%s</option>', $item->getValue(), $selected, disabled($disabled, true, false), $item->getName());
         }
 
         if ($this->isMultiselect()) {
@@ -69,21 +76,11 @@ class SelectBox extends Field {
     }
 
     /**
-     * @return FieldListItems
+     * @return SelectBoxItem[]
      */
-    public function getItems(): FieldListItems {
+    public function getItems(): array {
         return $this->items;
     }
-
-    /**
-     * @param FieldListItems $items
-     * @return SelectBox
-     */
-    public function setItems(FieldListItems $items): SelectBox {
-        $this->items = $items;
-        return $this;
-    }
-
 
 
     /**
