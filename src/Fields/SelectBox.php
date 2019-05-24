@@ -59,6 +59,8 @@ class SelectBox extends Field {
                         break;
                     }
                 }
+            } else {
+                $selected = selected($item->getValue(), $current_value, false);
             }
 
             $disabled = $this->isDisabled() ? true : $item->isDisabled();
@@ -67,12 +69,14 @@ class SelectBox extends Field {
             $options .= sprintf('<option value="%s" %s %s>%s</option>', $item->getValue(), $selected, disabled($disabled, true, false), $item->getName());
         }
 
+        $name_array = '';
         if ($this->isMultiselect()) {
             $attr = ' multiple="multiple" ';
+            $name_array = '[]';
         }
 
+        return sprintf('<select name="%1$s' . $name_array . '" id="%1$s" %2$s>%3$s</select>', $this->getId(), $attr, $options);
 
-        return sprintf('<select name="%1$s[]" id="%1$s" %2$s>%3$s</select>', $this->getId(), $attr, $options);
     }
 
     /**
