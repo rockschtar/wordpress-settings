@@ -26,7 +26,6 @@ abstract class Asset {
      */
     private $src;
 
-
     /**
      * @var string|bool|null
      */
@@ -36,6 +35,11 @@ abstract class Asset {
      * @var array
      */
     private $deps;
+
+    /**
+     * @var AssetInline[]
+     */
+    protected $inlines = [];
 
     /**
      * Asset constructor.
@@ -120,6 +124,13 @@ abstract class Asset {
      */
     public function getType() {
         return $this->type;
+    }
+
+    /**
+     * @return AssetInline[]
+     */
+    public function getInlines(): array {
+        return $this->inlines;
     }
 
 
