@@ -38,6 +38,7 @@ class WordPressSettings {
         add_action('admin_init', array($this, 'setup_sections'));
         add_action('admin_init', array($this, 'setup_fields'));
 
+
         $ajax_button_script_added = false;
         $upload_script_added = false;
 
