@@ -56,6 +56,11 @@ abstract class Field {
     private $sanitize_callback;
 
     /**
+     * @var array
+     */
+    private $assets = [];
+
+    /**
      * @return bool
      */
     public function isDisabled(): bool {
@@ -258,6 +263,27 @@ abstract class Field {
      */
     public function setReadonly(bool $readonly): Field {
         $this->readonly = $readonly;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAssets(): array {
+        return $this->assets;
+    }
+
+    /**
+     * @param array $assets
+     * @return Field
+     */
+    public function setAssets(array $assets): Field {
+        $this->assets = $assets;
+        return $this;
+    }
+
+    public function addAsset(Asset $asset): Field {
+        $this->assets[] = $asset;
         return $this;
     }
 
