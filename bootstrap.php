@@ -11,8 +11,19 @@ if (function_exists('add_action')) {
             do_action('rswp_create_settings');
         }, 1);
 
+        add_action('admin_action_rwps-load-script', static function () {
+
+            $script = $_GET['script'];
+
+            echo file_get_contents(RWPS_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'AjaxButton.js');
+            exit;
+
+        });
+
         $rswp_create_settings_action_added = true;
     }
+
+
 }
 
 if (!function_exists('rswp_register_settings_page')) {
