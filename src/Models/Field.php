@@ -56,7 +56,12 @@ abstract class Field {
     private $sanitize_callback;
 
     /**
-     * @var array
+     * @var String[]
+     */
+    private $css_classes = [];
+
+    /**
+     * @var Asset[]
      */
     private $assets = [];
 
@@ -267,14 +272,14 @@ abstract class Field {
     }
 
     /**
-     * @return array
+     * @return Asset[]
      */
     public function getAssets(): array {
         return $this->assets;
     }
 
     /**
-     * @param array $assets
+     * @param Asset[] $assets
      * @return Field
      */
     public function setAssets(array $assets): Field {
@@ -282,6 +287,10 @@ abstract class Field {
         return $this;
     }
 
+    /**
+     * @param Asset $asset
+     * @return Field
+     */
     public function addAsset(Asset $asset): Field {
         $this->assets[] = $asset;
         return $this;
@@ -316,5 +325,40 @@ abstract class Field {
         $html_tag->setAttribute('value', $current_value);
         return apply_filters('rwps_html_tag', $html_tag, $this->getId());
     }
+
+    /**
+     * @return String[]
+     */
+    public function getCssClasses(): array {
+        $this->css_classes = apply_filters('rswp_field_css_classes', $this->css_classes, $this->getId());
+        $this->css_classes = apply_filters('rswp_field_css_classes-' . $this->getId(), $this->css_classes);
+        return $this->css_classes;
+    }
+
+    /**
+     * @param string $css_class
+     * @return static
+     */
+    public function addCssClass(string $css_class) {
+        $this->css_classes[] = $css_class;
+        return $this;
+    }
+
+    /**
+     * @return String[]
+     */
+    public function getCssClassesAsString(): string {
+        return implode(', ', $this->css_classes);
+    }
+
+    /**
+     * @param String[] $css_classes
+     * @return Field
+     */
+    public function setCssClasses(array $css_classes): Field {
+        $this->css_classes = $css_classes;
+        return $this;
+    }
+
 
 }
