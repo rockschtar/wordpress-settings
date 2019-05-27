@@ -43,5 +43,10 @@ class AssetScript extends Asset {
         return $this;
     }
 
+    public function addInlineScript(string $data, string $position = 'after'): AssetScript {
+        $this->inlines[] = new AssetInlineScript($this->getHandle(), $data, $position);
+        return $this;
+    }
+
 
 }

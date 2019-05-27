@@ -75,7 +75,7 @@ class SelectBox extends Field {
             $name_array = '[]';
         }
 
-        return sprintf('<select name="%1$s' . $name_array . '" id="%1$s" %2$s>%3$s</select>', $this->getId(), $attr, $options);
+        return sprintf('<select name="%1$s' . $name_array . '" id="%1$s" %2$s class="%3$s">%4$s</select>', $this->getId(), $attr, $this->getCssClassesAsString(), $options);
 
     }
 

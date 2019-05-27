@@ -60,6 +60,7 @@ class WordPressSettings {
         foreach ($this->getPage()->getSections() as $section) {
 
             foreach ($section->getFields() as $field) {
+
                 if ($upload_script_added === false && is_a($field, Upload::class)) {
                     add_action('admin_footer', array($this, 'media_fields'));
                     add_action('admin_enqueue_scripts', 'wp_enqueue_media');
@@ -118,9 +119,7 @@ class WordPressSettings {
             add_action('admin_footer-' . $this->hook_suffix, $this->getPage()->getAdminFooterHook());
         }
 
-        if (count($this->getPage()->getAssets()) > 0) {
-            add_action('admin_enqueue_scripts', array(&$this, 'admin_enqueue_scripts'));
-        }
+        add_action('admin_enqueue_scripts', array(&$this, 'admin_enqueue_scripts'));
 
     }
 
@@ -468,6 +467,25 @@ class WordPressSettings {
     final public function admin_enqueue_scripts($hook): void {
 
         if ($this->getHookSuffix() === $hook) {
+
+            foreach ($this->getPage()->getSections() as $section) {
+
+                foreach ($section->getFields() as $field) {
+
+                    foreach ($field->getAssets() as $asset) {
+                        if ($asset instanceof AssetScript) {
+                            wp_enqueue_script($asset->getHandle(), $asset->getSrc(), $asset->getDeps(), $asset->getVer(), $asset->isInFooter());
+                            foreach ($asset->getInlines() as $inline_script) {
+                                wp_add_inline_script($inline_script->getHandle(), $inline_script->getData(), $inline_script->getPosition());
+                            }
+                        }
+
+                        if ($asset instanceof AssetStyle) {
+                            wp_enqueue_style($asset->getHandle(), $asset->getSrc(), $asset->getDeps(), $asset->getVer(), $asset->getMedia());
+                        }
+                    }
+                }
+            }
 
             foreach ($this->getPage()->getAssets() as $asset) {
 
