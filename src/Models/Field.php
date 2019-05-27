@@ -177,13 +177,13 @@ abstract class Field {
      * @return string
      */
     final public function output($current_value, array $args = []): string {
-        $output = apply_filters('rwps-field-html', $this->inputHTML($current_value, $args), $this->getId());
+        $output = apply_filters('rwps_field_html', $this->inputHTML($current_value, $args), $this->getId());
         if (!empty($this->getDescription())) {
             $output .= sprintf('<p class="description">%s</p>', $this->getDescription());
 
         }
-        $output = apply_filters('rwps-field', $output, $this->getId());
-        $output = apply_filters('rwps-field-' . $this->getId(), $output);
+        $output = apply_filters('rwps_field', $output, $this->getId());
+        $output = apply_filters('rwps_field-' . $this->getId(), $output);
 
         return $output;
     }
@@ -330,8 +330,8 @@ abstract class Field {
      * @return String[]
      */
     public function getCssClasses(): array {
-        $this->css_classes = apply_filters('rswp_field_css_classes', $this->css_classes, $this->getId());
-        $this->css_classes = apply_filters('rswp_field_css_classes-' . $this->getId(), $this->css_classes);
+        $this->css_classes = apply_filters('rwps_field_css_classes', $this->css_classes, $this->getId());
+        $this->css_classes = apply_filters('rwps_field_css_classes-' . $this->getId(), $this->css_classes);
         return $this->css_classes;
     }
 
