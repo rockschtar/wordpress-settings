@@ -7,6 +7,7 @@ namespace Rockschtar\WordPress\Settings\Controller;
 
 use Rockschtar\WordPress\Settings\Fields\AjaxButton;
 use Rockschtar\WordPress\Settings\Fields\Upload;
+use Rockschtar\WordPress\Settings\Models\Asset;
 use Rockschtar\WordPress\Settings\Models\AssetScript;
 use Rockschtar\WordPress\Settings\Models\AssetStyle;
 use Rockschtar\WordPress\Settings\Models\Field;
@@ -38,15 +39,9 @@ class WordPressSettings {
         add_action('admin_init', array($this, 'setup_sections'));
         add_action('admin_init', array($this, 'setup_fields'));
 
-
-        $ajax_button_script_added = false;
         $upload_script_added = false;
 
         foreach ($this->getPage()->getButtons() as $button) {
-            if ($ajax_button_script_added === false && is_a($button, AjaxButton::class)) {
-                add_action('admin_footer', array(&$this, 'ajax_button_script'));
-                $ajax_button_script_added = true;
-            }
 
             if (is_a($button, AjaxButton::class)) {
                 /* @var AjaxButton $field */
@@ -65,11 +60,6 @@ class WordPressSettings {
                     add_action('admin_footer', array($this, 'media_fields'));
                     add_action('admin_enqueue_scripts', 'wp_enqueue_media');
                     $upload_script_added = true;
-                }
-
-                if ($ajax_button_script_added === false && is_a($field, AjaxButton::class)) {
-                    add_action('admin_footer', array(&$this, 'ajax_button_script'));
-                    $ajax_button_script_added = true;
                 }
 
                 if (is_a($field, AjaxButton::class)) {
@@ -222,133 +212,6 @@ class WordPressSettings {
         echo $field->output($current_field_value, $args);
     }
 
-
-    final public function ajax_button_script(): void {
-        ?>
-        <script>
-            jQuery(document).ready(function ($) {
-
-                var RWPSAjaxButtons = (function () {
-
-                    var ajax_nonce = '<?php echo wp_create_nonce('rwps-ajax-button-nonce'); ?>';
-
-                    function init() {
-
-                        jQuery('.rwps-ajax-button').bind('click', function () {
-
-                            var button = $(this);
-
-                            var button_text = button.html();
-                            var label_wait = button.data('wait-text');
-                            var label_success = button.data('label-success');
-                            var label_error = button.data('label-success');
-                            var callback_success = button.data('callback-success');
-                            var callback_error = button.data('callback-error');
-                            var callback_done = button.data('callback-done');
-
-                            var field_data = {};
-                            var form = button.closest('form');
-                            var fields = form.find('input, select');
-                            var excluded_fields = ['action', '_wpnonce', '_wp_http_referer', 'submit'];
-
-                            fields.each(function () {
-                                var name = $(this).attr('name');
-                                var id = $(this).attr('id');
-                                var value = $(this).val();
-                                if (jQuery.inArray(name, excluded_fields) === -1) {
-
-                                    if (id === undefined) {
-                                        id = name;
-                                    }
-
-                                    field_data[id] = value;
-                                }
-                            });
-
-                            button.html(label_wait);
-                            button.attr("disabled", "disabled");
-
-                            jQuery.ajax({
-                                type: 'POST',
-                                url: ajaxurl,
-                                dataType: 'json',
-                                data: {
-                                    nonce: ajax_nonce,
-                                    action: 'rwps_ajax_button_' + button.attr('id'),
-                                    fields: field_data
-                                }
-
-                            }).fail(function (jqXHR, textStatus, errorThrown) {
-                                if (label_error === '') {
-                                    if (typeof jqXHR.responseJSON === 'object' && typeof jqXHR.responseJSON.data === 'string') {
-                                        button.html(jqXHR.responseJSON.data);
-                                    } else {
-                                        button.html(button_text);
-                                    }
-                                } else {
-                                    button.html(label_error);
-                                }
-
-                                if (callback_error !== '' && callback_error !== undefined) {
-                                    executeCallback(callback_error, window, jqXHR, textStatus, errorThrown);
-                                }
-                            }).done(function (response, textStatus, jqXHR) {
-                                if (label_success === '') {
-
-                                    if (typeof response.data === 'string') {
-                                        button.html(response.data);
-                                    } else {
-                                        button.html(button_text);
-                                    }
-
-                                } else {
-                                    button.html(label_success);
-                                }
-
-                                if (callback_success !== '' && callback_success !== undefined) {
-                                    executeCallback(callback_success, window, response, textStatus, jqXHR)
-                                }
-
-                            }).always(function (data_jqXHR, textStatus, jqXHR_errorThrown) {
-                                setTimeout(function () {
-                                    button.removeAttr('disabled');
-                                    button.html(button_text);
-                                }, 3000);
-
-
-                                if (callback_done !== '' && callback_done !== undefined) {
-                                    executeCallback(callback_done, window, data_jqXHR, textStatus, jqXHR_errorThrown)
-                                }
-                            });
-                        });
-
-                    }
-
-                    function executeCallback(callback, context) {
-
-                        var args = Array.prototype.slice.call(arguments, 2);
-                        var namespaces = callback.split(".");
-                        var func = namespaces.pop();
-                        for (var i = 0; i < namespaces.length; i++) {
-                            context = context[namespaces[i]];
-                        }
-                        return context[func].apply(context, args);
-
-
-                    }
-
-                    return {
-                        init: init
-                    }
-
-                })();
-
-                RWPSAjaxButtons.init();
-            });
-        </script>
-        <?php
-    }
-
     final public function media_fields(): void {
         ?>
         <script>
@@ -464,40 +327,54 @@ class WordPressSettings {
         return $this->hook_suffix;
     }
 
+
+    public function enqueueAsset(Asset $asset): void {
+        if ($asset instanceof AssetScript) {
+            wp_enqueue_script($asset->getHandle(), $asset->getSrc(), $asset->getDeps(), $asset->getVer(), $asset->isInFooter());
+            foreach ($asset->getInlines() as $inline_script) {
+                wp_add_inline_script($inline_script->getHandle(), $inline_script->getData(), $inline_script->getPosition());
+            }
+
+            if ($asset->getLocalize()) {
+                wp_localize_script($asset->getHandle(), $asset->getLocalize()
+                                                              ->getObjectName(), $asset->getLocalize()
+                                                                                       ->getL10n());
+            }
+
+        }
+
+        if ($asset instanceof AssetStyle) {
+            wp_enqueue_style($asset->getHandle(), $asset->getSrc(), $asset->getDeps(), $asset->getVer(), $asset->getMedia());
+        }
+    }
+
     final public function admin_enqueue_scripts($hook): void {
 
         if ($this->getHookSuffix() === $hook) {
 
             foreach ($this->getPage()->getSections() as $section) {
-
                 foreach ($section->getFields() as $field) {
-
                     foreach ($field->getAssets() as $asset) {
-                        if ($asset instanceof AssetScript) {
-                            wp_enqueue_script($asset->getHandle(), $asset->getSrc(), $asset->getDeps(), $asset->getVer(), $asset->isInFooter());
-                            foreach ($asset->getInlines() as $inline_script) {
-                                wp_add_inline_script($inline_script->getHandle(), $inline_script->getData(), $inline_script->getPosition());
-                            }
-                        }
-
-                        if ($asset instanceof AssetStyle) {
-                            wp_enqueue_style($asset->getHandle(), $asset->getSrc(), $asset->getDeps(), $asset->getVer(), $asset->getMedia());
-                        }
+                        $this->enqueueAsset($asset);
                     }
                 }
             }
 
+            foreach ($this->getPage()->getFields() as $field) {
+                foreach ($field->getAssets() as $asset) {
+                    $this->enqueueAsset($asset);
+                }
+            }
+
+            foreach ($this->getPage()->getButtons() as $button) {
+                foreach ($button->getAssets() as $asset) {
+                    $this->enqueueAsset($asset);
+                }
+            }
+
+
             foreach ($this->getPage()->getAssets() as $asset) {
-
-                if (is_a($asset, AssetScript::class)) {
-                    /* @var AssetScript $asset */
-                    wp_enqueue_script($asset->getHandle(), $asset->getSrc(), $asset->getSrc(), $asset->getVer(), $asset->isInFooter());
-                }
-
-                if (is_a($asset, AssetStyle::class)) {
-                    /* @var AssetStyle $asset */
-                    wp_enqueue_style($asset->getHandle(), $asset->getSrc(), $asset->getSrc(), $asset->getVer(), $asset->getMedia());
-                }
+                $this->enqueueAsset($asset);
             }
         }
     }
