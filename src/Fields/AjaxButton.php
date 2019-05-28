@@ -2,6 +2,7 @@
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
+use Rockschtar\WordPress\Settings\Models\AssetScript;
 use Rockschtar\WordPress\Settings\Models\Button;
 
 /**
@@ -40,6 +41,14 @@ class AjaxButton extends Button {
      * @var string|null
      */
     private $js_callback_done;
+
+    public function __construct($id) {
+        parent::__construct($id);
+        $ajax_button_asset_script = new AssetScript('rwps-ajax-button', admin_url('?action=rwps-load-script&script=AjaxButton.js'), false, ['jquery']);
+        $ajax_button_asset_script->addLocalize('rwps_ajax_button', ['nonce' => wp_create_nonce('rwps-ajax-button-nonce')]);
+        $this->addAsset($ajax_button_asset_script);
+    }
+
 
     /**
      * @param mixed $current_value

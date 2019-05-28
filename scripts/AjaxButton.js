@@ -2,9 +2,7 @@ jQuery(document).ready(function ($) {
 
     var RWPSAjaxButtons = (function () {
 
-        var ajax_nonce = '<?php echo wp_create_nonce('
-        rwps - ajax - button - nonce
-        '); ?>';
+        var ajax_nonce = rwps_ajax_button.nonce;
 
         function init() {
 

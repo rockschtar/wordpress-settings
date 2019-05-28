@@ -7,15 +7,19 @@ if (function_exists('add_action')) {
     global $rswp_create_settings_action_added;
 
     if (!$rswp_create_settings_action_added) {
-        add_action('_admin_menu', static function () {
-            do_action('rswp_create_settings');
+        add_action('wp_loaded', static function () {
+
+            if (is_admin()) {
+                do_action('rswp_create_settings');
+            }
         }, 1);
 
         add_action('admin_action_rwps-load-script', static function () {
 
-            $script = $_GET['script'];
-
-            echo file_get_contents(RWPS_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'AjaxButton.js');
+            /** @noinspection ProperNullCoalescingOperatorUsageInspection */
+            $script = $_GET['script'] ?? '';
+            $file = __DIR__ . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . $script;
+            echo file_get_contents($file);
             exit;
 
         });
