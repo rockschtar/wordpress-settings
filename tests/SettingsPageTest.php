@@ -12,11 +12,12 @@ use function Brain\Monkey\setUp;
 use function Brain\Monkey\tearDown;
 use PHPUnit\Framework\TestCase;
 use Rockschtar\WordPress\Settings\Fields\Textfield;
+use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Section;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
 
 
-class WordPressIntegrationTest extends TestCase {
+class SettingsPageTest extends TestCase {
 
     public function setUp(): void {
         setUp();
@@ -51,15 +52,12 @@ class WordPressIntegrationTest extends TestCase {
      * @return SettingsPage
      */
     public function testSection(SettingsPage $settingsPage): SettingsPage {
-
         $section = Section::create('ut-section');
         $this->assertEquals('ut-section', $section->getId());
         $settingsPage->addSection($section);
 
         return $settingsPage;
-
     }
-
 
     /**
      * @depends testSettingsPage
@@ -79,14 +77,31 @@ class WordPressIntegrationTest extends TestCase {
         $textField->setDescription('Description');
         $this->assertStringContainsString('<p class="description">Description</p>', $textField->output(''));
 
+        $this->assertStringContainsString('<input type="text"', $textField->output(''));
+
+        $textField->setType(Textfield::COLOR);
+        $this->assertStringContainsString('<input type="color"', $textField->output(''));
+
+        $textField->setType(Textfield::PASSWORD);
+        $this->assertStringContainsString('<input type="password"', $textField->output(''));
+
+        $textField->setType(Textfield::DATE);
+        $this->assertStringContainsString('<input type="date"', $textField->output(''));
+
+        $textField->setType(Textfield::EMAIL);
+        $this->assertStringContainsString('<input type="email"', $textField->output(''));
+
+        $textField->setType(Textfield::TEXT);
+        $this->assertStringContainsString('<input type="text"', $textField->output(''));
+
+        $textField->setDatalist(Datalist::create('data-list', ['item1']));
+        $this->assertStringContainsString('<datalist id="data-list"><option value="item1"></datalist>', $textField->output(''));
+
         $textField->setLabel('Textfield');
 
         $section = $settingsPage->getSections()[0];
         $section->addField($textField);
     }
 
-    public function testAdminInit() {
-
-    }
 
 }
