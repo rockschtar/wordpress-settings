@@ -66,6 +66,8 @@ class SettingsPageTest extends TestCase {
     public function testTextfield(SettingsPage $settingsPage): void {
 
         $textField = Textfield::create('ut-testfield')->setLabel('UT Textfield');
+
+
         $this->assertStringContainsString('id="ut-testfield" name="ut-testfield"', $textField->output(''));
 
         $textField->setReadonly(true);
