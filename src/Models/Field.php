@@ -41,16 +41,6 @@ abstract class Field {
     private $override_option;
 
     /**
-     * @var bool
-     */
-    private $disabled = false;
-
-    /**
-     * @var bool
-     */
-    private $readonly = false;
-
-    /**
      * @var callable
      */
     private $sanitize_callback;
@@ -64,22 +54,6 @@ abstract class Field {
      * @var Asset[]
      */
     private $assets = [];
-
-    /**
-     * @return bool
-     */
-    public function isDisabled(): bool {
-        return $this->disabled;
-    }
-
-    /**
-     * @param bool $disabled
-     * @return static
-     */
-    public function setDisabled(bool $disabled) {
-        $this->disabled = $disabled;
-        return $this;
-    }
 
     /**
      * Field constructor.
@@ -254,21 +228,6 @@ abstract class Field {
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isReadonly(): bool {
-        return $this->readonly;
-    }
-
-    /**
-     * @param bool $readonly
-     * @return static
-     */
-    public function setReadonly(bool $readonly) {
-        $this->readonly = $readonly;
-        return $this;
-    }
 
     /**
      * @return Asset[]
@@ -301,29 +260,6 @@ abstract class Field {
      * @return string
      */
     abstract public function inputHTML($current_value, array $args = []): string;
-
-    /**
-     * @param $current_value
-     * @return HTMLTag
-     */
-    public function getHTMLTag($current_value): HTMLTag {
-        $html_tag = new HTMLTag('input');
-        $html_tag->setAttribute('type', 'text');
-
-        $html_tag->setAttribute('id', $this->getId());
-        $html_tag->setAttribute('name', $this->getId());
-
-        if ($this->isReadonly()) {
-            $html_tag->setAttribute('readonly');
-        }
-
-        if ($this->isDisabled()) {
-            $html_tag->setAttribute('disabled');
-        }
-
-        $html_tag->setAttribute('value', $current_value);
-        return apply_filters('rwps_html_tag', $html_tag, $this->getId());
-    }
 
     /**
      * @return String[]

@@ -3,12 +3,15 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
+use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 
 /**
  * Class CheckBoxList
  * @package Rockschtar\WordPress\Settings
  */
 class CheckBoxList extends Field {
+
+    use DisabledTrait;
 
     /**
      * @var SelectBoxItem[]

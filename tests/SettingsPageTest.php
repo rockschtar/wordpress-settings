@@ -8,14 +8,14 @@
 
 namespace Rockschtar\WordPress\Settings\Tests;
 
-use function Brain\Monkey\setUp;
-use function Brain\Monkey\tearDown;
 use PHPUnit\Framework\TestCase;
 use Rockschtar\WordPress\Settings\Fields\CheckBox;
 use Rockschtar\WordPress\Settings\Fields\Textfield;
 use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Section;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
+use function Brain\Monkey\setUp;
+use function Brain\Monkey\tearDown;
 
 
 class SettingsPageTest extends TestCase {
@@ -112,19 +112,15 @@ class SettingsPageTest extends TestCase {
     public function testCheckbox(SettingsPage $settingsPage): void {
 
         $checkbox = CheckBox::create('ut-testfield')->setLabel('UT Textfield');
-
-
         $this->assertStringContainsString('id="ut-testfield" name="ut-testfield"', $checkbox->output(''));
 
         $checkbox->setReadonly(true);
         $this->assertStringContainsString('onclick="return false;"', $checkbox->output(''));
 
-
         $checkbox->setDescription('Description');
         $this->assertStringContainsString('<p class="description">Description</p>', $checkbox->output(''));
 
-        $checkbox->setLabel('Textfield');
-
+        $checkbox->setLabel('Checkbox');
         $section = $settingsPage->getSections()[0];
         $section->addField($checkbox);
     }

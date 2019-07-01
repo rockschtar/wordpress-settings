@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Rockschtar\WordPress\Settings\Traits;
-
 
 trait ReadOnlyTrait {
 
@@ -23,7 +21,4 @@ trait ReadOnlyTrait {
         $this->readonly = $readonly;
         return $this;
     }
-
-
-
 }

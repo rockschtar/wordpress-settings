@@ -3,12 +3,15 @@
 namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
+use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 
 /**
  * Class WYSIWYG
  * @package Rockschtar\WordPress\Settings
  */
 class WYSIWYG extends Field {
+
+    use DisabledTrait;
 
     /**
      * @var array
