@@ -30,6 +30,11 @@ class CheckBox extends Field {
             $html_tag->setAttribute('checked');
         }
 
+        if($this->isReadonly()) {
+            $html_tag->removeAttribute('readonly');
+            $html_tag->setAttribute('onclick', 'return false;');
+        }
+
         $html_tag->setAttribute('value', $this->getValue());
 
         return apply_filters('rwps_html_tag', $html_tag, $this->getId());

@@ -11,6 +11,7 @@ namespace Rockschtar\WordPress\Settings\Tests;
 use function Brain\Monkey\setUp;
 use function Brain\Monkey\tearDown;
 use PHPUnit\Framework\TestCase;
+use Rockschtar\WordPress\Settings\Fields\CheckBox;
 use Rockschtar\WordPress\Settings\Fields\Textfield;
 use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Section;
@@ -55,12 +56,11 @@ class SettingsPageTest extends TestCase {
         $section = Section::create('ut-section');
         $this->assertEquals('ut-section', $section->getId());
         $settingsPage->addSection($section);
-
         return $settingsPage;
     }
 
     /**
-     * @depends testSettingsPage
+     * @depends testSection
      * @param SettingsPage $settingsPage
      */
     public function testTextfield(SettingsPage $settingsPage): void {
@@ -105,5 +105,27 @@ class SettingsPageTest extends TestCase {
         $section->addField($textField);
     }
 
+    /**
+     * @depends testSection
+     * @param SettingsPage $settingsPage
+     */
+    public function testCheckbox(SettingsPage $settingsPage): void {
 
+        $checkbox = CheckBox::create('ut-testfield')->setLabel('UT Textfield');
+
+
+        $this->assertStringContainsString('id="ut-testfield" name="ut-testfield"', $checkbox->output(''));
+
+        $checkbox->setReadonly(true);
+        $this->assertStringContainsString('onclick="return false;"', $checkbox->output(''));
+
+
+        $checkbox->setDescription('Description');
+        $this->assertStringContainsString('<p class="description">Description</p>', $checkbox->output(''));
+
+        $checkbox->setLabel('Textfield');
+
+        $section = $settingsPage->getSections()[0];
+        $section->addField($checkbox);
+    }
 }
