@@ -4,6 +4,7 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
+use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
 
 /**
  * Class CheckBox
@@ -26,16 +27,12 @@ class CheckBox extends Field {
         $html_tag->setAttribute('type', 'checkbox');
 
         if ($this->getValue() === $current_value) {
-            $html_tag->setAttribute('checked', null);
+            $html_tag->setAttribute('checked');
         }
 
         $html_tag->setAttribute('value', $this->getValue());
 
-        if ($this->isReadonly()) {
-            $html_tag->setAttribute('disabled', null);
-        }
-
-        return $html_tag;
+        return apply_filters('rwps_html_tag', $html_tag, $this->getId());
     }
 
     /**

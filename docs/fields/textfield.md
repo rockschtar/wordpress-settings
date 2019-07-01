@@ -7,7 +7,7 @@ Type: ```checkbox```
 |  Method | Type | Description |
 |--|--|--|
 |  setId* | string | 	A unique ID for this option. This ID will be used to get the value for this option.|
-|  setLabel| string | The label of the option, for display purposes only.|
+|  setLabel | string | The label of the option, for display purposes only.|
 |  setDescription | string  | The description to display together with this option. |
 |  setValue| string  | The value of the checkbox |
 |  setSanitizeCallback| callable | Sets the sanitize-callback function |
