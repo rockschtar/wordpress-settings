@@ -1,13 +1,6 @@
 ### Settings Fields
 
-## Texfield
-
-```php
- $textField = Textfield::create('my-textfield');
- $textField->setSize(100);
- $textField->setPlaceholder('My Placeholder');
- ```
-       
+## [Textfield](/fields/checkbox)
 
 ### Email
 
