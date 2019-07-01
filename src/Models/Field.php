@@ -13,7 +13,7 @@ abstract class Field {
     /**
      * @var string
      */
-    private $label;
+    private $label = '';
 
     /**
      * @var string
@@ -23,7 +23,7 @@ abstract class Field {
     /**
      * @var string
      */
-    private $description;
+    private $description = '';
 
     /**
      * @var array
@@ -77,7 +77,6 @@ abstract class Field {
      * @return static
      */
     public function setDisabled(bool $disabled) {
-
         $this->disabled = $disabled;
         return $this;
     }
@@ -140,17 +139,17 @@ abstract class Field {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getDescription() {
+    public function getDescription(): string {
         return $this->description;
     }
 
     /**
-     * @param mixed $description
+     * @param string $description
      * @return static
      */
-    public function setDescription($description) {
+    public function setDescription(string $description) {
         $this->description = $description;
         return $this;
     }
@@ -202,7 +201,7 @@ abstract class Field {
     public function setDefaultOption($default_option) {
         $this->default_option = $default_option;
 
-        add_filter('default_option_' . $this->getId(), static function ($default, $id, $passed_default) use ($default_option) {
+        add_filter('default_option_' . $this->getId(), static function ($default) use ($default_option) {
 
             if ($default === false) {
                 return $default_option;
@@ -210,7 +209,7 @@ abstract class Field {
 
             return $default;
 
-        }, 10, 3);
+        }, 10, 1);
 
         return $this;
     }
@@ -264,9 +263,9 @@ abstract class Field {
 
     /**
      * @param bool $readonly
-     * @return Field
+     * @return static
      */
-    public function setReadonly(bool $readonly): Field {
+    public function setReadonly(bool $readonly) {
         $this->readonly = $readonly;
         return $this;
     }
@@ -315,11 +314,11 @@ abstract class Field {
         $html_tag->setAttribute('name', $this->getId());
 
         if ($this->isReadonly()) {
-            $html_tag->setAttribute('readonly', null);
+            $html_tag->setAttribute('readonly');
         }
 
         if ($this->isDisabled()) {
-            $html_tag->setAttribute('disabled', null);
+            $html_tag->setAttribute('disabled');
         }
 
         $html_tag->setAttribute('value', $current_value);
@@ -359,6 +358,4 @@ abstract class Field {
         $this->css_classes = $css_classes;
         return $this;
     }
-
-
 }
