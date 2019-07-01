@@ -41,7 +41,15 @@ class HTMLTag {
         $this->attributes[] = new Attribute($name, $value);
 
         return $this;
+    }
 
+    public function removeAttribute(string $attribute) : HTMLTag {
+
+        if(array_key_exists($attribute, $this->attributes)) {
+            unset($this->attributes[$attribute]);
+        }
+
+        return $this;
     }
 
     public function buildTag(): string {
