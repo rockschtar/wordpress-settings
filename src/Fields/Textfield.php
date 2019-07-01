@@ -5,12 +5,21 @@ namespace Rockschtar\WordPress\Settings\Fields;
 use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
+use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
+use Rockschtar\WordPress\Settings\Traits\PlaceholderTrait;
+use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
 
 /**
  * Class Textfield
  * @package Rockschtar\WordPress\Settings
  */
 class Textfield extends Field {
+
+    use DisabledTrait;
+
+    use ReadOnlyTrait;
+
+    use PlaceholderTrait;
 
     public const TEXT = 'text';
     public const COLOR = 'color';
@@ -22,11 +31,6 @@ class Textfield extends Field {
      * @var string
      */
     private $type = self::TEXT;
-
-    /**
-     * @var String|null
-     */
-    private $placeholder;
 
     /**
      * @var int|null
@@ -59,13 +63,29 @@ class Textfield extends Field {
      * @param $current_value
      * @return HTMLTag
      */
-    public function getHTMLTag($current_value): HTMLTag {
-        $html_tag = parent::getHTMLTag($current_value);
+    protected function getHTMLTag($current_value): HTMLTag {
+
+        $html_tag = new HTMLTag('input');
+        $html_tag->setAttribute('type', 'text');
+
+        $html_tag->setAttribute('id', $this->getId());
+        $html_tag->setAttribute('name', $this->getId());
+
+        if ($this->isReadonly()) {
+            $html_tag->setAttribute('readonly');
+        }
+
+        if ($this->isDisabled()) {
+            $html_tag->setAttribute('disabled');
+        }
+
+        $html_tag->setAttribute('value', $current_value);
+
         $html_tag->setAttribute('list', $this->getDatalistId());
         $html_tag->setAttribute('type', $this->getType());
         $html_tag->setAttribute('placeholder', $this->getPlaceholder());
         $html_tag->setAttribute('size', $this->getSize());
-        return $html_tag;
+        return apply_filters('rwps_html_tag', $html_tag, $this->getId());
     }
 
     /**

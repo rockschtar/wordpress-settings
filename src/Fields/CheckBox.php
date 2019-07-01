@@ -4,6 +4,7 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
+use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
 
 /**
@@ -11,6 +12,10 @@ use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
  * @package Rockschtar\WordPress\Settings
  */
 class CheckBox extends Field {
+
+    use DisabledTrait;
+
+    use ReadOnlyTrait;
 
     /**
      * @var String|null
@@ -21,13 +26,18 @@ class CheckBox extends Field {
      * @param $current_value
      * @return HTMLTag
      */
-    public function getHTMLTag($current_value): HTMLTag {
-        $html_tag = parent::getHTMLTag($current_value);
+    protected function getHTMLTag($current_value): HTMLTag {
+        $html_tag = new HTMLTag('checkbox');
 
-        $html_tag->setAttribute('type', 'checkbox');
+        $html_tag->setAttribute('id', $this->getId());
+        $html_tag->setAttribute('name', $this->getId());
 
         if ($this->getValue() === $current_value) {
             $html_tag->setAttribute('checked');
+        }
+
+        if ($this->isDisabled()) {
+            $html_tag->setAttribute('disabled');
         }
 
         if($this->isReadonly()) {
