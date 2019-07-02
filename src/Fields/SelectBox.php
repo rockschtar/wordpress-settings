@@ -4,6 +4,8 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
+use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
+use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
 use function is_array;
 
 /**
@@ -11,6 +13,10 @@ use function is_array;
  * @package Rockschtar\WordPress\Settings\Fields
  */
 class SelectBox extends Field {
+
+    use ReadOnlyTrait;
+
+    use DisabledTrait;
 
     /**
      * @var bool
