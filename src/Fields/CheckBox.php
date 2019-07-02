@@ -27,27 +27,28 @@ class CheckBox extends Field {
      * @return HTMLTag
      */
     protected function getHTMLTag($current_value): HTMLTag {
-        $html_tag = new HTMLTag('checkbox');
+        $htmlTag = new HTMLTag('input');
 
-        $html_tag->setAttribute('id', $this->getId());
-        $html_tag->setAttribute('name', $this->getId());
+        $htmlTag->setAttribute('type', 'checkbox');
+        $htmlTag->setAttribute('id', $this->getId());
+        $htmlTag->setAttribute('name', $this->getId());
 
         if ($this->getValue() === $current_value) {
-            $html_tag->setAttribute('checked');
+            $htmlTag->setAttribute('checked');
         }
 
         if ($this->isDisabled()) {
-            $html_tag->setAttribute('disabled');
+            $htmlTag->setAttribute('disabled');
         }
 
         if($this->isReadonly()) {
-            $html_tag->removeAttribute('readonly');
-            $html_tag->setAttribute('onclick', 'return false;');
+            $htmlTag->setAttribute('readonly');
+            $htmlTag->setAttribute('onclick', 'return false;');
         }
 
-        $html_tag->setAttribute('value', $this->getValue());
+        $htmlTag->setAttribute('value', $this->getValue());
 
-        return apply_filters('rwps_html_tag', $html_tag, $this->getId());
+        return $htmlTag;
     }
 
     /**
