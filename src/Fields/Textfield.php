@@ -5,6 +5,7 @@ namespace Rockschtar\WordPress\Settings\Fields;
 use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
+use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use Rockschtar\WordPress\Settings\Traits\PlaceholderTrait;
 use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
@@ -20,6 +21,8 @@ class Textfield extends Field {
     use ReadOnlyTrait;
 
     use PlaceholderTrait;
+
+    use AutofocusTrait;
 
     public const TEXT = 'text';
     public const COLOR = 'color';
