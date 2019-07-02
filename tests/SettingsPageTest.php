@@ -10,6 +10,7 @@ namespace Rockschtar\WordPress\Settings\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Rockschtar\WordPress\Settings\Fields\CheckBox;
+use Rockschtar\WordPress\Settings\Fields\SelectBox;
 use Rockschtar\WordPress\Settings\Fields\Textarea;
 use Rockschtar\WordPress\Settings\Fields\Textfield;
 use Rockschtar\WordPress\Settings\Models\Datalist;
@@ -121,6 +122,26 @@ class SettingsPageTest extends TestCase {
         $checkbox->setLabel('Checkbox');
         $section = $settingsPage->getSections()[0];
         $section->addField($checkbox);
+    }
+
+
+    /**
+     * @depends testSection
+     * @param SettingsPage $settingsPage
+     */
+    public function testSelectbox(SettingsPage $settingsPage): void {
+
+        $selectbox = SelectBox::create('ut-testfield')->setLabel('UT Textfield');
+        $this->assertStringContainsString('id="ut-testfield" name="ut-testfield"', $selectbox->output(''));
+
+        $this->assertReadonly($selectbox);
+        $this->assertAutofocus($selectbox);
+        $this->assertDisabled($selectbox);
+        $this->assertDescription($selectbox);
+
+        $selectbox->setLabel('Checkbox');
+        $section = $settingsPage->getSections()[0];
+        $section->addField($selectbox);
     }
 
     /**
