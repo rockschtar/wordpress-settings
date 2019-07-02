@@ -10,6 +10,7 @@ namespace Rockschtar\WordPress\Settings\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Rockschtar\WordPress\Settings\Fields\CheckBox;
+use Rockschtar\WordPress\Settings\Fields\Textarea;
 use Rockschtar\WordPress\Settings\Fields\Textfield;
 use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Section;
@@ -123,5 +124,43 @@ class SettingsPageTest extends TestCase {
         $checkbox->setLabel('Checkbox');
         $section = $settingsPage->getSections()[0];
         $section->addField($checkbox);
+    }
+
+    /**
+     * @depends testSection
+     * @param SettingsPage $settingsPage
+     */
+    public function testTextarea(SettingsPage $settingsPage): void {
+
+        $textarea = Textarea::create('ut-textarea')->setLabel('UT Textarea');
+        $this->assertStringContainsString('id="ut-textarea" name="ut-textarea"', $textarea->output(''));
+
+        $textarea->setRows(20);
+        $this->assertStringContainsString('rows="20"', $textarea->output(''));
+
+        $textarea->setCols(40);
+        $this->assertStringContainsString('cols="40"', $textarea->output(''));
+
+        $textarea->setReadonly(true);
+        $this->assertStringContainsString(' readonly ', $textarea->output(''));
+
+        $textarea->setDisabled(true);
+        $this->assertStringContainsString(' disabled ', $textarea->output(''));
+
+        $textarea->setAutofocus(true);
+        $this->assertStringContainsString(' autofocus ', $textarea->output(''));
+
+        $textarea->setPlaceholder('Write something');
+        $this->assertStringContainsString('placeholder="Write something"', $textarea->output(''));
+
+        $textarea->setDescription('Description');
+        $this->assertStringContainsString('<p class="description">Description</p>', $textarea->output(''));
+
+        $textarea->setDirname(true);
+        $this->assertStringContainsString('dirname="' . $textarea->getId() . '.dir"', $textarea->output(''));
+
+        $textarea->setLabel('Checkbox');
+        $section = $settingsPage->getSections()[0];
+        $section->addField($textarea);
     }
 }

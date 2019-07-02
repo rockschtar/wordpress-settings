@@ -56,17 +56,10 @@ class CheckBox extends Field {
      * @return string
      */
     public function inputHTML($current_value, array $args = []): string {
-        $html_tag = $this->getHTMLTag($current_value);
-
-        if ($this->isReadonly()) {
-            $hidden_tag = new HTMLTag('input');
-            $hidden_tag->setAttribute('type', 'hidden');
-            $hidden_tag->setAttribute('name', $this->getId());
-            $hidden_tag->setAttribute('value', $this->getValue());
-            return $html_tag->buildTag() . $hidden_tag->buildTag();
-        }
-
-        return $html_tag->buildTag();
+        $htmlTag = $this->getHTMLTag($current_value);
+        $html = apply_filters('rwps_html_tag', $htmlTag->buildTag());
+        $html = apply_filters('rwps_html_tag-' . $this->getId(), $html);
+        return $html;
     }
 
     /**

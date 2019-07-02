@@ -2,6 +2,7 @@
 namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
+use Rockschtar\WordPress\Settings\Models\HTMLTag;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use Rockschtar\WordPress\Settings\Traits\PlaceholderTrait;
 use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
@@ -148,29 +149,40 @@ class Textarea extends Field {
      */
     public function inputHTML($current_value, array $args = []): string {
 
-        $textareatTemplate = '<textarea id="{id}" name="{name}" rows="{rows}" cols="{cols}" {attributes}>{value}</textarea>';
-
-        $textareatTemplate = str_replace(array('{id}', '{name}', '{rows}', '{cols}', '{value}'), array($this->getId(),
-                                                                                                       $this->getId(),
-                                                                                                       $this->getRows(),
-                                                                                                       $this->getCols(),
-                                                                                                       $current_value), $textareatTemplate);
-        $attributes = [];
+        $htmlTag = new HTMLTag('textarea');
+        $htmlTag->setInnerHTML($current_value);
+        $htmlTag->setAttribute('id', $this->getId());
+        $htmlTag->setAttribute('name', $this->getId());
+        $htmlTag->setAttribute('rows', $this->getRows());
+        $htmlTag->setAttribute('cols', $this->getCols());
 
         if ($this->isAutofocus()) {
-            $attributes[] = 'autofocus';
+            $htmlTag->setAttribute('autofocus');
         }
 
         if ($this->isDirname()) {
-            $attributes[] = 'dirname="' . $this->getId() . '.dir"';
+            $htmlTag->setAttribute('dirname', $this->getId() . '.dir"');
         }
 
         if ($this->getMaxlength()) {
-            $attributes[] = 'maxlength="' . $this->getMaxlength() . '"';
+            $htmlTag->setAttribute('maxlength', $this->getMaxlength());
         }
 
-        $textarea = str_replace('{attributes}', implode(' ', $attributes), $textareatTemplate);
+        if ($this->isReadonly()) {
+            $htmlTag->setAttribute('readonly');
+        }
 
-        return $textarea;
+        if ($this->isDisabled()) {
+            $htmlTag->setAttribute('disabled');
+        }
+
+        if ($this->getPlaceholder()) {
+            $htmlTag->setAttribute('placeholder', $this->getPlaceholder());
+        }
+
+        $html = apply_filters('rwps_html_tag', $htmlTag->buildTag());
+        $html = apply_filters('rwps_html_tag-' . $this->getId(), $html);
+
+        return $html;
     }
 }
