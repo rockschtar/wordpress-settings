@@ -4,6 +4,7 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
+use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
 
@@ -16,6 +17,8 @@ class CheckBox extends Field {
     use DisabledTrait;
 
     use ReadOnlyTrait;
+
+    use AutofocusTrait;
 
     /**
      * @var String|null
@@ -39,6 +42,10 @@ class CheckBox extends Field {
 
         if ($this->isDisabled()) {
             $htmlTag->setAttribute('disabled');
+        }
+
+        if ($this->isAutofocus()) {
+            $htmlTag->setAttribute('autofocus');
         }
 
         if($this->isReadonly()) {
