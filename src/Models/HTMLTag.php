@@ -76,7 +76,7 @@ class HTMLTag {
 
         }
 
-        if ($this->getInnerHTML() || $this->isWithClosingTag()) {
+        if ($this->getInnerHTML() !== null || $this->isWithClosingTag()) {
             return sprintf('<' . $this->getTag() . ' %s>%s</' . $this->getTag() . '>', implode(' ', $attributes), $this->getInnerHTML());
         }
 
