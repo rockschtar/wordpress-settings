@@ -22,8 +22,10 @@ trait AutofocusTrait {
 
     /**
      * @param bool $autofocus
+     * @return static
      */
-    public function setAutofocus(bool $autofocus): void {
+    public function setAutofocus(bool $autofocus) {
         $this->autofocus = $autofocus;
+        return $this;
     }
 }
