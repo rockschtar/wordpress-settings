@@ -3,6 +3,7 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
+use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use Rockschtar\WordPress\Settings\Traits\PlaceholderTrait;
 use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
@@ -15,10 +16,7 @@ class Textarea extends Field {
 
     use PlaceholderTrait;
 
-    /**
-     * @var bool
-     */
-    private $autofocus = false;
+    use AutofocusTrait;
 
     /**
      * @var bool
@@ -44,22 +42,6 @@ class Textarea extends Field {
      * @var string
      */
     private $wrap;
-
-    /**
-     * @return bool
-     */
-    public function isAutofocus(): bool {
-        return $this->autofocus;
-    }
-
-    /**
-     * @param bool $autofocus
-     * @return Textarea
-     */
-    public function setAutofocus(bool $autofocus): Textarea {
-        $this->autofocus = $autofocus;
-        return $this;
-    }
 
     /**
      * @return int

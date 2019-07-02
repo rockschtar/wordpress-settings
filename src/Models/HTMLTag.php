@@ -81,8 +81,6 @@ class HTMLTag {
         }
 
         return sprintf('<' . $this->getTag() . ' %s />', implode(' ', $attributes));
-
-
     }
 
     /**
