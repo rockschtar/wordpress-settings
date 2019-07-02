@@ -10,9 +10,20 @@ class HTMLTag {
     private $tag;
 
     /**
+     * @var string|null
+     */
+    private $innerHTML;
+
+    /**
+     * @var bool
+     */
+    private $withClosingTag = false;
+
+    /**
      * @var Attribute[]
      */
     private $attributes;
+
 
     /**
      * HTMLTag constructor.
@@ -43,9 +54,9 @@ class HTMLTag {
         return $this;
     }
 
-    public function removeAttribute(string $attribute) : HTMLTag {
+    public function removeAttribute(string $attribute): HTMLTag {
 
-        if(array_key_exists($attribute, $this->attributes)) {
+        if (array_key_exists($attribute, $this->attributes)) {
             unset($this->attributes[$attribute]);
         }
 
@@ -65,7 +76,13 @@ class HTMLTag {
 
         }
 
+        if ($this->getInnerHTML() || $this->isWithClosingTag()) {
+            return sprintf('<' . $this->getTag() . ' %s>%s</' . $this->getTag() . '>', implode(' ', $attributes), $this->getInnerHTML());
+        }
+
         return sprintf('<' . $this->getTag() . ' %s />', implode(' ', $attributes));
+
+
     }
 
     /**
@@ -84,5 +101,32 @@ class HTMLTag {
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getInnerHTML(): ?string {
+        return $this->innerHTML;
+    }
+
+    /**
+     * @param string|null $innerHTML
+     */
+    public function setInnerHTML(?string $innerHTML): void {
+        $this->innerHTML = $innerHTML;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWithClosingTag(): bool {
+        return $this->withClosingTag;
+    }
+
+    /**
+     * @param bool $withClosingTag
+     */
+    public function setWithClosingTag(bool $withClosingTag): void {
+        $this->withClosingTag = $withClosingTag;
+    }
 
 }
