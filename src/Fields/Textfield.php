@@ -82,6 +82,10 @@ class Textfield extends Field {
             $html_tag->setAttribute('disabled');
         }
 
+        if ($this->isAutofocus()) {
+            $html_tag->setAttribute('autofocus');
+        }
+
         $html_tag->setAttribute('value', $current_value);
 
         $html_tag->setAttribute('list', $this->getDatalistId());
