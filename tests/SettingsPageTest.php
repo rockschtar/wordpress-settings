@@ -8,6 +8,7 @@
 
 namespace Rockschtar\WordPress\Settings\Tests;
 
+use Brain\Monkey\Functions;
 use PHPUnit\Framework\TestCase;
 use Rockschtar\WordPress\Settings\Fields\CheckBox;
 use Rockschtar\WordPress\Settings\Fields\SelectBox;
@@ -16,6 +17,7 @@ use Rockschtar\WordPress\Settings\Fields\Textfield;
 use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\Section;
+use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
 use function Brain\Monkey\setUp;
 use function Brain\Monkey\tearDown;
@@ -131,10 +133,19 @@ class SettingsPageTest extends TestCase {
      */
     public function testSelectbox(SettingsPage $settingsPage): void {
 
-        $selectbox = SelectBox::create('ut-testfield')->setLabel('UT Textfield');
-        $this->assertStringContainsString('id="ut-testfield" name="ut-testfield"', $selectbox->output(''));
+        $selectbox = SelectBox::create('ut-selectbox')->setLabel('UT Textfield');
+        $this->assertStringContainsString('id="ut-selectbox"', $selectbox->output(''));
+        $this->assertStringContainsString('name="ut-selectbox"', $selectbox->output(''));
 
-        $this->assertReadonly($selectbox);
+        $selectbox->addItem(new SelectBoxItem('hello', 'world', true));
+        $selectbox->addItem(new SelectBoxItem('value', 'item', true));
+
+        Functions\expect('selected')->with('hello')->andReturn(false);
+        Functions\expect('disabled')->andReturn(false);
+
+        $output = $selectbox->output('');
+
+
         $this->assertAutofocus($selectbox);
         $this->assertDisabled($selectbox);
         $this->assertDescription($selectbox);
