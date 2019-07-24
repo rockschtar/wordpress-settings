@@ -131,7 +131,7 @@ class WordPressSettings {
                 /* @var Field $field */
                 add_settings_field($field->getId(), $field->getLabel(), array($this, 'field'), $this->getPage()
                                                                                                     ->getId(), $section->getId(), ['field' => $field]);
-                $arguments = $field->getArguments();
+                $arguments = $field->getSanitizeArguments();
 
                 if (is_a($field, Upload::class)) {
 
