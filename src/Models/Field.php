@@ -28,7 +28,7 @@ abstract class Field {
     /**
      * @var array
      */
-    private $arguments = [];
+    private $sanitize_arguments = [];
 
     /**
      * @var mixed|null
@@ -131,17 +131,8 @@ abstract class Field {
     /**
      * @return array
      */
-    public function getArguments(): array {
-        return $this->arguments;
-    }
-
-    /**
-     * @param array $arguments
-     * @return static
-     */
-    public function setArguments(array $arguments) {
-        $this->arguments = $arguments;
-        return $this;
+    public function getSanitizeArguments(): array {
+        return $this->sanitize_arguments;
     }
 
     /**
@@ -175,15 +166,16 @@ abstract class Field {
     public function setDefaultOption($default_option) {
         $this->default_option = $default_option;
 
-        add_filter('default_option_' . $this->getId(), static function ($default) use ($default_option) {
-
+        $default_option_callback = static function ($default) use ($default_option) {
             if ($default === false) {
                 return $default_option;
             }
 
             return $default;
+        };
 
-        }, 10, 1);
+        remove_filter('default_option_' . $this->getId(), $default_option_callback, 10, 1);
+        add_filter('default_option_' . $this->getId(), $default_option_callback, 10, 1);
 
         return $this;
     }
@@ -221,10 +213,12 @@ abstract class Field {
 
     /**
      * @param callable $sanitize_callback
+     * @param array $arguments
      * @return static
      */
-    public function setSanitizeCallback(callable $sanitize_callback) {
+    public function setSanitizeCallback(callable $sanitize_callback, array $arguments = []) {
         $this->sanitize_callback = $sanitize_callback;
+        $this->sanitize_arguments = $arguments;
         return $this;
     }
 
