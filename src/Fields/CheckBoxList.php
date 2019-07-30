@@ -3,12 +3,15 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
+use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 
 /**
  * Class CheckBoxList
  * @package Rockschtar\WordPress\Settings
  */
 class CheckBoxList extends Field {
+
+    use DisabledTrait;
 
     /**
      * @var SelectBoxItem[]
@@ -56,7 +59,7 @@ class CheckBoxList extends Field {
             $disabled = $this->isDisabled() ? true : $item->isDisabled();
 
 
-            $options_markup .= sprintf('<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s %5$s %7$s /> %5$s</label><br/>', $this->getId(), $type, $item->getValue(), $checked, $item->getLabel(), $iterator, disabled($disabled, true, false));
+            $options_markup .= sprintf('<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s %5$s %7$s /> %5$s</label><br/>', $this->getId(), $type, $item->getValue(), $checked, $item->getName(), $iterator, disabled($disabled, true, false));
         }
 
         return sprintf('<fieldset>%s</fieldset>', $options_markup);

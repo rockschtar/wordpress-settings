@@ -13,7 +13,7 @@ abstract class Field {
     /**
      * @var string
      */
-    private $label;
+    private $label = '';
 
     /**
      * @var string
@@ -23,12 +23,12 @@ abstract class Field {
     /**
      * @var string
      */
-    private $description;
+    private $description = '';
 
     /**
      * @var array
      */
-    private $arguments = [];
+    private $sanitize_arguments = [];
 
     /**
      * @var mixed|null
@@ -39,16 +39,6 @@ abstract class Field {
      * @var mixed|null
      */
     private $override_option;
-
-    /**
-     * @var bool
-     */
-    private $disabled = false;
-
-    /**
-     * @var bool
-     */
-    private $readonly = false;
 
     /**
      * @var callable
@@ -64,23 +54,6 @@ abstract class Field {
      * @var Asset[]
      */
     private $assets = [];
-
-    /**
-     * @return bool
-     */
-    public function isDisabled(): bool {
-        return $this->disabled;
-    }
-
-    /**
-     * @param bool $disabled
-     * @return static
-     */
-    public function setDisabled(bool $disabled) {
-
-        $this->disabled = $disabled;
-        return $this;
-    }
 
     /**
      * Field constructor.
@@ -140,17 +113,17 @@ abstract class Field {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getDescription() {
+    public function getDescription(): string {
         return $this->description;
     }
 
     /**
-     * @param mixed $description
+     * @param string $description
      * @return static
      */
-    public function setDescription($description) {
+    public function setDescription(string $description) {
         $this->description = $description;
         return $this;
     }
@@ -158,17 +131,8 @@ abstract class Field {
     /**
      * @return array
      */
-    public function getArguments(): array {
-        return $this->arguments;
-    }
-
-    /**
-     * @param array $arguments
-     * @return static
-     */
-    public function setArguments(array $arguments) {
-        $this->arguments = $arguments;
-        return $this;
+    public function getSanitizeArguments(): array {
+        return $this->sanitize_arguments;
     }
 
     /**
@@ -202,15 +166,16 @@ abstract class Field {
     public function setDefaultOption($default_option) {
         $this->default_option = $default_option;
 
-        add_filter('default_option_' . $this->getId(), static function ($default, $id, $passed_default) use ($default_option) {
-
+        $default_option_callback = static function ($default) use ($default_option) {
             if ($default === false) {
                 return $default_option;
             }
 
             return $default;
+        };
 
-        }, 10, 3);
+        remove_filter('default_option_' . $this->getId(), $default_option_callback, 10, 1);
+        add_filter('default_option_' . $this->getId(), $default_option_callback, 10, 1);
 
         return $this;
     }
@@ -248,28 +213,15 @@ abstract class Field {
 
     /**
      * @param callable $sanitize_callback
+     * @param array $arguments
      * @return static
      */
-    public function setSanitizeCallback(callable $sanitize_callback) {
+    public function setSanitizeCallback(callable $sanitize_callback, array $arguments = []) {
         $this->sanitize_callback = $sanitize_callback;
+        $this->sanitize_arguments = $arguments;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isReadonly(): bool {
-        return $this->readonly;
-    }
-
-    /**
-     * @param bool $readonly
-     * @return Field
-     */
-    public function setReadonly(bool $readonly): Field {
-        $this->readonly = $readonly;
-        return $this;
-    }
 
     /**
      * @return Asset[]
@@ -304,29 +256,6 @@ abstract class Field {
     abstract public function inputHTML($current_value, array $args = []): string;
 
     /**
-     * @param $current_value
-     * @return HTMLTag
-     */
-    public function getHTMLTag($current_value): HTMLTag {
-        $html_tag = new HTMLTag('input');
-        $html_tag->setAttribute('type', 'text');
-
-        $html_tag->setAttribute('id', $this->getId());
-        $html_tag->setAttribute('name', $this->getId());
-
-        if ($this->isReadonly()) {
-            $html_tag->setAttribute('readonly', null);
-        }
-
-        if ($this->isDisabled()) {
-            $html_tag->setAttribute('disabled', null);
-        }
-
-        $html_tag->setAttribute('value', $current_value);
-        return apply_filters('rwps_html_tag', $html_tag, $this->getId());
-    }
-
-    /**
      * @return String[]
      */
     public function getCssClasses(): array {
@@ -359,6 +288,4 @@ abstract class Field {
         $this->css_classes = $css_classes;
         return $this;
     }
-
-
 }

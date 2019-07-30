@@ -4,12 +4,21 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
+use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
+use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
+use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
 
 /**
  * Class CheckBox
  * @package Rockschtar\WordPress\Settings
  */
 class CheckBox extends Field {
+
+    use DisabledTrait;
+
+    use ReadOnlyTrait;
+
+    use AutofocusTrait;
 
     /**
      * @var String|null
@@ -20,22 +29,33 @@ class CheckBox extends Field {
      * @param $current_value
      * @return HTMLTag
      */
-    public function getHTMLTag($current_value): HTMLTag {
-        $html_tag = parent::getHTMLTag($current_value);
+    protected function getHTMLTag($current_value): HTMLTag {
+        $htmlTag = new HTMLTag('input');
 
-        $html_tag->setAttribute('type', 'checkbox');
+        $htmlTag->setAttribute('type', 'checkbox');
+        $htmlTag->setAttribute('id', $this->getId());
+        $htmlTag->setAttribute('name', $this->getId());
 
         if ($this->getValue() === $current_value) {
-            $html_tag->setAttribute('checked', null);
+            $htmlTag->setAttribute('checked');
         }
 
-        $html_tag->setAttribute('value', $this->getValue());
-
-        if ($this->isReadonly()) {
-            $html_tag->setAttribute('disabled', null);
+        if ($this->isDisabled()) {
+            $htmlTag->setAttribute('disabled');
         }
 
-        return $html_tag;
+        if ($this->isAutofocus()) {
+            $htmlTag->setAttribute('autofocus');
+        }
+
+        if($this->isReadonly()) {
+            $htmlTag->setAttribute('readonly');
+            $htmlTag->setAttribute('onclick', 'return false;');
+        }
+
+        $htmlTag->setAttribute('value', $this->getValue());
+
+        return $htmlTag;
     }
 
     /**
@@ -44,17 +64,10 @@ class CheckBox extends Field {
      * @return string
      */
     public function inputHTML($current_value, array $args = []): string {
-        $html_tag = $this->getHTMLTag($current_value);
-
-        if ($this->isReadonly()) {
-            $hidden_tag = new HTMLTag('input');
-            $hidden_tag->setAttribute('type', 'hidden');
-            $hidden_tag->setAttribute('name', $this->getId());
-            $hidden_tag->setAttribute('value', $this->getValue());
-            return $html_tag->buildTag() . $hidden_tag->buildTag();
-        }
-
-        return $html_tag->buildTag();
+        $htmlTag = $this->getHTMLTag($current_value);
+        $html = apply_filters('rwps_html_tag', $htmlTag->buildTag());
+        $html = apply_filters('rwps_html_tag-' . $this->getId(), $html);
+        return $html;
     }
 
     /**

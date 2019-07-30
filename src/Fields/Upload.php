@@ -3,6 +3,7 @@
 namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
+use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use function in_array;
 use function is_array;
 
@@ -11,6 +12,8 @@ use function is_array;
  * @package Rockschtar\WordPress\Settings
  */
 class Upload extends Field {
+
+    use DisabledTrait;
 
     /**
      * @var string
