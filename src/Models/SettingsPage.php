@@ -16,7 +16,7 @@ class SettingsPage {
     /**
      * @var Section[]
      */
-    private $sections;
+    private $sections = [];
 
     /**
      * @var string

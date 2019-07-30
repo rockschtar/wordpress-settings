@@ -4,6 +4,8 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
+use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
+use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use function is_array;
 
 /**
@@ -11,6 +13,10 @@ use function is_array;
  * @package Rockschtar\WordPress\Settings\Fields
  */
 class SelectBox extends Field {
+
+    use AutofocusTrait;
+
+    use DisabledTrait;
 
     /**
      * @var bool
@@ -75,7 +81,10 @@ class SelectBox extends Field {
             $name_array = '[]';
         }
 
-        return sprintf('<select name="%1$s' . $name_array . '" id="%1$s" %2$s class="%3$s">%4$s</select>', $this->getId(), $attr, $this->getCssClassesAsString(), $options);
+        $autofocus = $this->isAutofocus() ? 'autofocus' : '';
+        $disabled = $this->isDisabled() ? 'disabled' : '';
+
+        return sprintf('<select name="%1$s' . $name_array . '" id="%1$s" %2$s class="%3$s" %4$s %5$s>%6$s</select>', $this->getId(), $attr, $this->getCssClassesAsString(), $autofocus, $disabled, $options);
 
     }
 
