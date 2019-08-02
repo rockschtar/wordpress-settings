@@ -6,14 +6,26 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\AssetScript;
 use Rockschtar\WordPress\Settings\Models\Field;
+use Rockschtar\WordPress\Settings\Models\HTMLTag;
 use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
+use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
 
 class FileUpload extends Field {
 
     use AutofocusTrait;
 
     use DisabledTrait;
+
+    use ReadOnlyTrait;
+
+
+    /**
+     * @var array
+     */
+    private $allowedMimeTypes = [];
+
+    private $appendMimeTypes = true;
 
     /**
      * @var string|null
@@ -51,9 +63,29 @@ class FileUpload extends Field {
         }
 
         $html .= '<input type="hidden" id="' . $fieldId . '" name="' . $fieldId . '" value="' . $filename . '" />';
-        $html .= '<br /><input type="file" id="' . $fieldId . '-file-upload" name="' . $fieldId . '-file-upload" />';
 
-        return $html;
+        $html_tag = new HTMLTag('input');
+        $html_tag->setAttribute('type', 'file');
+
+        $html_tag->setAttribute('id', $this->getId());
+        $html_tag->setAttribute('name', $this->getId());
+
+        if ($this->isReadonly()) {
+            $html_tag->setAttribute('readonly');
+        }
+
+        if ($this->isDisabled()) {
+            $html_tag->setAttribute('disabled');
+        }
+
+        if ($this->isAutofocus()) {
+            $html_tag->setAttribute('autofocus');
+        }
+
+
+        return $html . '<br />' . $html_tag->buildTag();
+
+
     }
 
     /**
@@ -65,9 +97,11 @@ class FileUpload extends Field {
 
     /**
      * @param string $uploadDirectory
+     * @return FileUpload
      */
-    public function setUploadDirectory(string $uploadDirectory): void {
+    public function setUploadDirectory(string $uploadDirectory): FileUpload {
         $this->uploadDirectory = $uploadDirectory;
+        return $this;
     }
 
     /**
@@ -79,8 +113,42 @@ class FileUpload extends Field {
 
     /**
      * @param string|null $uploadUrl
+     * @return FileUpload
      */
-    public function setUploadUrl(?string $uploadUrl): void {
+    public function setUploadUrl(?string $uploadUrl): FileUpload {
         $this->uploadUrl = $uploadUrl;
+        return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getAllowedMimeTypes(): array {
+        return $this->allowedMimeTypes;
+    }
+
+
+    public function addAllowedMimeType(string $key, string $mimeType): FileUpload {
+        $this->allowedMimeTypes[$key] = $mimeType;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAppendMimeTypes(): bool {
+        return $this->appendMimeTypes;
+    }
+
+    /**
+     * @param bool $appendMimeTypes
+     */
+    public function setAppendMimeTypes(bool $appendMimeTypes): FileUpload {
+        $this->appendMimeTypes = $appendMimeTypes;
+        return $this;
+    }
+
+
+
+
 }

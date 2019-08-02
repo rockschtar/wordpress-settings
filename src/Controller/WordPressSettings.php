@@ -60,12 +60,28 @@ class WordPressSettings {
             foreach ($section->getFields() as $field) {
 
                 if (is_a($field, FileUpload::class)) {
+
+                    /* @var $field FileUpload */
                     $file_upload_id = $field->getId() . '-file-upload';
+
+
                     add_filter('pre_update_option_' . $field->getId(), static function ($value, $old_value) use ($field, $file_upload_id) {
                         if ($_FILES[$file_upload_id]['error'] === 0) {
                             $filename = $_FILES[$file_upload_id]['name'];
                             $content = file_get_contents($_FILES[$file_upload_id]['tmp_name']);
+
+                            $mimeTypesFilter = static function ($mimeTypes) use ($field) {
+
+                                if ($field->isAppendMimeTypes()) {
+                                    return array_merge($mimeTypes, $field->getAllowedMimeTypes());
+                                }
+
+                                return $field->getAllowedMimeTypes();
+                            };
+
+                            add_filter('upload_mimes', $mimeTypesFilter);
                             $value = wp_upload_bits($filename, null, $content);
+                            remove_filter('upload_mimes', $mimeTypesFilter);
 
                             if ($value['error']) {
                                 add_settings_error($field->getId(), 1, $value['error']);
