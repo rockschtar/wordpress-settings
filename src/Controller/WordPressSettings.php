@@ -64,7 +64,6 @@ class WordPressSettings {
                     /* @var $field FileUpload */
                     $file_upload_id = $field->getId() . '-file-upload';
 
-
                     add_filter('pre_update_option_' . $field->getId(), static function ($value, $old_value) use ($field, $file_upload_id) {
                         if ($_FILES[$file_upload_id]['error'] === 0) {
                             $filename = $_FILES[$file_upload_id]['name'];
@@ -96,7 +95,7 @@ class WordPressSettings {
 
                         }
 
-                        if (($_FILES[$file_upload_id]['error'] === UPLOAD_ERR_NO_FILE) && isset($old_value['file'])) {
+                        if (($_FILES[$file_upload_id]['error'] === UPLOAD_ERR_NO_FILE) && empty($_POST[$field->getId()]) && isset($old_value['file'])) {
                             unlink($old_value['file']);
                             return [];
                         }
@@ -139,14 +138,13 @@ class WordPressSettings {
         $this->custom_hooks();
     }
 
-    final public function delete_fileupload() {
-
+    final public function delete_fileupload(): void {
         $option = $_POST['option'];
-
         $option_value = get_option($option);
-
         unlink($option_value['file']);
 
+        wp_send_json_success();
+        wp_die();
     }
 
     /**

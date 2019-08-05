@@ -59,7 +59,7 @@ class FileUpload extends Field {
         if (is_array($current_value) && array_key_exists('file', $current_value) && array_key_exists('url', $current_value)) {
             $filename = basename($current_value['file']);
             $url = $current_value['url'];
-            $html = '<a id="' . $fieldId . '-file-link" href="' . $url . '">' . $filename . '</a>&nbsp;<a href="#" class="error-message rwps-file-upload-delete" data-field-id="' . $fieldId . '">X</a>';
+            $html = '<a id="' . $fieldId . '-file-link" href="' . $url . '">' . $filename . '</a>&nbsp;<a href="#" class="error-message rwps-file-upload-delete" data-field-id="' . $fieldId . '">X</a><br />';
         }
 
         $html .= '<input type="hidden" id="' . $fieldId . '" name="' . $fieldId . '" value="' . $filename . '" />';
@@ -67,8 +67,8 @@ class FileUpload extends Field {
         $html_tag = new HTMLTag('input');
         $html_tag->setAttribute('type', 'file');
 
-        $html_tag->setAttribute('id', $this->getId());
-        $html_tag->setAttribute('name', $this->getId());
+        $html_tag->setAttribute('id', $this->getId() . '-file-upload');
+        $html_tag->setAttribute('name', $this->getId() . '-file-upload');
 
         if ($this->isReadonly()) {
             $html_tag->setAttribute('readonly');
@@ -83,7 +83,7 @@ class FileUpload extends Field {
         }
 
 
-        return $html . '<br />' . $html_tag->buildTag();
+        return $html . $html_tag->buildTag();
 
 
     }
