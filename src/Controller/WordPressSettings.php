@@ -6,6 +6,7 @@
 namespace Rockschtar\WordPress\Settings\Controller;
 
 use Rockschtar\WordPress\Settings\Fields\AjaxButton;
+use Rockschtar\WordPress\Settings\Fields\FileUpload;
 use Rockschtar\WordPress\Settings\Fields\Upload;
 use Rockschtar\WordPress\Settings\Models\Asset;
 use Rockschtar\WordPress\Settings\Models\AssetScript;
@@ -38,6 +39,8 @@ class WordPressSettings {
         add_action('admin_menu', array($this, 'create_settings'));
         add_action('admin_init', array($this, 'setup_sections'));
         add_action('admin_init', array($this, 'setup_fields'));
+        add_action('wp_ajax_rwps_delete_fileupload', array(&$this, 'delete_fileupload'));
+
 
         $upload_script_added = false;
 
@@ -56,6 +59,66 @@ class WordPressSettings {
 
             foreach ($section->getFields() as $field) {
 
+                if (is_a($field, FileUpload::class)) {
+
+                    /* @var $field FileUpload */
+                    $file_upload_id = $field->getId() . '-file-upload';
+
+                    add_filter('pre_update_option_' . $field->getId(), static function ($value, $old_value) use ($field, $file_upload_id) {
+                        if ($_FILES[$file_upload_id]['error'] === 0) {
+                            $filename = $_FILES[$file_upload_id]['name'];
+                            $content = file_get_contents($_FILES[$file_upload_id]['tmp_name']);
+
+                            $mimeTypesFilter = static function ($mimeTypes) use ($field) {
+
+                                if ($field->isAppendMimeTypes()) {
+                                    return array_merge($mimeTypes, $field->getAllowedMimeTypes());
+                                }
+
+                                return $field->getAllowedMimeTypes();
+                            };
+
+                            add_filter('upload_mimes', $mimeTypesFilter);
+                            $value = wp_upload_bits($filename, null, $content);
+                            remove_filter('upload_mimes', $mimeTypesFilter);
+
+                            if ($value['error']) {
+                                add_settings_error($field->getId(), 1, $value['error']);
+                                return $old_value;
+                            }
+
+                            if (isset($old_value['file'])) {
+                                unlink($old_value['file']);
+                            }
+
+                            return $value;
+
+                        }
+
+                        if (($_FILES[$file_upload_id]['error'] === UPLOAD_ERR_NO_FILE) && empty($_POST[$field->getId()]) && isset($old_value['file'])) {
+                            unlink($old_value['file']);
+                            return [];
+                        }
+
+                        return $old_value;
+                    }, 10, 2);
+
+
+                    add_filter('upload_dir', static function ($upload_directory) use ($field, $file_upload_id) {
+                        /* @var FileUpload $field */
+                        if ($field->getUploadDirectory() && isset($_FILES[$file_upload_id])) {
+                            $upload_directory['path'] = $field->getUploadDirectory();
+                        }
+
+                        if ($field->getUploadUrl() && isset($_FILES[$file_upload_id])) {
+                            $upload_directory['url'] = $field->getUploadUrl();
+                        }
+
+                        return $upload_directory;
+                    });
+
+                }
+
                 if ($upload_script_added === false && is_a($field, Upload::class)) {
                     add_action('admin_footer', array($this, 'media_fields'));
                     add_action('admin_enqueue_scripts', 'wp_enqueue_media');
@@ -73,6 +136,15 @@ class WordPressSettings {
         }
 
         $this->custom_hooks();
+    }
+
+    final public function delete_fileupload(): void {
+        $option = $_POST['option'];
+        $option_value = get_option($option);
+        unlink($option_value['file']);
+
+        wp_send_json_success();
+        wp_die();
     }
 
     /**
@@ -151,6 +223,42 @@ class WordPressSettings {
                     };
 
                     $arguments['sanitize_callback'] = $sanitize_callback;
+                } else if (is_a($field, FileUpload::class)) {
+
+                    $sanitize_callback = static function ($value) use ($field, $arguments) {
+
+                        $file_upload_id = $field->getId() . '-file-upload';
+
+                        if ($_FILES[$file_upload_id]['error'] === 0) {
+                            $mime_type = mime_content_type($_FILES[$file_upload_id]['tmp_name']);
+
+                            $allowed_mime_types = get_allowed_mime_types();
+                            $mime_type_allowed = false;
+
+                            foreach ($allowed_mime_types as $key => $current_mime_type) {
+
+                                if ($current_mime_type === $mime_type) {
+                                    $mime_type_allowed = true;
+                                    break;
+                                }
+
+                            }
+
+                            if ($mime_type_allowed === false) {
+                                add_settings_error($field->getId(), $field->getId(), __('Sorry, this file type is not permitted for security reasons.'));
+                            }
+                        }
+
+                        if ($field->getSanitizeCallback() !== null) {
+                            $user_sanitize_callback = $field->getSanitizeCallback();
+                            $value = $user_sanitize_callback($value);
+                        }
+
+                        return $value;
+                    };
+
+                    $arguments['sanitize_callback'] = $sanitize_callback;
+
 
                 } else if ($field->getSanitizeCallback() !== null) {
                     $arguments['sanitize_callback'] = $field->getSanitizeCallback();
@@ -171,7 +279,7 @@ class WordPressSettings {
             }
             ?>
             <!--suppress HtmlUnknownTarget -->
-            <form method="POST" action="options.php">
+            <form method="POST" action="options.php" enctype="multipart/form-data">
                 <?php do_action('rwps-before-form-fields', $this->getPage()); ?>
                 <?php do_action('rwps-before-form-fields' . $this->getPage()->getId()); ?>
                 <?php
