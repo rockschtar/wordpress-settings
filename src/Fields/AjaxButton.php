@@ -4,12 +4,15 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Models\AssetScript;
 use Rockschtar\WordPress\Settings\Models\Button;
+use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 
 /**
  * Class AjaxButton
  * @package Rockschtar\WordPress\Settings
  */
 class AjaxButton extends Button {
+
+    use DisabledTrait;
 
     /**
      * @var String|null
