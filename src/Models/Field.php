@@ -170,18 +170,6 @@ abstract class Field {
      */
     public function setDefaultOption($default_option) {
         $this->default_option = $default_option;
-
-        $default_option_callback = static function ($default) use ($default_option) {
-            if ($default === false) {
-                return $default_option;
-            }
-
-            return $default;
-        };
-
-        remove_filter('default_option_' . $this->getId(), $default_option_callback, 10, 1);
-        add_filter('default_option_' . $this->getId(), $default_option_callback, 10, 1);
-
         return $this;
     }
 
@@ -302,7 +290,7 @@ abstract class Field {
     }
 
     /**
-     * @param callable|null $on_change
+     * @param callable $on_change
      * @return static
      */
     public function setOnChange(callable $on_change): Field {
