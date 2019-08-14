@@ -59,6 +59,12 @@ class WordPressSettings {
 
             foreach ($section->getFields() as $field) {
 
+                add_action('update_option_' . $field->getId(), static function ($old_value, $new_value) use ($field) {
+                    if ($old_value !== $new_value && $field->getOnChange() !== null) {
+                        call_user_func($field->getOnChange(), $field);
+                    }
+                }, 10, 2);
+
                 if (is_a($field, FileUpload::class)) {
 
                     /* @var $field FileUpload */
@@ -87,7 +93,7 @@ class WordPressSettings {
                                 return $old_value;
                             }
 
-                            if (isset($old_value['file'])) {
+                            if (isset($old_value['file']) && file_exists($old_value['file'])) {
                                 unlink($old_value['file']);
                             }
 
