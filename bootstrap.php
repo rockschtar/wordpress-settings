@@ -9,9 +9,7 @@ if (function_exists('add_action')) {
     if (!$rwps_actions_added) {
 
         add_action('wp_loaded', static function () {
-            if (is_admin()) {
-                do_action('rswp_create_settings');
-            }
+            do_action('rswp_create_settings');
         }, 1);
 
         add_action('admin_action_rwps-load-script', static function () {
@@ -28,7 +26,7 @@ if (function_exists('add_action')) {
 }
 
 if (!function_exists('rswp_register_settings_page')) {
-    function rswp_register_settings_page(SettingsPage $page): void {
+    function rswp_register_settings_page(SettingsPage $page) {
         WordPressSettings::registerSettingsPage($page);
     }
 }

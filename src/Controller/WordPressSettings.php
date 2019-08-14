@@ -41,7 +41,16 @@ class WordPressSettings {
         add_action('admin_init', array($this, 'setup_fields'));
         add_action('wp_ajax_rwps_delete_fileupload', array(&$this, 'delete_fileupload'));
 
+        if (is_admin()) {
+            $this->setup_admin_hooks();
+        }
 
+        $this->setup_global_hooks();
+
+        $this->custom_hooks();
+    }
+
+    private function setup_admin_hooks(): void {
         $upload_script_added = false;
 
         foreach ($this->getPage()->getButtons() as $button) {
@@ -56,7 +65,6 @@ class WordPressSettings {
         }
 
         foreach ($this->getPage()->getSections() as $section) {
-
             foreach ($section->getFields() as $field) {
 
                 add_action('update_option_' . $field->getId(), static function ($old_value, $new_value) use ($field) {
@@ -141,7 +149,28 @@ class WordPressSettings {
             }
         }
 
-        $this->custom_hooks();
+    }
+
+    private function setup_global_hooks(): void {
+
+        foreach ($this->getPage()->getSections() as $section) {
+            foreach ($section->getFields() as $field) {
+                if ($field->getDefaultOption() !== null) {
+                    add_filter('default_option_' . $field->getId(), static function ($default) use ($field) {
+
+                        if ($default === false) {
+                            $default = $field->getDefaultOption();
+                        }
+
+                        return $default;
+                    }, 10, 1);
+                }
+            }
+        }
+    }
+
+    final public function setup_public_hooks(): void {
+        //setup default option here
     }
 
     final public function delete_fileupload(): void {
@@ -160,6 +189,7 @@ class WordPressSettings {
     public static function registerSettingsPage(SettingsPage $page): WordPressSettings {
         return new WordPressSettings($page);
     }
+
 
     public function custom_hooks(): void {
     }
