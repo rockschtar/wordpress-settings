@@ -56,6 +56,11 @@ abstract class Field {
     private $assets = [];
 
     /**
+     * @var callable|null
+     */
+    private $on_change;
+
+    /**
      * Field constructor.
      * @param $id
      */
@@ -282,10 +287,28 @@ abstract class Field {
 
     /**
      * @param String[] $css_classes
-     * @return Field
+     * @return static
      */
     public function setCssClasses(array $css_classes): Field {
         $this->css_classes = $css_classes;
         return $this;
     }
+
+    /**
+     * @return callable|null
+     */
+    public function getOnChange(): ?callable {
+        return $this->on_change;
+    }
+
+    /**
+     * @param callable|null $on_change
+     * @return static
+     */
+    public function setOnChange(callable $on_change): Field {
+        $this->on_change = $on_change;
+        return $this;
+    }
+
+
 }
