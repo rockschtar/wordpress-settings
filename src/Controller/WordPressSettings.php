@@ -93,25 +93,24 @@ class WordPressSettings
                               $filename = $_FILES[$file_upload_id]['name'];
                               $content = file_get_contents($_FILES[$file_upload_id]['tmp_name']);
 
-                              $this->allowedMimeTypesFilter(
+                              $value = $this->allowedMimeTypesFilter(
                                 $field,
                                 static function () use ($filename, $content) {
                                     return wp_upload_bits($filename, null, $content);
                                 }
                               );
 
-                            if ($value['error']) {
-                                add_settings_error($field->getId(), 1, $value['error']);
-                                return $old_value;
-                            }
+                              if ($value['error']) {
+                                  add_settings_error($field->getId(), 1, $value['error']);
+                                  return $old_value;
+                              }
 
-                            if (isset($old_value['file']) && file_exists($old_value['file'])) {
-                                unlink($old_value['file']);
-                            }
+                              if (isset($old_value['file']) && file_exists($old_value['file'])) {
+                                  unlink($old_value['file']);
+                              }
 
-                            return $value;
-
-                        }
+                              return $value;
+                          }
 
                           if (($_FILES[$file_upload_id]['error'] === UPLOAD_ERR_NO_FILE) && empty(
                             $_POST[$field->getId()]
@@ -314,19 +313,25 @@ class WordPressSettings
                         $file_upload_id = $field->getId() . '-file-upload';
 
                         if ($_FILES[$file_upload_id]['error'] === 0) {
-                            $mime_type = mime_content_type($_FILES[$file_upload_id]['tmp_name']);
+                            $mime_type_allowed = $this->allowedMimeTypesFilter(
+                              $field,
+                              function () use ($file_upload_id) {
+                                  $mime_type = mime_content_type($_FILES[$file_upload_id]['tmp_name']);
 
-                            $this->allowedMimeTypesFilter($field);
+                                  $allowed_mime_types = get_allowed_mime_types();
+                                  $mime_type_allowed = false;
 
-                            $allowed_mime_types = get_allowed_mime_types();
-                            $mime_type_allowed = false;
+                                  foreach ($allowed_mime_types as $key => $current_mime_type) {
+                                      if ($current_mime_type === $mime_type) {
+                                          $mime_type_allowed = true;
+                                          break;
+                                      }
+                                  }
 
-                            foreach ($allowed_mime_types as $key => $current_mime_type) {
-                                if ($current_mime_type === $mime_type) {
-                                    $mime_type_allowed = true;
-                                    break;
-                                }
-                            }
+                                  return $mime_type_allowed;
+                              }
+                            );
+
 
                             if ($mime_type_allowed === false) {
                                 add_settings_error(
@@ -609,7 +614,7 @@ class WordPressSettings
         }
     }
 
-    private function allowedMimeTypesFilter(FileUpload $field, ?\Closure $closure)
+    private function allowedMimeTypesFilter(FileUpload $field, ?\Closure $closure = null)
     {
         $mimeTypesFilter = static function ($mimeTypes) use ($field) {
             if ($field->isAppendMimeTypes()) {
@@ -623,15 +628,12 @@ class WordPressSettings
 
         $value = true;
 
-        if($closure) {
+        if ($closure) {
             $value = $closure();
         }
-
-
+        
         remove_filter('upload_mimes', $mimeTypesFilter);
 
         return $value;
     }
-
-
 }
