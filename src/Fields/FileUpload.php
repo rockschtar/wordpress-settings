@@ -38,7 +38,6 @@ class FileUpload extends Field {
     private $uploadUrl;
 
     public function __construct($id) {
-
         $ajax_button_asset_script = new AssetScript('rwps-file-upload', admin_url('?action=rwps-load-script&script=FileUpload.js'), false, ['jquery']);
         $this->addAsset($ajax_button_asset_script);
         parent::__construct($id);
@@ -54,8 +53,8 @@ class FileUpload extends Field {
 
         $fieldId = $this->getId();
         $filename = '';
-        $url = '';
         $html = '';
+
         if (is_array($current_value) && array_key_exists('file', $current_value) && array_key_exists('url', $current_value)) {
             $filename = basename($current_value['file']);
             $url = $current_value['url'];

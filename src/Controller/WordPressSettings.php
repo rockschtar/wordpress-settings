@@ -13,6 +13,7 @@ use Rockschtar\WordPress\Settings\Models\AssetScript;
 use Rockschtar\WordPress\Settings\Models\AssetStyle;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
+
 use function call_user_func;
 use function is_array;
 
@@ -20,7 +21,8 @@ use function is_array;
  * Class WordPressSettings
  * @package Rockschtar\WordPress\Settings
  */
-class WordPressSettings {
+class WordPressSettings
+{
 
     /**
      * @var SettingsPage
@@ -32,8 +34,8 @@ class WordPressSettings {
      */
     private $hook_suffix;
 
-    private function __construct(SettingsPage $page) {
-
+    private function __construct(SettingsPage $page)
+    {
         $this->page = $page;
 
         add_action('admin_menu', array($this, 'create_settings'));
@@ -50,51 +52,53 @@ class WordPressSettings {
         $this->custom_hooks();
     }
 
-    private function setup_admin_hooks(): void {
+    private function setup_admin_hooks(): void
+    {
         $upload_script_added = false;
 
         foreach ($this->getPage()->getButtons() as $button) {
-
             if (is_a($button, AjaxButton::class)) {
                 /* @var AjaxButton $field */
-                add_action('wp_ajax_rwps_ajax_button_' . $button->getId(), static function () use ($button) {
-                    check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
-                    call_user_func($button->getCallable(), $button);
-                });
+                add_action(
+                  'wp_ajax_rwps_ajax_button_' . $button->getId(),
+                  static function () use ($button) {
+                      check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
+                      call_user_func($button->getCallable(), $button);
+                  }
+                );
             }
         }
 
         foreach ($this->getPage()->getSections() as $section) {
             foreach ($section->getFields() as $field) {
-
-                add_action('update_option_' . $field->getId(), static function ($old_value, $new_value) use ($field) {
-                    if ($old_value !== $new_value && $field->getOnChange() !== null) {
-                        call_user_func($field->getOnChange(), $field);
-                    }
-                }, 10, 2);
+                add_action(
+                  'update_option_' . $field->getId(),
+                  static function ($old_value, $new_value) use ($field) {
+                      if ($old_value !== $new_value && $field->getOnChange() !== null) {
+                          call_user_func($field->getOnChange(), $field);
+                      }
+                  },
+                  10,
+                  2
+                );
 
                 if (is_a($field, FileUpload::class)) {
-
                     /* @var $field FileUpload */
                     $file_upload_id = $field->getId() . '-file-upload';
 
-                    add_filter('pre_update_option_' . $field->getId(), static function ($value, $old_value) use ($field, $file_upload_id) {
-                        if ($_FILES[$file_upload_id]['error'] === 0) {
-                            $filename = $_FILES[$file_upload_id]['name'];
-                            $content = file_get_contents($_FILES[$file_upload_id]['tmp_name']);
+                    add_filter(
+                      'pre_update_option_' . $field->getId(),
+                      function ($value, $old_value) use ($field, $file_upload_id) {
+                          if ($_FILES[$file_upload_id]['error'] === 0) {
+                              $filename = $_FILES[$file_upload_id]['name'];
+                              $content = file_get_contents($_FILES[$file_upload_id]['tmp_name']);
 
-                            $mimeTypesFilter = static function ($mimeTypes) use ($field) {
-
-                                if ($field->isAppendMimeTypes()) {
-                                    return array_merge($mimeTypes, $field->getAllowedMimeTypes());
+                              $this->allowedMimeTypesFilter(
+                                $field,
+                                static function () use ($filename, $content) {
+                                    return wp_upload_bits($filename, null, $content);
                                 }
-
-                                return $field->getAllowedMimeTypes();
-                            };
-
-                            add_filter('upload_mimes', $mimeTypesFilter);
-                            $value = wp_upload_bits($filename, null, $content);
-                            remove_filter('upload_mimes', $mimeTypesFilter);
+                              );
 
                             if ($value['error']) {
                                 add_settings_error($field->getId(), 1, $value['error']);
@@ -109,28 +113,35 @@ class WordPressSettings {
 
                         }
 
-                        if (($_FILES[$file_upload_id]['error'] === UPLOAD_ERR_NO_FILE) && empty($_POST[$field->getId()]) && isset($old_value['file'])) {
-                            unlink($old_value['file']);
-                            return [];
-                        }
+                          if (($_FILES[$file_upload_id]['error'] === UPLOAD_ERR_NO_FILE) && empty(
+                            $_POST[$field->getId()]
+                            ) && isset($old_value['file'])) {
+                              unlink($old_value['file']);
+                              return [];
+                          }
 
-                        return $old_value;
-                    }, 10, 2);
+                          return $old_value;
+                      },
+                      10,
+                      2
+                    );
 
 
-                    add_filter('upload_dir', static function ($upload_directory) use ($field, $file_upload_id) {
-                        /* @var FileUpload $field */
-                        if ($field->getUploadDirectory() && isset($_FILES[$file_upload_id])) {
-                            $upload_directory['path'] = $field->getUploadDirectory();
-                        }
+                    add_filter(
+                      'upload_dir',
+                      static function ($upload_directory) use ($field, $file_upload_id) {
+                          /* @var FileUpload $field */
+                          if ($field->getUploadDirectory() && isset($_FILES[$file_upload_id])) {
+                              $upload_directory['path'] = $field->getUploadDirectory();
+                          }
 
-                        if ($field->getUploadUrl() && isset($_FILES[$file_upload_id])) {
-                            $upload_directory['url'] = $field->getUploadUrl();
-                        }
+                          if ($field->getUploadUrl() && isset($_FILES[$file_upload_id])) {
+                              $upload_directory['url'] = $field->getUploadUrl();
+                          }
 
-                        return $upload_directory;
-                    });
-
+                          return $upload_directory;
+                      }
+                    );
                 }
 
                 if ($upload_script_added === false && is_a($field, Upload::class)) {
@@ -141,39 +152,47 @@ class WordPressSettings {
 
                 if (is_a($field, AjaxButton::class)) {
                     /* @var AjaxButton $field */
-                    add_action('wp_ajax_rwps_ajax_button_' . $field->getId(), static function () use ($field) {
-                        check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
-                        call_user_func($field->getCallable(), $field);
-                    });
+                    add_action(
+                      'wp_ajax_rwps_ajax_button_' . $field->getId(),
+                      static function () use ($field) {
+                          check_ajax_referer('rwps-ajax-button-nonce', 'nonce');
+                          call_user_func($field->getCallable(), $field);
+                      }
+                    );
                 }
             }
         }
-
     }
 
-    private function setup_global_hooks(): void {
-
+    private function setup_global_hooks(): void
+    {
         foreach ($this->getPage()->getSections() as $section) {
             foreach ($section->getFields() as $field) {
                 if ($field->getDefaultOption() !== null) {
-                    add_filter('default_option_' . $field->getId(), static function ($default) use ($field) {
+                    add_filter(
+                      'default_option_' . $field->getId(),
+                      static function ($default) use ($field) {
+                          if ($default === false) {
+                              $default = $field->getDefaultOption();
+                          }
 
-                        if ($default === false) {
-                            $default = $field->getDefaultOption();
-                        }
-
-                        return $default;
-                    }, 10, 1);
+                          return $default;
+                      },
+                      10,
+                      1
+                    );
                 }
             }
         }
     }
 
-    final public function setup_public_hooks(): void {
+    final public function setup_public_hooks(): void
+    {
         //setup default option here
     }
 
-    final public function delete_fileupload(): void {
+    final public function delete_fileupload(): void
+    {
         $option = $_POST['option'];
         $option_value = get_option($option);
         unlink($option_value['file']);
@@ -186,30 +205,49 @@ class WordPressSettings {
      * @param SettingsPage $page
      * @return WordPressSettings
      */
-    public static function registerSettingsPage(SettingsPage $page): WordPressSettings {
+    public static function registerSettingsPage(SettingsPage $page): WordPressSettings
+    {
         return new WordPressSettings($page);
     }
 
 
-    public function custom_hooks(): void {
+    public function custom_hooks(): void
+    {
     }
 
     /**
      * @return SettingsPage
      */
-    public function getPage(): SettingsPage {
+    public function getPage(): SettingsPage
+    {
         return $this->page;
     }
 
-    final public function create_settings(): void {
+    final public function create_settings(): void
+    {
         $page = $this->getPage();
         $callback = $page->getCallback() ?? array($this, 'settings_content');
 
         if ($this->getPage()->getParent() === null) {
-            $this->hook_suffix = add_menu_page($page->getPageTitle(), $page->getMenuTitle(), $page->getCapability(), $page->getId(), $callback, $page->getIcon(), $page->getPosition());
+            $this->hook_suffix = add_menu_page(
+              $page->getPageTitle(),
+              $page->getMenuTitle(),
+              $page->getCapability(),
+              $page->getId(),
+              $callback,
+              $page->getIcon(),
+              $page->getPosition()
+            );
         } else {
-            $this->hook_suffix = add_submenu_page($this->getPage()
-                                                       ->getParent(), $page->getPageTitle(), $page->getMenuTitle(), $page->getCapability(), $page->getId(), $callback);
+            $this->hook_suffix = add_submenu_page(
+              $this->getPage()
+                ->getParent(),
+              $page->getPageTitle(),
+              $page->getMenuTitle(),
+              $page->getCapability(),
+              $page->getId(),
+              $callback
+            );
         }
 
 
@@ -218,17 +256,23 @@ class WordPressSettings {
         }
 
         add_action('admin_enqueue_scripts', array(&$this, 'admin_enqueue_scripts'));
-
     }
 
-    final public function setup_sections(): void {
+    final public function setup_sections(): void
+    {
         foreach ($this->getPage()->getSections() as $section) {
-            add_settings_section($section->getId(), $section->getTitle(), $section->getCallback(), $this->getPage()
-                                                                                                        ->getId());
+            add_settings_section(
+              $section->getId(),
+              $section->getTitle(),
+              $section->getCallback(),
+              $this->getPage()
+                ->getId()
+            );
         }
     }
 
-    final public function setup_fields(): void {
+    final public function setup_fields(): void
+    {
         foreach ($this->getPage()->getSections() as $section) {
             foreach ($section->getFields() as $field) {
                 /* @var AjaxButton $field */
@@ -237,16 +281,22 @@ class WordPressSettings {
                 }
 
                 /* @var Field $field */
-                add_settings_field($field->getId(), $field->getLabel(), array($this, 'field'), $this->getPage()
-                                                                                                    ->getId(), $section->getId(), ['field' => $field]);
+                add_settings_field(
+                  $field->getId(),
+                  $field->getLabel(),
+                  array($this, 'field'),
+                  $this->getPage()
+                    ->getId(),
+                  $section->getId(),
+                  ['field' => $field]
+                );
                 $arguments = $field->getSanitizeArguments();
 
                 if (is_a($field, Upload::class)) {
-
                     $sanitize_callback = static function ($value) use ($field, $arguments) {
                         if (!is_array($value)) {
                             $value = '';
-                        } else if (isset($value['attachment_id']) && empty($value['attachment_id'])) {
+                        } elseif (isset($value['attachment_id']) && empty($value['attachment_id'])) {
                             $value = '';
                         }
 
@@ -259,29 +309,31 @@ class WordPressSettings {
                     };
 
                     $arguments['sanitize_callback'] = $sanitize_callback;
-                } else if (is_a($field, FileUpload::class)) {
-
-                    $sanitize_callback = static function ($value) use ($field, $arguments) {
-
+                } elseif (is_a($field, FileUpload::class)) {
+                    $sanitize_callback = function ($value) use ($field, $arguments) {
                         $file_upload_id = $field->getId() . '-file-upload';
 
                         if ($_FILES[$file_upload_id]['error'] === 0) {
                             $mime_type = mime_content_type($_FILES[$file_upload_id]['tmp_name']);
 
+                            $this->allowedMimeTypesFilter($field);
+
                             $allowed_mime_types = get_allowed_mime_types();
                             $mime_type_allowed = false;
 
                             foreach ($allowed_mime_types as $key => $current_mime_type) {
-
                                 if ($current_mime_type === $mime_type) {
                                     $mime_type_allowed = true;
                                     break;
                                 }
-
                             }
 
                             if ($mime_type_allowed === false) {
-                                add_settings_error($field->getId(), $field->getId(), __('Sorry, this file type is not permitted for security reasons.'));
+                                add_settings_error(
+                                  $field->getId(),
+                                  $field->getId(),
+                                  __('Sorry, this file type is not permitted for security reasons.')
+                                );
                             }
                         }
 
@@ -294,9 +346,7 @@ class WordPressSettings {
                     };
 
                     $arguments['sanitize_callback'] = $sanitize_callback;
-
-
-                } else if ($field->getSanitizeCallback() !== null) {
+                } elseif ($field->getSanitizeCallback() !== null) {
                     $arguments['sanitize_callback'] = $field->getSanitizeCallback();
                 }
 
@@ -305,43 +355,57 @@ class WordPressSettings {
         }
     }
 
-    final public function settings_content(): void { ?>
-        <?php do_action('rwps-before-page-wrap', $this->getPage()); ?>
-        <?php do_action('rwps-before-page-wrap-' . $this->getPage()->getId()); ?>
+    final public function settings_content(): void
+    { ?>
+        <?php
+        do_action('rwps-before-page-wrap', $this->getPage()); ?>
+        <?php
+        do_action('rwps-before-page-wrap-' . $this->getPage()->getId()); ?>
         <div class="wrap">
-            <h1><?php echo $this->getPage()->getPageTitle(); ?></h1>
-            <?php if ($this->getPage()->getParent() === null) {
+            <h1><?php
+                echo $this->getPage()->getPageTitle(); ?></h1>
+            <?php
+            if ($this->getPage()->getParent() === null) {
                 settings_errors();
             }
             ?>
             <!--suppress HtmlUnknownTarget -->
             <form method="POST" action="options.php" enctype="multipart/form-data">
-                <?php do_action('rwps-before-form-fields', $this->getPage()); ?>
-                <?php do_action('rwps-before-form-fields' . $this->getPage()->getId()); ?>
+                <?php
+                do_action('rwps-before-form-fields', $this->getPage()); ?>
+                <?php
+                do_action('rwps-before-form-fields' . $this->getPage()->getId()); ?>
                 <?php
                 settings_fields($this->getPage()->getId());
                 do_settings_sections($this->getPage()->getId());
 
                 ?>
                 <p class="submit">
-                    <?php foreach ($this->getPage()->getButtons() as $button) {
-                        if (is_a($button, AjaxButton::class) && $button->getPosition() === AjaxButton::POSITION_BEFORE_SUBMIT) {
+                    <?php
+                    foreach ($this->getPage()->getButtons() as $button) {
+                        if (is_a($button, AjaxButton::class) && $button->getPosition(
+                          ) === AjaxButton::POSITION_BEFORE_SUBMIT) {
                             echo $button->output('');
                         }
                     } ?>
 
                     <input type="submit"
                            class="button-primary"
-                           value="<?php _e('Save Changes') ?>"
+                           value="<?php
+                           _e('Save Changes') ?>"
                     />
-                    <?php foreach ($this->getPage()->getButtons() as $button) {
-                        if (is_a($button, AjaxButton::class) && $button->getPosition() === AjaxButton::POSITION_AFTER_SUBMIT) {
+                    <?php
+                    foreach ($this->getPage()->getButtons() as $button) {
+                        if (is_a($button, AjaxButton::class) && $button->getPosition(
+                          ) === AjaxButton::POSITION_AFTER_SUBMIT) {
                             echo $button->output('');
                         }
                     } ?>
                 </p>
-                <?php do_action('rwps-after-form-fields', $this->getPage()); ?>
-                <?php do_action('rwps-after-form-fields' . $this->getPage()->getId()); ?>
+                <?php
+                do_action('rwps-after-form-fields', $this->getPage()); ?>
+                <?php
+                do_action('rwps-after-form-fields' . $this->getPage()->getId()); ?>
             </form>
         </div>
         <?php
@@ -349,14 +413,16 @@ class WordPressSettings {
         do_action('rwps-after-page-wrap-' . $this->getPage()->getId());
     }
 
-    final public function field(array $args): void {
+    final public function field(array $args): void
+    {
         /* @var Field $field ; */
         $field = $args['field'];
         $current_field_value = get_option($field->getId());
         echo $field->output($current_field_value, $args);
     }
 
-    final public function media_fields(): void {
+    final public function media_fields(): void
+    {
         ?>
         <script>
             jQuery(document).ready(function ($) {
@@ -381,8 +447,8 @@ class WordPressSettings {
                                 });
                                 this._frame.on("select", function () {
 
-                                    console.log(buttonSender);
-                                    console.log(buttonSender.data('fieldid'));
+                                        console.log(buttonSender);
+                                        console.log(buttonSender.data('fieldid'));
 
                                         var attachment = that._frame.state().get('selection').first().toJSON();
                                         onSelectMedia(buttonSender, attachment);
@@ -467,35 +533,55 @@ class WordPressSettings {
     /**
      * @return string
      */
-    public function getHookSuffix(): string {
+    public function getHookSuffix(): string
+    {
         return $this->hook_suffix;
     }
 
 
-    public function enqueueAsset(Asset $asset): void {
+    public function enqueueAsset(Asset $asset): void
+    {
         if ($asset instanceof AssetScript) {
-            wp_enqueue_script($asset->getHandle(), $asset->getSrc(), $asset->getDeps(), $asset->getVer(), $asset->isInFooter());
+            wp_enqueue_script(
+              $asset->getHandle(),
+              $asset->getSrc(),
+              $asset->getDeps(),
+              $asset->getVer(),
+              $asset->isInFooter()
+            );
             foreach ($asset->getInlines() as $inline_script) {
-                wp_add_inline_script($inline_script->getHandle(), $inline_script->getData(), $inline_script->getPosition());
+                wp_add_inline_script(
+                  $inline_script->getHandle(),
+                  $inline_script->getData(),
+                  $inline_script->getPosition()
+                );
             }
 
             if ($asset->getLocalize()) {
-                wp_localize_script($asset->getHandle(), $asset->getLocalize()
-                                                              ->getObjectName(), $asset->getLocalize()
-                                                                                       ->getL10n());
+                wp_localize_script(
+                  $asset->getHandle(),
+                  $asset->getLocalize()
+                    ->getObjectName(),
+                  $asset->getLocalize()
+                    ->getL10n()
+                );
             }
-
         }
 
         if ($asset instanceof AssetStyle) {
-            wp_enqueue_style($asset->getHandle(), $asset->getSrc(), $asset->getDeps(), $asset->getVer(), $asset->getMedia());
+            wp_enqueue_style(
+              $asset->getHandle(),
+              $asset->getSrc(),
+              $asset->getDeps(),
+              $asset->getVer(),
+              $asset->getMedia()
+            );
         }
     }
 
-    final public function admin_enqueue_scripts($hook): void {
-
+    final public function admin_enqueue_scripts($hook): void
+    {
         if ($this->getHookSuffix() === $hook) {
-
             foreach ($this->getPage()->getSections() as $section) {
                 foreach ($section->getFields() as $field) {
                     foreach ($field->getAssets() as $asset) {
@@ -521,6 +607,30 @@ class WordPressSettings {
                 $this->enqueueAsset($asset);
             }
         }
+    }
+
+    private function allowedMimeTypesFilter(FileUpload $field, ?\Closure $closure)
+    {
+        $mimeTypesFilter = static function ($mimeTypes) use ($field) {
+            if ($field->isAppendMimeTypes()) {
+                return array_merge($mimeTypes, $field->getAllowedMimeTypes());
+            }
+
+            return $field->getAllowedMimeTypes();
+        };
+
+        add_filter('upload_mimes', $mimeTypesFilter);
+
+        $value = true;
+
+        if($closure) {
+            $value = $closure();
+        }
+
+
+        remove_filter('upload_mimes', $mimeTypesFilter);
+
+        return $value;
     }
 
 
