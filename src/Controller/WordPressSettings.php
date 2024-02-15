@@ -245,7 +245,8 @@ class WordPressSettings
               $page->getMenuTitle(),
               $page->getCapability(),
               $page->getId(),
-              $callback
+              $callback,
+              $page->getPosition()
             );
         }
 
@@ -631,7 +632,7 @@ class WordPressSettings
         if ($closure) {
             $value = $closure();
         }
-        
+
         remove_filter('upload_mimes', $mimeTypesFilter);
 
         return $value;
