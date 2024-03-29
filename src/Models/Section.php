@@ -2,12 +2,14 @@
 
 namespace Rockschtar\WordPress\Settings\Models;
 
+use Rockschtar\WordPress\Settings\Fields\Field;
+
 /**
  * Class Section
  * @package Rockschtar\WordPress\Settings
  */
-class Section {
-
+class Section
+{
     /**
      * @var string
      */
@@ -32,7 +34,8 @@ class Section {
      * Section constructor.
      * @param string $id
      */
-    public function __construct(string $id) {
+    public function __construct(string $id)
+    {
         $this->id = $id;
     }
 
@@ -40,14 +43,22 @@ class Section {
      * @param string $id
      * @return Section
      */
-    public static function create(string $id): Section {
-        return new self($id);
+    public static function create(string $id, ?SettingsPage $page = null): Section
+    {
+        $instance = new self($id);
+
+        if ($page) {
+            $instance->addToPage($page);
+        }
+
+        return $instance;
     }
 
     /**
      * @return mixed
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -55,7 +66,8 @@ class Section {
      * @param mixed $id
      * @return Section
      */
-    public function setId($id): Section {
+    public function setId($id): Section
+    {
         $this->id = $id;
         return $this;
     }
@@ -63,7 +75,8 @@ class Section {
     /**
      * @return mixed
      */
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
@@ -71,7 +84,8 @@ class Section {
      * @param mixed $title
      * @return Section
      */
-    public function setTitle($title): Section {
+    public function setTitle($title): Section
+    {
         $this->title = $title;
         return $this;
     }
@@ -79,7 +93,8 @@ class Section {
     /**
      * @return array|string
      */
-    public function getCallback() {
+    public function getCallback()
+    {
         return $this->callback;
     }
 
@@ -87,7 +102,8 @@ class Section {
      * @param array|string $callback
      * @return Section
      */
-    public function setCallback($callback): Section {
+    public function setCallback($callback): Section
+    {
         $this->callback = $callback;
         return $this;
     }
@@ -95,7 +111,8 @@ class Section {
     /**
      * @return Field[]
      */
-    public function getFields(): array {
+    public function getFields(): array
+    {
         return $this->fields;
     }
 
@@ -103,7 +120,8 @@ class Section {
      * @param mixed $fields
      * @return Section
      */
-    public function setFields($fields): Section {
+    public function setFields($fields): Section
+    {
         $this->fields = $fields;
         return $this;
     }
@@ -112,9 +130,15 @@ class Section {
      * @param Field $field
      * @return Section
      */
-    public function addField(Field $field): Section {
+    public function addField(Field $field): Section
+    {
         $this->fields[] = $field;
         return $this;
     }
 
+    public function addToPage(SettingsPage $page): static
+    {
+        $page->addSection($this);
+        return $this;
+    }
 }

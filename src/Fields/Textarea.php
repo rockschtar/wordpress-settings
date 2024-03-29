@@ -1,15 +1,16 @@
 <?php
+
 namespace Rockschtar\WordPress\Settings\Fields;
 
-use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\HTMLTag;
 use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
+use Rockschtar\WordPress\Settings\Traits\DirnameTrait;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use Rockschtar\WordPress\Settings\Traits\PlaceholderTrait;
 use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
 
-class Textarea extends Field {
-
+class Textarea extends Field
+{
     use ReadOnlyTrait;
 
     use DisabledTrait;
@@ -18,153 +19,91 @@ class Textarea extends Field {
 
     use AutofocusTrait;
 
-    /**
-     * @var bool
-     */
-    private $dirname = false;
+    use DirnameTrait;
 
-    /**
-     * @var int
-     */
-    private $cols = 80;
+    private int $cols = 80;
 
-    /**
-     * @var int
-     */
-    private $rows = 10;
+    private int $rows = 10;
 
-    /**
-     * @var int|null
-     */
-    private $maxlength;
+    private ?int $maxlength = null;
 
-    /**
-     * @var string
-     */
-    private $wrap;
+    private ?string $wrap = null;
 
-    /**
-     * @return int
-     */
-    public function getCols(): int {
+    public function getCols(): int
+    {
         return $this->cols;
     }
 
-    /**
-     * @param int $cols
-     * @return Textarea
-     */
-    public function setCols(int $cols): Textarea {
+    public function setCols(int $cols): Textarea
+    {
         $this->cols = $cols;
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getRows(): int {
+    public function getRows(): int
+    {
         return $this->rows;
     }
 
-    /**
-     * @param int $rows
-     * @return Textarea
-     */
-    public function setRows(int $rows): Textarea {
+    public function setRows(int $rows): Textarea
+    {
         $this->rows = $rows;
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getMaxlength(): ?int {
+
+    public function getMaxlength(): ?int
+    {
         return $this->maxlength;
     }
 
-    /**
-     * @param int|null $maxlength
-     * @return Textarea
-     */
-    public function setMaxlength(?int $maxlength): Textarea {
+
+    public function setMaxlength(?int $maxlength): Textarea
+    {
         $this->maxlength = $maxlength;
         return $this;
     }
 
-
-    /**
-     * @return string
-     */
-    public function getWrap(): string {
+    public function getWrap(): ?string
+    {
         return $this->wrap;
     }
 
-    /**
-     * @param string $wrap
-     * @return Textarea
-     */
-    public function setWrap(string $wrap): Textarea {
+    public function setWrap(string $wrap): Textarea
+    {
         $this->wrap = $wrap;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isDirname(): bool {
-        return $this->dirname;
-    }
+    public function output($currentValue, array $args = []): string
+    {
 
-    /**
-     * @param bool $dirname
-     * @return Textarea
-     */
-    public function setDirname(bool $dirname): Textarea {
-        $this->dirname = $dirname;
-        return $this;
-    }
+        $readonly = $this->isReadonly() ? 'readonly' : '';
+        $disabled = $this->isDisabled() ? 'disabled' : '';
+        $autofocus = $this->isAutofocus() ? 'autofocus' : '';
+        $dir = !empty($this->getDir()) ? 'dir="' . $this->getDir() . '"' : '';
+        $dirname = !empty($this->getDir()) ? 'dirname="' . $this->getId() . '.dir"' : '';
+        $maxlength = $this->getMaxlength() ? 'maxlength="' . $this->getMaxlength() . '"' : '';
+        $placeholder = $this->getPlaceholder() ? 'placeholder="' . $this->getPlaceholder() . '"' : '';
+        $wrap = $this->getWrap() ? 'wrap="' . $this->getWrap() . '"' : '';
 
-    /**
-     * @param $current_value
-     * @param array $args
-     * @return string
-     */
-    public function inputHTML($current_value, array $args = []): string {
+        $output = <<<HTML
+            <textarea 
+                id="{$this->getId()}"
+                name="{$this->getId()}"
+                rows="{$this->getRows()}"
+                cols="{$this->getCols()}"
+                $readonly
+                $disabled
+                $autofocus
+                $maxlength
+                $placeholder
+                $dir
+                $dirname
+                $wrap
+                >$currentValue</textarea>
+        HTML;
 
-        $htmlTag = new HTMLTag('textarea');
-        $htmlTag->setInnerHTML($current_value);
-        $htmlTag->setAttribute('id', $this->getId());
-        $htmlTag->setAttribute('name', $this->getId());
-        $htmlTag->setAttribute('rows', $this->getRows());
-        $htmlTag->setAttribute('cols', $this->getCols());
-
-        if ($this->isAutofocus()) {
-            $htmlTag->setAttribute('autofocus');
-        }
-
-        if ($this->isDirname()) {
-            $htmlTag->setAttribute('dirname', $this->getId() . '.dir"');
-        }
-
-        if ($this->getMaxlength()) {
-            $htmlTag->setAttribute('maxlength', $this->getMaxlength());
-        }
-
-        if ($this->isReadonly()) {
-            $htmlTag->setAttribute('readonly');
-        }
-
-        if ($this->isDisabled()) {
-            $htmlTag->setAttribute('disabled');
-        }
-
-        if ($this->getPlaceholder()) {
-            $htmlTag->setAttribute('placeholder', $this->getPlaceholder());
-        }
-
-        $html = apply_filters('rwps_html_tag', $htmlTag->buildTag());
-        $html = apply_filters('rwps_html_tag-' . $this->getId(), $html);
-
-        return $html;
+        return $output;
     }
 }

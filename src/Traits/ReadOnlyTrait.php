@@ -2,14 +2,15 @@
 
 namespace Rockschtar\WordPress\Settings\Traits;
 
-trait ReadOnlyTrait {
-
+trait ReadOnlyTrait
+{
     private $readonly = false;
 
     /**
      * @return bool
      */
-    public function isReadonly(): bool {
+    public function isReadonly(): bool
+    {
         return $this->readonly;
     }
 
@@ -17,7 +18,8 @@ trait ReadOnlyTrait {
      * @param bool $readonly
      * @return static
      */
-    public function setReadonly(bool $readonly) {
+    public function setReadonly(bool $readonly)
+    {
         $this->readonly = $readonly;
         return $this;
     }

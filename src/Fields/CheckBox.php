@@ -2,78 +2,50 @@
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
-use Rockschtar\WordPress\Settings\Models\Field;
-use Rockschtar\WordPress\Settings\Models\HTMLTag;
 use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
 
-/**
- * Class CheckBox
- * @package Rockschtar\WordPress\Settings
- */
-class CheckBox extends Field {
-
+class CheckBox extends Field
+{
     use DisabledTrait;
 
     use ReadOnlyTrait;
 
     use AutofocusTrait;
 
-    /**
-     * @var String|null
-     */
-    private $value;
+    private mixed $value = null;
 
-    /**
-     * @param $current_value
-     * @return HTMLTag
-     */
-    protected function getHTMLTag($current_value): HTMLTag {
-        $htmlTag = new HTMLTag('input');
+    public function output($currentValue, array $args = []): string
+    {
 
-        $htmlTag->setAttribute('type', 'checkbox');
-        $htmlTag->setAttribute('id', $this->getId());
-        $htmlTag->setAttribute('name', $this->getId());
+        $readonly = $this->isReadonly() ? 'readonly' : '';
+        $disabled = $this->isDisabled() ? 'disabled' : '';
+        $autofocus = $this->isAutofocus() ? 'autofocus' : '';
+        $checked = checked($this->getValue(), $currentValue, false);
 
-        if ($this->getValue() === $current_value) {
-            $htmlTag->setAttribute('checked');
-        }
+        $output = <<<HTML
+            <input 
+                type="checkbox" 
+                id="{$this->getId()}"
+                name="{$this->getId()}"
+                $readonly 
+                $disabled 
+                $autofocus
+                $checked
+                value="{$this->getValue()}" 
+            />
+        HTML;
 
-        if ($this->isDisabled()) {
-            $htmlTag->setAttribute('disabled');
-        }
 
-        if ($this->isAutofocus()) {
-            $htmlTag->setAttribute('autofocus');
-        }
-
-        if($this->isReadonly()) {
-            $htmlTag->setAttribute('readonly');
-            $htmlTag->setAttribute('onclick', 'return false;');
-        }
-
-        $htmlTag->setAttribute('value', $this->getValue());
-
-        return $htmlTag;
-    }
-
-    /**
-     * @param $current_value
-     * @param array $args
-     * @return string
-     */
-    public function inputHTML($current_value, array $args = []): string {
-        $htmlTag = $this->getHTMLTag($current_value);
-        $html = apply_filters('rwps_html_tag', $htmlTag->buildTag());
-        $html = apply_filters('rwps_html_tag-' . $this->getId(), $html);
-        return $html;
+        return $output;
     }
 
     /**
      * @return String|null
      */
-    public function getValue(): ?String {
+    public function getValue(): ?string
+    {
         return $this->value;
     }
 
@@ -81,7 +53,8 @@ class CheckBox extends Field {
      * @param String|null $value
      * @return CheckBox
      */
-    public function setValue(?String $value): CheckBox {
+    public function setValue(?string $value): CheckBox
+    {
         $this->value = $value;
         return $this;
     }
