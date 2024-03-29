@@ -2,63 +2,41 @@
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
-use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 
-/**
- * Class WYSIWYG
- * @package Rockschtar\WordPress\Settings
- */
-class WYSIWYG extends Field {
-
+class WYSIWYG extends Field
+{
     use DisabledTrait;
 
-    /**
-     * @var array
-     */
-    private $settings = [];
+    private array $settings = [];
 
-    /**
-     * @var int
-     */
-    private $width;
+    private ?int $width = null;
 
-    /**
-     * @var int
-     */
-    private $height;
+    private ?int $height = null;
 
-    /**
-     * @param $current_value
-     * @param array $args
-     * @return string
-     */
-    public function inputHTML($current_value, array $args = []): string {
-        ?>
-        <?php
-        /** @noinspection IsEmptyFunctionUsageInspection */
-        if (!empty($this->getWidth())): ?>
-            <!--suppress CssUnusedSymbol -->
-            <style type="text/css">
-                #wp-<?php echo $this->getId(); ?>-editor-container, #wp-<?php echo $this->getId(); ?>-editor-tools {
-                    width: <?php echo $this->getWidth(); ?>px;
+    public function output($currentValue, array $args = []): string
+    {
+        ob_start();
+
+        $styleTag = $this->getWidth() === null ? '' : <<<HTML
+            <style>
+                #wp-{$this->getId()}-editor-container, #wp-{$this->getId()}-editor-tools {
+                    width: {$this->getWidth()}px;
                 }
             </style>
-        <?php endif;
+        HTML;
 
-        $editor_settings = $this->getSettings();
+        $editorSettings = $this->getSettings();
 
-        /** @noinspection IsEmptyFunctionUsageInspection */
-        if (!empty($this->getHeight())) {
-            $editor_settings['editor_height'] = $this->getHeight();
+        if ($this->getHeight() !== null) {
+            $editorSettings['editor_height'] = $this->getHeight();
         }
 
-        $editor_settings['readonly'] = $this->isDisabled();
+        $editorSettings['readonly'] = $this->isDisabled();
 
         $is_disabled = $this->isDisabled();
 
         $tiny_mce_before_init = static function ($args) use ($is_disabled) {
-
             if ($is_disabled) {
                 $args['readonly'] = 1;
             }
@@ -68,7 +46,8 @@ class WYSIWYG extends Field {
 
         add_filter('tiny_mce_before_init', $tiny_mce_before_init);
 
-        wp_editor($current_value, $this->getId(), $editor_settings);
+        echo $styleTag;
+        wp_editor($currentValue, $this->getId(), $editorSettings);
 
         remove_filter('tiny_mce_before_init', $tiny_mce_before_init);
 
@@ -78,7 +57,8 @@ class WYSIWYG extends Field {
     /**
      * @return int
      */
-    public function getWidth(): ?int {
+    public function getWidth(): ?int
+    {
         return $this->width;
     }
 
@@ -86,7 +66,8 @@ class WYSIWYG extends Field {
      * @param int $width
      * @return WYSIWYG
      */
-    public function setWidth(int $width): WYSIWYG {
+    public function setWidth(int $width): WYSIWYG
+    {
         $this->width = $width;
         return $this;
     }
@@ -94,7 +75,8 @@ class WYSIWYG extends Field {
     /**
      * @return array
      */
-    public function getSettings(): array {
+    public function getSettings(): array
+    {
         return $this->settings;
     }
 
@@ -102,7 +84,8 @@ class WYSIWYG extends Field {
      * @param array $settings
      * @return WYSIWYG
      */
-    public function setSettings(array $settings): WYSIWYG {
+    public function setSettings(array $settings): WYSIWYG
+    {
         $this->settings = $settings;
         return $this;
     }
@@ -110,7 +93,8 @@ class WYSIWYG extends Field {
     /**
      * @return int
      */
-    public function getHeight(): ?int {
+    public function getHeight(): ?int
+    {
         return $this->height;
     }
 
@@ -118,7 +102,8 @@ class WYSIWYG extends Field {
      * @param int $height
      * @return WYSIWYG
      */
-    public function setHeight(int $height): WYSIWYG {
+    public function setHeight(int $height): WYSIWYG
+    {
         $this->height = $height;
         return $this;
     }

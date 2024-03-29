@@ -2,117 +2,83 @@
 
 namespace Rockschtar\WordPress\Settings\Models;
 
-/**
- * Class Button
- * @package Rockschtar\WordPress\Settings
- */
-abstract class Button extends Field {
+use Rockschtar\WordPress\Settings\Fields\Field;
+
+abstract class Button extends Field
+{
     public const POSITION_FORM = 'form';
     public const POSITION_BEFORE_SUBMIT = 'before_submit';
     public const POSITION_AFTER_SUBMIT = 'after_submit';
 
-    /**
-     * @var string|null
-     */
-    private $position = self::POSITION_FORM;
+    private ?string $position = self::POSITION_FORM;
 
-    /**
-     * @var string
-     */
-    private $button_label;
+    private string $buttonLabel = '';
 
-    /**
-     * @var String
-     */
-    private $action;
+    private string $action = '';
 
     /**
      * @var callable
      */
     private $callable;
 
-    /**
-     * @return callable
-     */
-    public function getCallable(): callable {
-        return $this->callable;
 
+    public function getCallable(): callable
+    {
+        return $this->callable;
     }
 
-    /**
-     * @param callable $callable
-     * @return static
-     */
-    public function setCallable(callable $callable) {
+    public function setCallable(callable $callable): static
+    {
         $this->callable = $callable;
         return $this;
     }
 
-    /**
-     * @return String
-     */
-    public function getAction(): String {
+    public function getAction(): string
+    {
         return $this->action;
     }
 
-    /**
-     * @param String $action
-     * @return static
-     */
-    public function setAction(String $action) {
+    public function setAction(string $action): static
+    {
         $this->action = $action;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getPosition(): ?string {
+    public function getPosition(): ?string
+    {
         return $this->position;
     }
 
-    /**
-     * @param string|null $position
-     * @return static
-     */
-    public function setPosition(?string $position) {
+    public function setPosition(?string $position): static
+    {
         $this->position = $position;
         return $this;
     }
 
-    /**
-     * @param mixed $current_value
-     * @param array $args
-     * @return string
-     */
-    public function inputHTML($current_value, array $args = []): string {
-        ob_start();
-        ?>
-        <button type="button" id="<?php $this->getId(); ?>"
-                class="button button-secondary rwps-ajax-button rwps-ajax-button-<?php $this->getId(); ?>"><?php echo $this->getButtonLabel(); ?></button>
-        <?php
-
-        return ob_get_clean();
+    public function output($currentValue, array $args = []): string
+    {
+        return <<<HTML
+            <button 
+                type="button" 
+                id="{$this->getId()}"
+                class="button 
+                button-secondary rwps-ajax-button rwps-ajax-button-{$this->getId()}">{$this->getButtonLabel()}
+            </button>
+        HTML;
     }
 
-    /**
-     * @return string
-     */
-    public function getButtonLabel(): string {
-
-        if (empty($this->button_label)) {
+    public function getButtonLabel(): string
+    {
+        if (empty($this->buttonLabel)) {
             return $this->getId();
         }
 
-        return $this->button_label;
+        return $this->buttonLabel;
     }
 
-    /**
-     * @param string $button_label
-     * @return static
-     */
-    public function setButtonLabel(string $button_label) {
-        $this->button_label = $button_label;
+    public function setButtonLabel(string $buttonLabel): static
+    {
+        $this->buttonLabel = $buttonLabel;
         return $this;
     }
 }

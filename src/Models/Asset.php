@@ -6,8 +6,8 @@ namespace Rockschtar\WordPress\Settings\Models;
  * Class Asset
  * @package Rockschtar\WordPress\Settings
  */
-abstract class Asset {
-
+abstract class Asset
+{
     public const TYPE_SCRIPT = 'script';
     public const TYPE_STYLE = 'style';
 
@@ -48,7 +48,8 @@ abstract class Asset {
      * @param bool|string|null $ver
      * @param array $deps
      */
-    public function __construct(string $handle, string $src, $ver = false, array $deps = []) {
+    public function __construct(string $handle, string $src, $ver = false, array $deps = [])
+    {
         $this->handle = $handle;
         $this->src = $src;
         $this->ver = $ver;
@@ -58,7 +59,8 @@ abstract class Asset {
     /**
      * @return string
      */
-    public function getHandle(): string {
+    public function getHandle(): string
+    {
         return $this->handle;
     }
 
@@ -66,7 +68,8 @@ abstract class Asset {
      * @param string $handle
      * @return Asset
      */
-    public function setHandle(string $handle): Asset {
+    public function setHandle(string $handle): Asset
+    {
         $this->handle = $handle;
         return $this;
     }
@@ -74,7 +77,8 @@ abstract class Asset {
     /**
      * @return string
      */
-    public function getSrc(): string {
+    public function getSrc(): string
+    {
         return $this->src;
     }
 
@@ -82,7 +86,8 @@ abstract class Asset {
      * @param string $src
      * @return Asset
      */
-    public function setSrc(string $src): Asset {
+    public function setSrc(string $src): Asset
+    {
         $this->src = $src;
         return $this;
     }
@@ -90,7 +95,8 @@ abstract class Asset {
     /**
      * @return bool|string|null
      */
-    public function getVer() {
+    public function getVer()
+    {
         return $this->ver;
     }
 
@@ -98,7 +104,8 @@ abstract class Asset {
      * @param bool|string|null $ver
      * @return Asset
      */
-    public function setVer($ver): Asset {
+    public function setVer($ver): Asset
+    {
         $this->ver = $ver;
         return $this;
     }
@@ -106,7 +113,8 @@ abstract class Asset {
     /**
      * @return array
      */
-    public function getDeps(): array {
+    public function getDeps(): array
+    {
         return $this->deps;
     }
 
@@ -114,7 +122,8 @@ abstract class Asset {
      * @param array $deps
      * @return Asset
      */
-    public function setDeps(array $deps): Asset {
+    public function setDeps(array $deps): Asset
+    {
         $this->deps = $deps;
         return $this;
     }
@@ -122,16 +131,16 @@ abstract class Asset {
     /**
      * @return mixed
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
     /**
      * @return AssetInline[]
      */
-    public function getInlines(): array {
+    public function getInlines(): array
+    {
         return $this->inlines;
     }
-
-
 }
