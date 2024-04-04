@@ -2,12 +2,14 @@
 
 namespace Rockschtar\WordPress\Settings\Models;
 
+use Rockschtar\WordPress\Settings\Fields\Field;
+
 /**
  * Class SettingsPage
  * @package Rockschtar\WordPress\Settings
  */
-class SettingsPage {
-
+class SettingsPage
+{
     /**
      * @var string
      */
@@ -72,7 +74,8 @@ class SettingsPage {
      * Page constructor.
      * @param string $id
      */
-    private function __construct(string $id) {
+    private function __construct(string $id)
+    {
         $this->id = $id;
     }
 
@@ -80,14 +83,16 @@ class SettingsPage {
      * @param string $id
      * @return SettingsPage
      */
-    public static function create(string $id): SettingsPage {
+    public static function create(string $id): SettingsPage
+    {
         return new self($id);
     }
 
     /**
      * @return string|null
      */
-    public function getParent(): ?string {
+    public function getParent(): ?string
+    {
         return $this->parent;
     }
 
@@ -95,7 +100,8 @@ class SettingsPage {
      * @param string|null $parent
      * @return SettingsPage
      */
-    public function setParent(?string $parent): SettingsPage {
+    public function setParent(?string $parent): SettingsPage
+    {
         $this->parent = $parent;
         return $this;
     }
@@ -103,7 +109,8 @@ class SettingsPage {
     /**
      * @return callable|null
      */
-    public function getAdminFooterHook(): ?callable {
+    public function getAdminFooterHook(): ?callable
+    {
         return $this->admin_footer_hook;
     }
 
@@ -111,7 +118,8 @@ class SettingsPage {
      * @param callable|null $admin_footer_hook
      * @return SettingsPage
      */
-    public function setAdminFooterHook(?callable $admin_footer_hook): SettingsPage {
+    public function setAdminFooterHook(?callable $admin_footer_hook): SettingsPage
+    {
         $this->admin_footer_hook = $admin_footer_hook;
         return $this;
     }
@@ -120,7 +128,8 @@ class SettingsPage {
      * @param Asset $asset
      * @return SettingsPage
      */
-    public function addAsset(Asset $asset): SettingsPage {
+    public function addAsset(Asset $asset): SettingsPage
+    {
         $this->assets[] = $asset;
         return $this;
     }
@@ -128,21 +137,24 @@ class SettingsPage {
     /**
      * @return Asset[]
      */
-    public function getAssets(): array {
+    public function getAssets(): array
+    {
         return $this->assets;
     }
 
     /**
      * @return Section[]
      */
-    public function getSections(): array {
+    public function getSections(): array
+    {
         return $this->sections;
     }
 
     /**
      * @return string
      */
-    public function getPageTitle(): string {
+    public function getPageTitle(): string
+    {
         return $this->page_title;
     }
 
@@ -150,7 +162,8 @@ class SettingsPage {
      * @param string $page_title
      * @return SettingsPage
      */
-    public function setPageTitle(string $page_title): SettingsPage {
+    public function setPageTitle(string $page_title): SettingsPage
+    {
         $this->page_title = $page_title;
         return $this;
     }
@@ -158,7 +171,8 @@ class SettingsPage {
     /**
      * @return string
      */
-    public function getMenuTitle(): string {
+    public function getMenuTitle(): string
+    {
         return $this->menu_title;
     }
 
@@ -166,7 +180,8 @@ class SettingsPage {
      * @param string $menu_title
      * @return SettingsPage
      */
-    public function setMenuTitle(string $menu_title): SettingsPage {
+    public function setMenuTitle(string $menu_title): SettingsPage
+    {
         $this->menu_title = $menu_title;
         return $this;
     }
@@ -174,7 +189,8 @@ class SettingsPage {
     /**
      * @return string
      */
-    public function getCapability(): string {
+    public function getCapability(): string
+    {
         return $this->capability;
     }
 
@@ -182,7 +198,8 @@ class SettingsPage {
      * @param string $capability
      * @return SettingsPage
      */
-    public function setCapability(string $capability): SettingsPage {
+    public function setCapability(string $capability): SettingsPage
+    {
         $this->capability = $capability;
         return $this;
     }
@@ -190,7 +207,8 @@ class SettingsPage {
     /**
      * @return string
      */
-    public function getIcon(): string {
+    public function getIcon(): string
+    {
         return $this->icon;
     }
 
@@ -198,7 +216,8 @@ class SettingsPage {
      * @param string $icon
      * @return SettingsPage
      */
-    public function setIcon(string $icon): SettingsPage {
+    public function setIcon(string $icon): SettingsPage
+    {
         $this->icon = $icon;
         return $this;
     }
@@ -206,7 +225,8 @@ class SettingsPage {
     /**
      * @return float|int
      */
-    public function getPosition() {
+    public function getPosition()
+    {
         return $this->position;
     }
 
@@ -214,7 +234,8 @@ class SettingsPage {
      * @param float|int $position
      * @return SettingsPage
      */
-    public function setPosition($position): SettingsPage {
+    public function setPosition($position): SettingsPage
+    {
         $this->position = $position;
         return $this;
     }
@@ -222,7 +243,8 @@ class SettingsPage {
     /**
      * @return mixed
      */
-    public function getCallback() {
+    public function getCallback()
+    {
         return $this->callback;
     }
 
@@ -230,7 +252,8 @@ class SettingsPage {
      * @param mixed $callback
      * @return SettingsPage
      */
-    public function setCallback($callback): SettingsPage {
+    public function setCallback($callback): SettingsPage
+    {
         $this->callback = $callback;
         return $this;
     }
@@ -239,7 +262,8 @@ class SettingsPage {
      * @param Button $button
      * @return SettingsPage
      */
-    public function addButton(Button $button): SettingsPage {
+    public function addButton(Button $button): SettingsPage
+    {
         $this->buttons[] = $button;
         return $this;
     }
@@ -247,7 +271,8 @@ class SettingsPage {
     /**
      * @return Button[]
      */
-    public function getButtons(): array {
+    public function getButtons(): array
+    {
         return $this->buttons;
     }
 
@@ -255,7 +280,8 @@ class SettingsPage {
      * @param Field $field
      * @return SettingsPage
      */
-    public function addField(Field $field): SettingsPage {
+    public function addField(Field $field): SettingsPage
+    {
 
         $section = $this->getOrCreateDefaultSection($index);
         $section->addField($field);
@@ -267,7 +293,8 @@ class SettingsPage {
      * @param int|null $index
      * @return Section
      */
-    private function getOrCreateDefaultSection(?int &$index = null): Section {
+    private function getOrCreateDefaultSection(?int &$index = null): Section
+    {
         $section_id = $this->getId() . '-default';
 
         $section = null;
@@ -296,7 +323,8 @@ class SettingsPage {
     /**
      * @return string
      */
-    public function getId(): string {
+    public function getId(): string
+    {
         return $this->id;
     }
 
@@ -304,7 +332,8 @@ class SettingsPage {
      * @param string $id
      * @return SettingsPage
      */
-    public function setId(string $id): SettingsPage {
+    public function setId(string $id): SettingsPage
+    {
         $this->id = $id;
         return $this;
     }
@@ -313,7 +342,8 @@ class SettingsPage {
      * @param Section $section
      * @return SettingsPage
      */
-    public function addSection(Section $section): SettingsPage {
+    public function addSection(Section $section): SettingsPage
+    {
         $this->sections[] = $section;
         return $this;
     }
@@ -321,7 +351,8 @@ class SettingsPage {
     /**
      * @return Field[]
      */
-    public function getFields(): array {
+    public function getFields(): array
+    {
         return $this->getOrCreateDefaultSection()->getFields();
     }
 
@@ -329,7 +360,8 @@ class SettingsPage {
      * @param mixed $fields
      * @return SettingsPage
      */
-    public function setFields($fields): SettingsPage {
+    public function setFields($fields): SettingsPage
+    {
         $this->getOrCreateDefaultSection()->setFields($fields);
         return $this;
     }

@@ -1,12 +1,13 @@
 <?php
+
 /**
  * @author: StefanHelmer
  */
 
 namespace Rockschtar\WordPress\Settings\Models;
 
-
-abstract class AssetInline {
+abstract class AssetInline
+{
     /**
      * @var string
      */
@@ -22,7 +23,8 @@ abstract class AssetInline {
      * @param string $handle
      * @param string $data
      */
-    public function __construct(string $handle, string $data) {
+    public function __construct(string $handle, string $data)
+    {
         $this->handle = $handle;
         $this->data = $data;
     }
@@ -30,7 +32,8 @@ abstract class AssetInline {
     /**
      * @return string
      */
-    public function getHandle(): string {
+    public function getHandle(): string
+    {
         return $this->handle;
     }
 
@@ -38,7 +41,8 @@ abstract class AssetInline {
      * @param string $handle
      * @return static
      */
-    public function setHandle(string $handle) {
+    public function setHandle(string $handle)
+    {
         $this->handle = $handle;
         return $this;
     }
@@ -46,7 +50,8 @@ abstract class AssetInline {
     /**
      * @return string
      */
-    public function getData(): string {
+    public function getData(): string
+    {
         return $this->data;
     }
 
@@ -54,10 +59,9 @@ abstract class AssetInline {
      * @param string $data
      * @return static
      */
-    public function setData(string $data) {
+    public function setData(string $data)
+    {
         $this->data = $data;
         return $this;
     }
-
-
 }

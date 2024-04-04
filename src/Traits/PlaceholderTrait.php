@@ -1,15 +1,13 @@
 <?php
 
-
 namespace Rockschtar\WordPress\Settings\Traits;
-
 
 /**
  * Trait PlaceholderTrait
  * @package Rockschtar\WordPress\Settings\Traits
  */
-trait PlaceholderTrait {
-
+trait PlaceholderTrait
+{
     /**
      * @var string|null
      */
@@ -18,7 +16,8 @@ trait PlaceholderTrait {
     /**
      * @return string|null
      */
-    public function getPlaceholder(): ?string {
+    public function getPlaceholder(): ?string
+    {
         return $this->placeholder;
     }
 
@@ -26,10 +25,9 @@ trait PlaceholderTrait {
      * @param string|null $placeholder
      * @return static
      */
-    public function setPlaceholder(?string $placeholder) {
+    public function setPlaceholder(?string $placeholder)
+    {
         $this->placeholder = $placeholder;
         return $this;
     }
-
-
 }

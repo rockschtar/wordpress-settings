@@ -1,30 +1,20 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Traits;
 
+trait AutofocusTrait
+{
+    private bool $autofocus = false;
 
-trait AutofocusTrait {
 
-    /**
-     * @var bool
-     */
-    private $autofocus = false;
-
-    /**
-     * @return bool
-     */
-    public function isAutofocus(): bool {
+    public function isAutofocus(): bool
+    {
         return $this->autofocus;
     }
 
-    /**
-     * @param bool $autofocus
-     * @return static
-     */
-    public function setAutofocus(bool $autofocus) {
+
+    public function setAutofocus(bool $autofocus): static
+    {
         $this->autofocus = $autofocus;
         return $this;
     }

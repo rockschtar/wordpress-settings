@@ -5,13 +5,15 @@ namespace Rockschtar\WordPress\Settings\Fields;
 use Rockschtar\WordPress\Settings\Models\AssetScript;
 use Rockschtar\WordPress\Settings\Models\AssetStyle;
 
-class Select2Box extends SelectBox {
-
-    /**
-     * Select2Box constructor.
-     * @param string $id
-     */
-    public function __construct(string $id) {
+/**
+ * This method is deprecated and will be removed in the next major release.
+ *
+ * @deprecated
+ */
+class Select2Box extends SelectBox
+{
+    public function __construct(string $id)
+    {
         parent::__construct($id);
 
         $this->addCssClass('rswp-select2');

@@ -1,48 +1,24 @@
 <?php
-/**
- * @author: StefanHelmer
- */
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
+class Custom extends Field
+{
+    private ?string $content = null;
 
-use Rockschtar\WordPress\Settings\Models\Field;
-
-/**
- * Class Custom
- * @package Rockschtar\WordPress\Settings
- */
-class Custom extends Field {
-
-    /**
-     * @var string|null
-     */
-    private $content;
-
-    /**
-     * @param $current_value
-     * @param array $args
-     * @return string
-     */
-    public function inputHTML($current_value, array $args = []): string {
+    public function output($currentValue, array $args = []): string
+    {
         return $this->getContent();
     }
 
-    /**
-     * @return string|null
-     */
-    public function getContent(): ?string {
+    public function getContent(): ?string
+    {
         return $this->content;
     }
 
-    /**
-     * @param string|null $content
-     * @return Custom
-     */
-    public function setContent(?string $content): Custom {
+    public function setContent(?string $content): Custom
+    {
         $this->content = $content;
         return $this;
     }
-
-
 }
