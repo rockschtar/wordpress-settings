@@ -6,143 +6,120 @@ use Rockschtar\WordPress\Settings\Models\AssetScript;
 use Rockschtar\WordPress\Settings\Models\Button;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 
-/**
- * Class AjaxButton
- * @package Rockschtar\WordPress\Settings
- */
-class AjaxButton extends Button {
-
+class AjaxButton extends Button
+{
     use DisabledTrait;
 
-    /**
-     * @var String|null
-     */
-    private $button_label_wait = 'Please wait';
+    private ?string $labelWait = 'Please wait';
 
-    /**
-     * @var string|null
-     */
-    private $button_label_success;
+    private ?string $labelSuccess = null;
 
+    private ?string $labelError = null;
 
-    /**
-     * @var string|null
-     */
-    private $button_label_error;
+    private ?string $jsCallbackSuccess = null;
 
-    /**
-     * @var string|null
-     */
-    private $js_callback_success;
+    private ?string $js_callback_error = null;
 
-    /**
-     * @var string|null
-     */
-    private $js_callback_error;
+    private ?string $js_callback_done = null;
 
-    /**
-     * @var string|null
-     */
-    private $js_callback_done;
-
-    public function __construct($id) {
+    public function __construct(string $id)
+    {
         parent::__construct($id);
-        $ajax_button_asset_script = new AssetScript('rwps-ajax-button', admin_url('?action=rwps-load-script&script=AjaxButton.js'), false, ['jquery']);
-        $ajax_button_asset_script->addLocalize('rwps_ajax_button', ['nonce' => wp_create_nonce('rwps-ajax-button-nonce')]);
+        $ajax_button_asset_script = new AssetScript(
+            'rwps-ajax-button',
+            admin_url('?action=rwps-load-script&script=AjaxButton.js'),
+            false,
+            ['jquery']
+        );
+        $ajax_button_asset_script->addLocalize(
+            'rwps_ajax_button',
+            ['nonce' => wp_create_nonce('rwps-ajax-button-nonce')]
+        );
         $this->addAsset($ajax_button_asset_script);
     }
 
 
-    /**
-     * @param mixed $current_value
-     * @param array $args
-     * @return string
-     */
-    public function inputHTML($current_value, array $args = []): string {
-        ob_start();
-        ?>
-        <button <?php disabled($this->isDisabled()); ?> type="button" id="<?php echo $this->getId(); ?>"
-                                                        data-wait-text="<?php echo $this->getButtonlabelWait(); ?>"
-                                                        data-label-success="<?php echo $this->getButtonLabelSuccess(); ?>"
-                                                        data-label-error="<?php echo $this->getButtonLabelError(); ?>"
-                                                        data-callback-success="<?php echo $this->getJSCallbackSuccess(); ?>"
-                                                        data-callback-error="<?php echo $this->getJSCallbackError(); ?>"
-                                                        data-callback-done="<?php echo $this->getJSCallbackDone(); ?>"
-                                                        class="button button-secondary rwps-ajax-button rwps-ajax-button-<?php $this->getId(); ?>"><?php echo $this->getButtonLabel(); ?></button>
-        <?php
+    public function output($currentValue, array $args = []): string
+    {
+        $disabled = $this->isDisabled() ? 'disabled' : '';
 
-        return ob_get_clean();
-
+        return <<<HTML
+            <button type="button" id="{$this->getId()}"
+                    $disabled
+                    data-wait-text="{$this->getButtonlabelWait()}"
+                    data-label-success="{$this->getLabelSuccess()}"
+                    data-label-error="{$this->getLabelError()}"
+                    data-callback-success="{$this->getJSCallbackSuccess()}"
+                    data-callback-error="{$this->getJSCallbackError()}"
+                    data-callback-done="{$this->getJSCallbackDone()}"
+                    class="button button-secondary rwps-ajax-button rwps-ajax-button-{$this->getId()}">{$this->getButtonLabel()}
+            </button>
+        HTML;
     }
 
-    /**
-     * @return String|null
-     */
-    public function getButtonlabelWait(): ?String {
-        return $this->button_label_wait;
+    public function getButtonlabelWait(): ?string
+    {
+        return $this->labelWait;
     }
 
-    /**
-     * @param String|null $button_label_wait
-     * @return AjaxButton
-     */
-    public function setButtonlabelWait(?String $button_label_wait): AjaxButton {
-        $this->button_label_wait = $button_label_wait;
+    public function setButtonlabelWait(?string $label): AjaxButton
+    {
+        $this->labelWait = $label;
+        return $this;
+    }
+
+    public function getLabelSuccess(): ?string
+    {
+        return $this->labelSuccess;
+    }
+
+    public function setLabelSuccess(?string $labelSuccess): AjaxButton
+    {
+        $this->labelSuccess = $labelSuccess;
         return $this;
     }
 
     /**
      * @return string|null
      */
-    public function getButtonLabelSuccess(): ?string {
-        return $this->button_label_success;
+    public function getLabelError(): ?string
+    {
+        return $this->labelError;
     }
 
     /**
-     * @param string|null $button_label_success
+     * @param string|null $labelError
      * @return AjaxButton
      */
-    public function setButtonLabelSuccess(?string $button_label_success): AjaxButton {
-        $this->button_label_success = $button_label_success;
+    public function setLabelError(?string $labelError): AjaxButton
+    {
+        $this->labelError = $labelError;
         return $this;
     }
 
     /**
      * @return string|null
      */
-    public function getButtonLabelError(): ?string {
-        return $this->button_label_error;
+    public function getJSCallbackSuccess(): ?string
+    {
+        return $this->jsCallbackSuccess;
     }
 
     /**
-     * @param string|null $button_label_error
+     * @param string|null $jsCallbackSuccess
      * @return AjaxButton
      */
-    public function setButtonLabelError(?string $button_label_error): AjaxButton {
-        $this->button_label_error = $button_label_error;
+    public function setJSCallbackSuccess(?string $jsCallbackSuccess): AjaxButton
+    {
+        $this->jsCallbackSuccess = $jsCallbackSuccess;
         return $this;
     }
 
     /**
      * @return string|null
      */
-    public function getJSCallbackSuccess(): ?string {
-        return $this->js_callback_success;
-    }
-
-    /**
-     * @param string|null $js_callback_success
-     * @return AjaxButton
-     */
-    public function setJSCallbackSuccess(?string $js_callback_success): AjaxButton {
-        $this->js_callback_success = $js_callback_success;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getJSCallbackError(): ?string {
+    public function getJSCallbackError(): ?string
+    {
         return $this->js_callback_error;
     }
 
@@ -150,7 +127,8 @@ class AjaxButton extends Button {
      * @param string|null $js_callback_error
      * @return AjaxButton
      */
-    public function setJSCallbackError(?string $js_callback_error): AjaxButton {
+    public function setJSCallbackError(?string $js_callback_error): AjaxButton
+    {
         $this->js_callback_error = $js_callback_error;
         return $this;
     }
@@ -158,7 +136,8 @@ class AjaxButton extends Button {
     /**
      * @return string|null
      */
-    public function getJSCallbackDone(): ?string {
+    public function getJSCallbackDone(): ?string
+    {
         return $this->js_callback_done;
     }
 
@@ -166,9 +145,9 @@ class AjaxButton extends Button {
      * @param string|null $js_callback_done
      * @return AjaxButton
      */
-    public function setJSCallbackDone(?string $js_callback_done): AjaxButton {
+    public function setJSCallbackDone(?string $js_callback_done): AjaxButton
+    {
         $this->js_callback_done = $js_callback_done;
         return $this;
     }
-
 }

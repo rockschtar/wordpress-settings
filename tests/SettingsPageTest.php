@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Rockschtar\WordPress\Settings\Fields\CheckBox;
 use Rockschtar\WordPress\Settings\Fields\SelectBox;
 use Rockschtar\WordPress\Settings\Fields\Textarea;
-use Rockschtar\WordPress\Settings\Fields\Textfield;
+use Rockschtar\WordPress\Settings\Fields\InputText;
 use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\Section;
@@ -70,8 +70,8 @@ class SettingsPageTest extends TestCase {
      */
     public function testTextfield(SettingsPage $settingsPage): void {
 
-        $textField = Textfield::create('ut-testfield')->setLabel('UT Textfield');
-        $this->assertStringContainsString('id="ut-testfield" name="ut-testfield"', $textField->output(''));
+        $textField = InputText::create('ut-testfield')->setLabel('UT Textfield');
+        $this->assertStringContainsString('id="ut-testfield" name="ut-testfield"', $textField->processOutput(''));
 
         $this->assertAutofocus($textField);
         $this->assertReadonly($textField);
@@ -79,25 +79,25 @@ class SettingsPageTest extends TestCase {
         $this->assertPlaceholder($textField);
         $this->assertDescription($textField);
 
-        $this->assertStringContainsString('<input type="text"', $textField->output(''));
+        $this->assertStringContainsString('<input type="text"', $textField->processOutput(''));
 
-        $textField->setType(Textfield::COLOR);
-        $this->assertStringContainsString('<input type="color"', $textField->output(''));
+        $textField->setType(InputText::COLOR);
+        $this->assertStringContainsString('<input type="color"', $textField->processOutput(''));
 
-        $textField->setType(Textfield::PASSWORD);
-        $this->assertStringContainsString('<input type="password"', $textField->output(''));
+        $textField->setType(InputText::PASSWORD);
+        $this->assertStringContainsString('<input type="password"', $textField->processOutput(''));
 
-        $textField->setType(Textfield::DATE);
-        $this->assertStringContainsString('<input type="date"', $textField->output(''));
+        $textField->setType(InputText::DATE);
+        $this->assertStringContainsString('<input type="date"', $textField->processOutput(''));
 
-        $textField->setType(Textfield::EMAIL);
-        $this->assertStringContainsString('<input type="email"', $textField->output(''));
+        $textField->setType(InputText::EMAIL);
+        $this->assertStringContainsString('<input type="email"', $textField->processOutput(''));
 
-        $textField->setType(Textfield::TEXT);
-        $this->assertStringContainsString('<input type="text"', $textField->output(''));
+        $textField->setType(InputText::TEXT);
+        $this->assertStringContainsString('<input type="text"', $textField->processOutput(''));
 
         $textField->setDatalist(Datalist::create('data-list', ['item1']));
-        $this->assertStringContainsString('<datalist id="data-list"><option value="item1"></datalist>', $textField->output(''));
+        $this->assertStringContainsString('<datalist id="data-list"><option value="item1"></datalist>', $textField->processOutput(''));
 
         $textField->setLabel('Textfield');
 
@@ -112,10 +112,10 @@ class SettingsPageTest extends TestCase {
     public function testCheckbox(SettingsPage $settingsPage): void {
 
         $checkbox = CheckBox::create('ut-testfield')->setLabel('UT Textfield');
-        $this->assertStringContainsString('id="ut-testfield" name="ut-testfield"', $checkbox->output(''));
+        $this->assertStringContainsString('id="ut-testfield" name="ut-testfield"', $checkbox->processOutput(''));
 
         $checkbox->setReadonly(true);
-        $this->assertStringContainsString('onclick="return false;"', $checkbox->output(''));
+        $this->assertStringContainsString('onclick="return false;"', $checkbox->processOutput(''));
 
         $this->assertAutofocus($checkbox);
         $this->assertDisabled($checkbox);
@@ -134,8 +134,8 @@ class SettingsPageTest extends TestCase {
     public function testSelectbox(SettingsPage $settingsPage): void {
 
         $selectbox = SelectBox::create('ut-selectbox')->setLabel('UT Textfield');
-        $this->assertStringContainsString('id="ut-selectbox"', $selectbox->output(''));
-        $this->assertStringContainsString('name="ut-selectbox"', $selectbox->output(''));
+        $this->assertStringContainsString('id="ut-selectbox"', $selectbox->processOutput(''));
+        $this->assertStringContainsString('name="ut-selectbox"', $selectbox->processOutput(''));
 
         $selectbox->addItem(new SelectBoxItem('hello', 'world', true));
         $selectbox->addItem(new SelectBoxItem('value', 'item', true));
@@ -143,7 +143,7 @@ class SettingsPageTest extends TestCase {
         Functions\expect('selected')->with('hello')->andReturn(false);
         Functions\expect('disabled')->andReturn(false);
 
-        $output = $selectbox->output('');
+        $output = $selectbox->processOutput('');
 
 
         $this->assertAutofocus($selectbox);
@@ -162,7 +162,7 @@ class SettingsPageTest extends TestCase {
     public function testTextarea(SettingsPage $settingsPage): void {
 
         $textarea = Textarea::create('ut-textarea')->setLabel('UT Textarea');
-        $this->assertStringContainsString('id="ut-textarea" name="ut-textarea"', $textarea->output(''));
+        $this->assertStringContainsString('id="ut-textarea" name="ut-textarea"', $textarea->processOutput(''));
 
         $this->assertReadonly($textarea);
         $this->assertDisabled($textarea);
@@ -171,13 +171,13 @@ class SettingsPageTest extends TestCase {
         $this->assertDescription($textarea);
 
         $textarea->setRows(20);
-        $this->assertStringContainsString('rows="20"', $textarea->output(''));
+        $this->assertStringContainsString('rows="20"', $textarea->processOutput(''));
 
         $textarea->setCols(40);
-        $this->assertStringContainsString('cols="40"', $textarea->output(''));
+        $this->assertStringContainsString('cols="40"', $textarea->processOutput(''));
 
         $textarea->setDirname(true);
-        $this->assertStringContainsString('dirname="' . $textarea->getId() . '.dir"', $textarea->output(''));
+        $this->assertStringContainsString('dirname="' . $textarea->getId() . '.dir"', $textarea->processOutput(''));
 
         $textarea->setLabel('Checkbox');
         $section = $settingsPage->getSections()[0];
@@ -188,7 +188,7 @@ class SettingsPageTest extends TestCase {
 
         if (method_exists($field, 'setReadonly')) {
             $field->setReadonly(true);
-            $this->assertStringContainsString(' readonly', $field->output(''));
+            $this->assertStringContainsString(' readonly', $field->processOutput(''));
         } else {
             $this->assertTrue(false);
         }
@@ -198,7 +198,7 @@ class SettingsPageTest extends TestCase {
 
         if (method_exists($field, 'setDisabled')) {
             $field->setDisabled(true);
-            $this->assertStringContainsString(' disabled', $field->output(''));
+            $this->assertStringContainsString(' disabled', $field->processOutput(''));
         } else {
             $this->assertTrue(false);
         }
@@ -208,7 +208,7 @@ class SettingsPageTest extends TestCase {
 
         if (method_exists($field, 'setAutofocus')) {
             $field->setAutofocus(true);
-            $this->assertStringContainsString(' autofocus', $field->output(''));
+            $this->assertStringContainsString(' autofocus', $field->processOutput(''));
         } else {
             $this->assertTrue(false);
         }
@@ -217,14 +217,14 @@ class SettingsPageTest extends TestCase {
     private function assertDescription(Field $field): void {
 
         $field->setDescription('Description');
-        $this->assertStringContainsString('<p class="description">Description</p>', $field->output(''));
+        $this->assertStringContainsString('<p class="description">Description</p>', $field->processOutput(''));
     }
 
     private function assertPlaceholder(Field $field): void {
 
         if (method_exists($field, 'setPlaceholder')) {
             $field->setPlaceholder('UT Placeholder');
-            $this->assertStringContainsString('placeholder="UT Placeholder"', $field->output(''));
+            $this->assertStringContainsString('placeholder="UT Placeholder"', $field->processOutput(''));
         } else {
             $this->assertTrue(false);
         }

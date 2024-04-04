@@ -6,8 +6,8 @@ namespace Rockschtar\WordPress\Settings\Models;
  * Class SelectBoxItem
  * @package Rockschtar\WordPress\Settings
  */
-class SelectBoxItem {
-
+class SelectBoxItem
+{
     /**
      * @var string
      */
@@ -29,7 +29,8 @@ class SelectBoxItem {
      * @param string $name
      * @param bool $disabled
      */
-    public function __construct(string $value, string $name, bool $disabled = false) {
+    public function __construct(string $value, string $name, bool $disabled = false)
+    {
         $this->name = $name;
         $this->value = $value;
         $this->disabled = $disabled;
@@ -38,7 +39,8 @@ class SelectBoxItem {
     /**
      * @return string
      */
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->name;
     }
 
@@ -46,7 +48,8 @@ class SelectBoxItem {
      * @param string $name
      * @return SelectBoxItem
      */
-    public function setName(string $name): SelectBoxItem {
+    public function setName(string $name): SelectBoxItem
+    {
         $this->name = $name;
         return $this;
     }
@@ -54,7 +57,8 @@ class SelectBoxItem {
     /**
      * @return string
      */
-    public function getValue(): string {
+    public function getValue(): string
+    {
         return $this->value;
     }
 
@@ -62,7 +66,8 @@ class SelectBoxItem {
      * @param string $value
      * @return SelectBoxItem
      */
-    public function setValue(string $value): SelectBoxItem {
+    public function setValue(string $value): SelectBoxItem
+    {
         $this->value = $value;
         return $this;
     }
@@ -70,7 +75,8 @@ class SelectBoxItem {
     /**
      * @return bool
      */
-    public function isDisabled(): bool {
+    public function isDisabled(): bool
+    {
         return $this->disabled;
     }
 
@@ -78,7 +84,8 @@ class SelectBoxItem {
      * @param bool $disabled
      * @return SelectBoxItem
      */
-    public function setDisabled(bool $disabled): SelectBoxItem {
+    public function setDisabled(bool $disabled): SelectBoxItem
+    {
         $this->disabled = $disabled;
         return $this;
     }
@@ -90,8 +97,8 @@ class SelectBoxItem {
      * @param bool $disabled
      * @return SelectBoxItem
      */
-    public static function create(string $value, string $name, bool $disabled = false): SelectBoxItem {
+    public static function create(string $value, string $name, bool $disabled = false): SelectBoxItem
+    {
         return new self($value, $name, $disabled);
     }
-
 }

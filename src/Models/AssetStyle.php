@@ -6,8 +6,8 @@ namespace Rockschtar\WordPress\Settings\Models;
  * Class AssetStyle
  * @package Rockschtar\WordPress\Settings
  */
-class AssetStyle extends Asset {
-
+class AssetStyle extends Asset
+{
     /**
      * @var string
      */
@@ -21,7 +21,8 @@ class AssetStyle extends Asset {
      * @param array $deps
      * @param bool $media
      */
-    public function __construct(string $handle, string $src, $ver = false, array $deps = [], $media = false) {
+    public function __construct(string $handle, string $src, $ver = false, array $deps = [], $media = false)
+    {
         parent::__construct($handle, $src, $ver, $deps);
         $this->type = Asset::TYPE_STYLE;
         $this->media = $media;
@@ -30,7 +31,8 @@ class AssetStyle extends Asset {
     /**
      * @return string
      */
-    public function getMedia(): string {
+    public function getMedia(): string
+    {
         return $this->media;
     }
 
@@ -38,9 +40,9 @@ class AssetStyle extends Asset {
      * @param string $media
      * @return AssetStyle
      */
-    public function setMedia(string $media): AssetStyle {
+    public function setMedia(string $media): AssetStyle
+    {
         $this->media = $media;
         return $this;
     }
-
 }

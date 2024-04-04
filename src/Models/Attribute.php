@@ -6,8 +6,8 @@ namespace Rockschtar\WordPress\Settings\Models;
  * Class Attribute
  * @package Rockschtar\WordPress\Settings
  */
-class Attribute {
-
+class Attribute
+{
     /**
      * @var string
      */
@@ -23,7 +23,8 @@ class Attribute {
      * @param string $name
      * @param string|null $value
      */
-    public function __construct(string $name, string $value = null) {
+    public function __construct(string $name, string $value = null)
+    {
         $this->name = $name;
         $this->value = $value;
     }
@@ -31,7 +32,8 @@ class Attribute {
     /**
      * @return string
      */
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->name;
     }
 
@@ -39,7 +41,8 @@ class Attribute {
      * @param string $name
      * @return Attribute
      */
-    public function setName(string $name): Attribute {
+    public function setName(string $name): Attribute
+    {
         $this->name = $name;
         return $this;
     }
@@ -47,7 +50,8 @@ class Attribute {
     /**
      * @return string
      */
-    public function getValue(): ?string {
+    public function getValue(): ?string
+    {
         return $this->value;
     }
 
@@ -55,7 +59,8 @@ class Attribute {
      * @param string $value
      * @return Attribute
      */
-    public function setValue(string $value): Attribute {
+    public function setValue(string $value): Attribute
+    {
         $this->value = $value;
         return $this;
     }
@@ -66,8 +71,8 @@ class Attribute {
      * @param string $value
      * @return Attribute
      */
-    public static function create(string $name, string $value): Attribute {
+    public static function create(string $name, string $value): Attribute
+    {
         return new self($name, $value);
     }
-
 }
