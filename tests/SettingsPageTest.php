@@ -17,7 +17,7 @@ use Rockschtar\WordPress\Settings\Fields\InputText;
 use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Models\Field;
 use Rockschtar\WordPress\Settings\Models\Section;
-use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
+use Rockschtar\WordPress\Settings\Models\ListItem;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
 use function Brain\Monkey\setUp;
 use function Brain\Monkey\tearDown;
@@ -137,8 +137,8 @@ class SettingsPageTest extends TestCase {
         $this->assertStringContainsString('id="ut-selectbox"', $selectbox->processOutput(''));
         $this->assertStringContainsString('name="ut-selectbox"', $selectbox->processOutput(''));
 
-        $selectbox->addItem(new SelectBoxItem('hello', 'world', true));
-        $selectbox->addItem(new SelectBoxItem('value', 'item', true));
+        $selectbox->addItem(new ListItem('hello', 'world', true));
+        $selectbox->addItem(new ListItem('value', 'item', true));
 
         Functions\expect('selected')->with('hello')->andReturn(false);
         Functions\expect('disabled')->andReturn(false);

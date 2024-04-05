@@ -2,7 +2,7 @@
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
-use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
+use Rockschtar\WordPress\Settings\Models\ListItem;
 use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
 use Rockschtar\WordPress\Settings\Traits\CssClassTrait;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
@@ -20,11 +20,11 @@ class SelectBox extends Field
     private bool $multiple = false;
 
     /**
-     * @var SelectBoxItem[]
+     * @var ListItem[]
      */
     private array $items = [];
 
-    public function addItem(SelectBoxItem $item): SelectBox
+    public function addItem(ListItem $item): SelectBox
     {
         $this->items[] = $item;
         return $this;
@@ -80,7 +80,7 @@ class SelectBox extends Field
     }
 
     /**
-     * @return SelectBoxItem[]
+     * @return ListItem[]
      */
     public function getItems(): array
     {
