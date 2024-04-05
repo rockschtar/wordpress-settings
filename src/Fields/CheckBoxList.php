@@ -2,7 +2,7 @@
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
-use Rockschtar\WordPress\Settings\Models\SelectBoxItem;
+use Rockschtar\WordPress\Settings\Models\ListItem;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 
 use function is_array;
@@ -12,11 +12,11 @@ class CheckBoxList extends Field
     use DisabledTrait;
 
     /**
-     * @var SelectBoxItem[]
+     * @var ListItem[]
      */
     private array $items = [];
 
-    public function addItem(SelectBoxItem $item): CheckBoxList
+    public function addItem(ListItem $item): CheckBoxList
     {
         $this->items[] = $item;
 
@@ -66,7 +66,7 @@ class CheckBoxList extends Field
     }
 
     /**
-     * @return SelectBoxItem[]
+     * @return ListItem[]
      */
     public function getItems(): array
     {
