@@ -8,10 +8,7 @@ namespace Rockschtar\WordPress\Settings\Models;
 
 class AssetInlineScript extends AssetInline
 {
-    /**
-     * @var string
-     */
-    private $position;
+    private string $position;
 
     /**
      * AssetInlineScript constructor.
