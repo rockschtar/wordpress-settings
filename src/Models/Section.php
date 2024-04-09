@@ -8,7 +8,7 @@ class Section
 {
     private string $id;
 
-    private string $title;
+    private string $title = '';
 
     /**
      * @var callable|null
