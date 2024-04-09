@@ -4,21 +4,22 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 class Custom extends Field
 {
+    private $contentCallback;
+
     private ?string $content = null;
 
     public function output($currentValue, array $args = []): string
     {
-        return $this->getContent();
+        if($this->contentCallback === null) {
+            return '';
+        }
+
+        return call_user_func($this->contentCallback, $this, $currentValue, $args);
     }
 
-    public function getContent(): ?string
+    public function setContentCallback(callable $contentCallback): Custom
     {
-        return $this->content;
-    }
-
-    public function setContent(?string $content): Custom
-    {
-        $this->content = $content;
+        $this->contentCallback = $contentCallback;
         return $this;
     }
 }
