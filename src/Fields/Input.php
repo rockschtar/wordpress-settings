@@ -3,7 +3,6 @@
 namespace Rockschtar\WordPress\Settings\Fields;
 
 use Rockschtar\WordPress\Settings\Enums\InputType;
-use Rockschtar\WordPress\Settings\Models\Datalist;
 use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
 use Rockschtar\WordPress\Settings\Traits\CssClassTrait;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
@@ -130,7 +129,6 @@ abstract class Input extends Field
         $dataList = $this->getDatalistHTML();
         $class = empty($this->getCssClassesAsString()) ? '' : 'class="' . $this->getCssClassesAsString() . '"';
 
-        $b = $this->attributes();
         $attributes = [];
         foreach ($this->attributes() as $key => $value) {
             $attributes[] = $key . '="' . $value . '"';
