@@ -1,8 +1,6 @@
 <?php
 
-namespace Rockschtar\WordPress\Settings\Models;
-
-use Rockschtar\WordPress\Settings\Fields\Field;
+namespace Rockschtar\WordPress\Settings\Fields;
 
 abstract class Button extends Field
 {

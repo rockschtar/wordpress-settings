@@ -2,6 +2,7 @@
 
 namespace Rockschtar\WordPress\Settings\Models;
 
+use Rockschtar\WordPress\Settings\Enqueue\Enqueue;
 use Rockschtar\WordPress\Settings\Fields\Field;
 
 class SettingsPage
@@ -23,15 +24,17 @@ class SettingsPage
 
     private int | float $position = 2;
 
+    private array $subPages = [];
+
     /**
      * @var callable
      */
     private $callback;
 
     /**
-     * @var Asset[]
+     * @var Enqueue[]
      */
-    private array $assets = [];
+    private array $enqueues = [];
 
     /**
      * @var callable
@@ -77,18 +80,18 @@ class SettingsPage
         return $this;
     }
 
-    public function addAsset(Asset $asset): SettingsPage
+    public function addEnqueue(Enqueue $enqueue): SettingsPage
     {
-        $this->assets[] = $asset;
+        $this->enqueues[] = $enqueue;
         return $this;
     }
 
     /**
-     * @return Asset[]
+     * @return Enqueue[]
      */
-    public function getAssets(): array
+    public function getEnqueues(): array
     {
-        return $this->assets;
+        return $this->enqueues;
     }
 
     /**
@@ -235,5 +238,19 @@ class SettingsPage
     {
         $this->getOrCreateDefaultSection()->setFields($fields);
         return $this;
+    }
+
+    public function addSubPage(SettingsPage $page): SettingsPage
+    {
+        $this->subPages[] = $page;
+        return $this;
+    }
+
+    /**
+     * @return SettingsPage[]
+     */
+    public function getSubPages(): array
+    {
+        return $this->subPages;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
-use Rockschtar\WordPress\Settings\Models\Asset;
+use Rockschtar\WordPress\Settings\Enqueue\Enqueue;
 use Rockschtar\WordPress\Settings\Models\Section;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
 
@@ -24,9 +24,9 @@ abstract class Field
     private $sanitizeCallback;
 
     /**
-     * @var \Rockschtar\WordPress\Settings\Models\Asset[]
+     * @var Enqueue[]
      */
-    private array $assets = [];
+    private array $enqueues = [];
 
     /**
      * @var callable|null
@@ -118,25 +118,25 @@ abstract class Field
     }
 
     /**
-     * @return Asset[]
+     * @return Enqueue[]
      */
-    public function getAssets(): array
+    public function getEnqueues(): array
     {
-        return $this->assets;
+        return $this->enqueues;
     }
 
     /**
-     * @param Asset[] $assets
+     * @param Enqueue[] $enqueues
      */
-    public function setAssets(array $assets): Field
+    public function setEnqueues(array $enqueues): Field
     {
-        $this->assets = $assets;
+        $this->enqueues = $enqueues;
         return $this;
     }
 
-    public function addAsset(Asset $asset): Field
+    public function addEnqueue(Enqueue $enqueue): Field
     {
-        $this->assets[] = $asset;
+        $this->enqueues[] = $enqueue;
         return $this;
     }
 

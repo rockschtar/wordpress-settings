@@ -1,3 +1,4 @@
+require('jquery');
 jQuery(document).ready(function ($) {
 
     const RWPSAjaxButtons = (function () {
@@ -43,8 +44,6 @@ jQuery(document).ready(function ($) {
 
                 button.html(label_wait);
                 button.attr('disabled', 'disabled');
-
-                console.log('hallo', fields);
 
                 jQuery.ajax({
                     type: 'POST',
@@ -117,7 +116,6 @@ jQuery(document).ready(function ($) {
             const namespaces = callback.split('.');
             const func = namespaces.pop();
 
-            console.log('namespeaces', namespaces);
 
             for (let i = 0; i < namespaces.length; i++) {
                 context = context[namespaces[i]];
