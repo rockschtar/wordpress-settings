@@ -14,7 +14,7 @@ if (function_exists('add_action')) {
 
         add_action('admin_action_rwps-load-script', static function () {
             $script = $_GET['script'] ?? '';
-            $file = __DIR__ . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . $script;
+            $file = __DIR__ . '/dist/wp/' . $script;
             echo file_get_contents($file);
             exit;
 

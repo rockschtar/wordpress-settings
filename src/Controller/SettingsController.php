@@ -4,13 +4,14 @@ namespace Rockschtar\WordPress\Settings\Controller;
 
 use Closure;
 use JetBrains\PhpStorm\NoReturn;
+use Rockschtar\WordPress\Settings\Enqueue\AddInlineScript;
+use Rockschtar\WordPress\Settings\Enqueue\Enqueue;
+use Rockschtar\WordPress\Settings\Enqueue\EnqueueScript;
+use Rockschtar\WordPress\Settings\Enqueue\EnqueueStyle;
 use Rockschtar\WordPress\Settings\Fields\AjaxButton;
+use Rockschtar\WordPress\Settings\Fields\Button;
 use Rockschtar\WordPress\Settings\Fields\UploadFile;
 use Rockschtar\WordPress\Settings\Fields\UploadMedia;
-use Rockschtar\WordPress\Settings\Models\Asset;
-use Rockschtar\WordPress\Settings\Models\AssetScript;
-use Rockschtar\WordPress\Settings\Models\AssetStyle;
-use Rockschtar\WordPress\Settings\Models\Button;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
 
 use function call_user_func;
@@ -154,7 +155,7 @@ class SettingsController
                     add_action('admin_enqueue_scripts', static function () {
                         wp_enqueue_script(
                             'rwsp-media-upload',
-                            RWPS_PLUGIN_URL . '/scripts/MediaUpload.js',
+                            RWPS_PLUGIN_URL . '/dist/wp/MediaUpload.js',
                             ['jquery'],
                             null,
                             true
@@ -194,42 +195,43 @@ class SettingsController
     }
 
 
-    public function enqueueAsset(Asset $asset): void
+    public function enqueueAsset(Enqueue $enqueue): void
     {
-        if ($asset instanceof AssetScript) {
+        if ($enqueue instanceof EnqueueScript) {
             wp_enqueue_script(
-                $asset->getHandle(),
-                $asset->getSrc(),
-                $asset->getDeps(),
-                $asset->getVer(),
-                $asset->isInFooter()
+                $enqueue->getHandle(),
+                $enqueue->getSrc(),
+                $enqueue->getDeps(),
+                $enqueue->getVer(),
+                $enqueue->isInFooter()
             );
-            foreach ($asset->getInlines() as $inline_script) {
+            foreach ($enqueue->getInlines() as $addInlineScript) {
+
+                $position = is_a($addInlineScript, AddInlineScript::class) ? $addInlineScript->getPosition() : 'after';
+
                 wp_add_inline_script(
-                    $inline_script->getHandle(),
-                    $inline_script->getData(),
-                    $inline_script->getPosition()
+                    $addInlineScript->getHandle(),
+                    $addInlineScript->getData(),
+                    $position
                 );
             }
 
-            if ($asset->getLocalize()) {
+            if ($enqueue->getLocalize()) {
                 wp_localize_script(
-                    $asset->getHandle(),
-                    $asset->getLocalize()
-                        ->getObjectName(),
-                    $asset->getLocalize()
-                        ->getL10n()
+                    $enqueue->getHandle(),
+                    $enqueue->getLocalize()->getObjectName(),
+                    $enqueue->getLocalize()->getL10n()
                 );
             }
         }
 
-        if ($asset instanceof AssetStyle) {
+        if ($enqueue instanceof EnqueueStyle) {
             wp_enqueue_style(
-                $asset->getHandle(),
-                $asset->getSrc(),
-                $asset->getDeps(),
-                $asset->getVer(),
-                $asset->getMedia()
+                $enqueue->getHandle(),
+                $enqueue->getSrc(),
+                $enqueue->getDeps(),
+                $enqueue->getVer(),
+                $enqueue->getMedia()
             );
         }
     }
@@ -239,14 +241,14 @@ class SettingsController
         if ($this->getHookSuffix() === $hook) {
             foreach ($this->page->getSections() as $section) {
                 foreach ($section->getFields() as $field) {
-                    foreach ($field->getAssets() as $asset) {
+                    foreach ($field->getEnqueues() as $asset) {
                         $this->enqueueAsset($asset);
                     }
                 }
             }
 
             foreach ($this->page->getFields() as $field) {
-                foreach ($field->getAssets() as $asset) {
+                foreach ($field->getEnqueues() as $asset) {
                     $this->enqueueAsset($asset);
                 }
             }
@@ -258,7 +260,7 @@ class SettingsController
             }
 
 
-            foreach ($this->page->getAssets() as $asset) {
+            foreach ($this->page->getEnqueues() as $asset) {
                 $this->enqueueAsset($asset);
             }
         }
@@ -303,6 +305,22 @@ class SettingsController
                 $page->getIcon(),
                 $page->getPosition()
             );
+
+            /*foreach($page->getSubPages() as $subPage) {
+
+                $subPageCallback = $subPage->getCallback() ?? $this->outputPage(...);
+
+                add_submenu_page(
+                    $page->getId(),
+                    $subPage->getPageTitle(),
+                    $subPage->getMenuTitle(),
+                    $subPage->getCapability(),
+                    $subPage->getId(),
+                    $subPageCallback,
+                    $subPage->getPosition()
+                );
+            }*/
+
         } else {
             $this->hookSuffix = add_submenu_page(
                 $this->page

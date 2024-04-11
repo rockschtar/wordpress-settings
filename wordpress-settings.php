@@ -45,3 +45,4 @@ if (file_exists(RWPS_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEP
 }
 
 require __DIR__ . DIRECTORY_SEPARATOR . 'bootstrap.php';
+

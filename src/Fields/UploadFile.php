@@ -2,7 +2,7 @@
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
-use Rockschtar\WordPress\Settings\Models\AssetScript;
+use Rockschtar\WordPress\Settings\Enqueue\EnqueueScript;
 use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
@@ -25,8 +25,8 @@ class UploadFile extends Field
 
     public function __construct($id)
     {
-        $ajax_button_asset_script = new AssetScript('rwps-file-upload', admin_url('?action=rwps-load-script&script=FileUpload.js'), false, ['jquery']);
-        $this->addAsset($ajax_button_asset_script);
+        $ajax_button_asset_script = new EnqueueScript('rwps-file-upload', admin_url('?action=rwps-load-script&script=FileUpload.js'), false, ['jquery']);
+        $this->addEnqueue($ajax_button_asset_script);
         parent::__construct($id);
     }
 

@@ -2,8 +2,7 @@
 
 namespace Rockschtar\WordPress\Settings\Fields;
 
-use Rockschtar\WordPress\Settings\Models\AssetScript;
-use Rockschtar\WordPress\Settings\Models\Button;
+use Rockschtar\WordPress\Settings\Enqueue\EnqueueScript;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 
 class AjaxButton extends Button
@@ -25,17 +24,15 @@ class AjaxButton extends Button
     public function __construct(string $id)
     {
         parent::__construct($id);
-        $ajax_button_asset_script = new AssetScript(
-            'rwps-ajax-button',
-            admin_url('?action=rwps-load-script&script=AjaxButton.js'),
-            false,
-            ['jquery']
-        );
-        $ajax_button_asset_script->addLocalize(
-            'rwps_ajax_button',
-            ['nonce' => wp_create_nonce('rwps-ajax-button-nonce')]
-        );
-        $this->addAsset($ajax_button_asset_script);
+
+        $asset = include RWPS_PLUGIN_DIR . '/dist/wp/AjaxButton.asset.php';
+        $assetScript = EnqueueScript::create('rwps-ajax-button')
+            ->setSrc(RWPS_PLUGIN_URL . '/dist/wp/AjaxButton.js')
+            ->setVer($asset['version'])
+            ->setDeps($asset['dependencies'])
+            ->addLocalize('rwps_ajax_button', ['nonce' => wp_create_nonce('rwps-ajax-button-nonce')]);
+
+        $this->addEnqueue($assetScript);
     }
 
 
