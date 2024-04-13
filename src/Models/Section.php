@@ -47,7 +47,7 @@ class Section
         return $this;
     }
 
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -58,7 +58,7 @@ class Section
         return $this;
     }
 
-    public function getCallback() : ?callable
+    public function getCallback(): ?callable
     {
         return $this->callback;
     }

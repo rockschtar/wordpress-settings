@@ -4,7 +4,6 @@ namespace Rockschtar\WordPress\Settings\Enqueue;
 
 class AddInlineStyle extends AddInline
 {
-
     public function __construct(string $handle, string $data)
     {
         parent::__construct($handle, $data);
@@ -14,5 +13,4 @@ class AddInlineStyle extends AddInline
     {
         return new static($handle, $data);
     }
-
 }

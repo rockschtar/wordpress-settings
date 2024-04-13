@@ -2,7 +2,8 @@
 
 namespace Rockschtar\WordPress\Settings\Enums;
 
-enum EnqueueType {
+enum EnqueueType
+{
     case Script;
     case Style;
 }

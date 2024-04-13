@@ -153,11 +153,15 @@ class SettingsController
                 if ($upload_script_added === false && is_a($field, UploadMedia::class)) {
                     add_action('admin_enqueue_scripts', 'wp_enqueue_media');
                     add_action('admin_enqueue_scripts', static function () {
+
+
+                        $asset = include RWPS_PLUGIN_DIR . '/dist/wp/UploadMedia.asset.php';
+
                         wp_enqueue_script(
-                            'rwsp-media-upload',
-                            RWPS_PLUGIN_URL . '/dist/wp/MediaUpload.js',
-                            ['jquery'],
-                            null,
+                            'rwps-upload-media',
+                            RWPS_PLUGIN_URL . '/dist/wp/UploadMedia.js',
+                            $asset['dependencies'],
+                            $asset['version'],
                             true
                         );
                     });
@@ -206,7 +210,6 @@ class SettingsController
                 $enqueue->isInFooter()
             );
             foreach ($enqueue->getInlines() as $addInlineScript) {
-
                 $position = is_a($addInlineScript, AddInlineScript::class) ? $addInlineScript->getPosition() : 'after';
 
                 wp_add_inline_script(
@@ -320,7 +323,6 @@ class SettingsController
                     $subPage->getPosition()
                 );
             }*/
-
         } else {
             $this->hookSuffix = add_submenu_page(
                 $this->page
@@ -372,7 +374,10 @@ class SettingsController
                     $this->page->getId(),
                     $section->getId()
                 );
-                $arguments = $field->getSanitizeArguments();
+
+                $arguments = [];
+                $arguments['description'] = $field->getDescription();
+                $arguments['show_in_rest'] = $field->isShowInRest();
 
                 if ($field->getType() !== null) {
                     $arguments['type'] = $field->getType();
@@ -468,7 +473,6 @@ class SettingsController
             $settingsErrors = ob_get_clean();
         }
 
-
         $ajaxButtonsBeforeSubmit = '';
         $ajaxButtonsAfterSubmit = '';
 
@@ -483,7 +487,7 @@ class SettingsController
         }
 
         $output = <<<HTML
-            <div class="wrap">
+            <div class="wrap rwps-settings-wrap">
                 <h1>{$this->page->getPageTitle()}</h1>
                 $settingsErrors
                 <form method="POST" action="options.php" enctype="multipart/form-data">

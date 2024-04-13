@@ -51,7 +51,7 @@ abstract class Enqueue
         return $this;
     }
 
-    public function getVer() : bool | string | null
+    public function getVer(): bool | string | null
     {
         return $this->ver;
     }
@@ -73,7 +73,7 @@ abstract class Enqueue
         return $this;
     }
 
-    public function getType() : EnqueueType
+    public function getType(): EnqueueType
     {
         return $this->type;
     }

@@ -19,7 +19,7 @@ abstract class AddInline
         return $this->handle;
     }
 
-    public function setHandle(string $handle) : static
+    public function setHandle(string $handle): static
     {
         $this->handle = $handle;
         return $this;
@@ -31,7 +31,7 @@ abstract class AddInline
     }
 
 
-    public function setData(string $data) : static
+    public function setData(string $data): static
     {
         $this->data = $data;
         return $this;
