@@ -1,0 +1,116 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+    pull_request:
+      branches:
+        - master
+    tags:
+      - '*'
+
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run PHPCS
+        run: vendor/bin/phpcs
+
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [phpcs, eslint]
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: NPM Build
+        run: npm run build  # Replace with your npm build script
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Composer Install
+        run: composer install --no-dev --no-suggest --optimize-autoloader --no-interaction
+
+      - name: Set Version in PHP File
+        run: |
+          sed -i "s/Version:.*$/Version: ${{ github.ref_name }}/" soccr.php
+        shell: bash
+
+      - name: zip
+        run: npm run plugin-zip
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: wordpress-settings.zip
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Release ${{ github.ref }}
+
+      - name: Download build
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./wordpress-settings.zip
+          asset_name: wordpress-settings-${{ github.ref_name }}.zip
+          asset_content_type: application/zip
