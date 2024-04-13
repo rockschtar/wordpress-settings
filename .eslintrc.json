@@ -1,0 +1,33 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es2021": true
+  },
+  "extends": [
+    "plugin:react/recommended",
+    "prettier-standard"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "plugins": [
+    "react"
+  ],
+  "globals": {
+    "jquery": true,
+    "jQuery": true,
+    "wp": true,
+    "rwps_ajax_button": true,
+    "ajaxurl": true
+
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off"
+  },
+  "settings": {
+    "react" : {
+      "version": "detect"
+    }
+  }
+}
