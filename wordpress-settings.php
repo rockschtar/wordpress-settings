@@ -2,15 +2,10 @@
 
 /**
  * WordPress Settings
- * @package     Rockschtar\WordPress\Settings
- * @author      Stefan Helmer
- * @copyright   2019 Stefan Helmer
- * @license     MIT
- * @wordpress-plugin
- * Plugin Name:  WordPress Settings
+ * Plugin Name:  WordPress Settings Wrapper
  * Plugin URI:   https://eracer.de
- * Description:  WordPress Settings Library
- * Version:      1.0.0
+ * Description:  WordPress Settings Library as Plugin
+ * Version:      develop
  * Requires PHP: 8.2
  * Requires at least: 6.4
  * Author: Stefan Helmer
@@ -21,7 +16,6 @@
 
 define('RWPS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('RWPS_PLUGIN_URL', plugin_dir_url(__FILE__));
-
 
 if (file_exists(RWPS_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php')) {
     require_once 'vendor/autoload.php';
