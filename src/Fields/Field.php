@@ -14,8 +14,6 @@ abstract class Field
 
     private string $description = '';
 
-    private array $sanitizeArguments = [];
-
     private mixed $defaultOption = null;
 
     /**
@@ -32,6 +30,8 @@ abstract class Field
      * @var callable|null
      */
     private $onChange;
+
+    private bool $showInRest = false;
 
     private ?string $type = null;
 
@@ -64,7 +64,6 @@ abstract class Field
         return $this->label;
     }
 
-
     public function setLabel(string $label): static
     {
         $this->label = $label;
@@ -76,7 +75,6 @@ abstract class Field
         return $this->id;
     }
 
-
     public function getDescription(): string
     {
         return $this->description;
@@ -87,12 +85,6 @@ abstract class Field
         $this->description = $description;
         return $this;
     }
-
-    public function getSanitizeArguments(): array
-    {
-        return $this->sanitizeArguments;
-    }
-
 
     public function getDefaultOption(): mixed
     {
@@ -110,10 +102,9 @@ abstract class Field
         return $this->sanitizeCallback;
     }
 
-    public function setSanitizeCallback(callable $sanitizeCallback, array $arguments = []): static
+    public function setSanitizeCallback(callable $sanitizeCallback): static
     {
         $this->sanitizeCallback = $sanitizeCallback;
-        $this->sanitizeArguments = $arguments;
         return $this;
     }
 
@@ -177,6 +168,17 @@ abstract class Field
     public function addToSection(Section $section): static
     {
         $section->addField($this);
+        return $this;
+    }
+
+    public function isShowInRest(): bool
+    {
+        return $this->showInRest;
+    }
+
+    public function setShowInRest(bool $showInRest): Field
+    {
+        $this->showInRest = $showInRest;
         return $this;
     }
 }

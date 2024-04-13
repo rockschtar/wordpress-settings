@@ -6,7 +6,6 @@ use Rockschtar\WordPress\Settings\Enums\EnqueueType;
 
 class EnqueueScript extends Enqueue
 {
-
     private bool $inFooter;
 
     private ?EnqueueScriptLocalize $localize = null;
@@ -18,7 +17,8 @@ class EnqueueScript extends Enqueue
         $this->inFooter = $in_footer;
     }
 
-    public static function create(string $handle) : EnqueueScript {
+    public static function create(string $handle): EnqueueScript
+    {
         return new self($handle);
     }
 

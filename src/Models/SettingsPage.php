@@ -156,7 +156,7 @@ class SettingsPage
         return $this;
     }
 
-    public function getCallback() : ?callable
+    public function getCallback(): ?callable
     {
         return $this->callback;
     }

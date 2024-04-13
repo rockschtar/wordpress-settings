@@ -8,14 +8,15 @@ if (function_exists('add_action')) {
 
     if (!$rwps_actions_added) {
 
-        add_action('wp_loaded', static function () {
+        add_action('admin_menu', static function () {
             do_action('rswp_create_settings');
         }, 1);
 
         add_action('admin_action_rwps-load-script', static function () {
+            header('Content-Type: application/javascript');
             $script = $_GET['script'] ?? '';
             $file = __DIR__ . '/dist/wp/' . $script;
-            echo file_get_contents($file);
+            readfile($file);
             exit;
 
         });

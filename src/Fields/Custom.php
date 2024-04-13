@@ -10,7 +10,7 @@ class Custom extends Field
 
     public function output($currentValue, array $args = []): string
     {
-        if($this->contentCallback === null) {
+        if ($this->contentCallback === null) {
             return '';
         }
 
