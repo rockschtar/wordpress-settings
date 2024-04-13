@@ -74,7 +74,7 @@ jobs:
 
       - name: Set Version in PHP File
         run: |
-          sed -i "s/Version:.*$/Version: ${{ github.ref_name }}/" soccr.php
+          sed -i "s/Version:.*$/Version: ${{ github.ref_name }}/" wordpress-settings.php
         shell: bash
 
       - name: zip
