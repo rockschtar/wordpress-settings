@@ -4,6 +4,10 @@
 
 ## Installation
 
+```bash
+composer require rockschtar/wordpress-settings
+```
+
 ## Example Usage
 
 ```php
