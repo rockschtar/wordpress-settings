@@ -257,7 +257,7 @@ class SettingsController
             }
 
             foreach ($this->page->getButtons() as $button) {
-                foreach ($button->getAssets() as $asset) {
+                foreach ($button->getEnqueues() as $asset) {
                     $this->enqueueAsset($asset);
                 }
             }
