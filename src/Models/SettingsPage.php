@@ -3,6 +3,7 @@
 namespace Rockschtar\WordPress\Settings\Models;
 
 use Rockschtar\WordPress\Settings\Enqueue\Enqueue;
+use Rockschtar\WordPress\Settings\Fields\Button;
 use Rockschtar\WordPress\Settings\Fields\Field;
 
 class SettingsPage
