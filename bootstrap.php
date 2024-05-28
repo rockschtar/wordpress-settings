@@ -3,6 +3,14 @@
 use Rockschtar\WordPress\Settings\Controller\SettingsController;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
 
+if(!defined('RWPS_PLUGIN_DIR')) {
+    define('RWPS_PLUGIN_DIR', plugin_dir_path(__FILE__));
+}
+
+if(!defined('RWPS_PLUGIN_URL')) {
+    define('RWPS_PLUGIN_URL', plugin_dir_url(__FILE__));
+}
+
 if (function_exists('add_action')) {
     global $rwps_actions_added;
 
