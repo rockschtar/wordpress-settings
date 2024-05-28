@@ -3,7 +3,7 @@
 use Rockschtar\WordPress\Settings\Controller\SettingsController;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
 
-if (function_exists('add_action')) {
+if (function_exists('plugin_dir_url')) {
     if(!defined('RWPS_PLUGIN_DIR')) {
         define('RWPS_PLUGIN_DIR', plugin_dir_path(__FILE__));
     }
