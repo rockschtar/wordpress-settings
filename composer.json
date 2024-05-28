@@ -10,6 +10,10 @@
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.9"
   },
+  "dist": {
+    "type": "zip",
+    "url": "https://github.com/rockschtar/wordpress-settings/releases/download/%version%/wordpress-settings-%version%.zip"
+  },
   "autoload": {
     "files": [
       "bootstrap.php"
