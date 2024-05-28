@@ -18,7 +18,7 @@ if (function_exists('add_action')) {
 
     if (!$rwps_actions_added) {
 
-        add_action('admin_menu', static function () {
+        add_action('wp_loaded', static function () {
             do_action('rswp_create_settings');
         }, 1);
 
