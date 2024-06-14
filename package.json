@@ -18,7 +18,7 @@
     "postpackages-update": "npm run build",
     "plugin-zip": "wp-scripts plugin-zip"
   },
-  "files": [ "dist", "src", "bootstrap.php", "wordpress-settings.php"],
+  "files": [ "dist", "src", "js","bootstrap.php", "wordpress-settings.php"],
   "lint-staged": {
     "*.{js,jsx}": "eslint"
   },
