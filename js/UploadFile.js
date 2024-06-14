@@ -1,4 +1,3 @@
-require('jquery')
 jQuery(document).ready(function ($) {
   const RWPSUploadFile = (function () {
     function init() {

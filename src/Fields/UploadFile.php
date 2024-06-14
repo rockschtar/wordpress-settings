@@ -7,6 +7,7 @@ use Rockschtar\WordPress\Settings\Traits\AutofocusTrait;
 use Rockschtar\WordPress\Settings\Traits\DisabledTrait;
 use Rockschtar\WordPress\Settings\Traits\ReadOnlyTrait;
 use Rockschtar\WordPress\Settings\Utils\PathUtil;
+use Rockschtar\WordPress\Settings\Utils\PluginVersion;
 
 class UploadFile extends Field
 {
@@ -26,16 +27,15 @@ class UploadFile extends Field
 
     public function __construct($id)
     {
-        $enqueueSrcPath = RWPS_PLUGIN_DIR . '/dist/wp/UploadFile.js';
-        $asset = include RWPS_PLUGIN_DIR . 'dist/wp/UploadFile.asset.php';
+        $enqueueSrcPath = RWPS_PLUGIN_DIR . '/js/UploadFile.js';
 
         if (PathUtil::isPublicPath($enqueueSrcPath)) {
-            $src = RWPS_PLUGIN_URL . '/dist/wp/UploadFile.js';
+            $src = RWPS_PLUGIN_URL . '/js/UploadFile.js';
         } else {
             $src = admin_url('?action=rwps-load-script&script=UploadFile.js');
         }
 
-        $enqueue = new EnqueueScript('rwps-upload-file', $src, $asset['version'], $asset['dependencies']);
+        $enqueue = new EnqueueScript('rwps-upload-file', $src, PluginVersion::get(), ['jquery']);
 
         $this->addEnqueue($enqueue);
         parent::__construct($id);

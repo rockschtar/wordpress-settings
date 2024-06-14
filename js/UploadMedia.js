@@ -1,5 +1,3 @@
-require('jquery')
-
 jQuery(document).ready(function ($) {
   const RWPSMediaUpload = (function () {
     function init() {
