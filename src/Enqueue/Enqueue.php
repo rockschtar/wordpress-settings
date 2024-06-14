@@ -85,5 +85,4 @@ abstract class Enqueue
     {
         return $this->inlines;
     }
-
 }

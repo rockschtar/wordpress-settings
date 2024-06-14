@@ -13,9 +13,9 @@ use Rockschtar\WordPress\Settings\Fields\Button;
 use Rockschtar\WordPress\Settings\Fields\UploadFile;
 use Rockschtar\WordPress\Settings\Fields\UploadMedia;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
-
 use Rockschtar\WordPress\Settings\Utils\PathUtil;
 use Rockschtar\WordPress\Settings\Utils\PluginVersion;
+
 use function call_user_func;
 use function is_array;
 
