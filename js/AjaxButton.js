@@ -1,4 +1,3 @@
-require('jquery')
 jQuery(document).ready(function ($) {
   const RWPSAjaxButtons = (function () {
     const ajaxNonce = rwps_ajax_button.nonce

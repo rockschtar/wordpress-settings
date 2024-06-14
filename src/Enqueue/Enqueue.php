@@ -17,7 +17,7 @@ abstract class Enqueue
     private array $deps;
 
     /**
-     * @var AddInline[]
+     * @var AddInline[]AjaxButton
      */
     protected array $inlines = [];
 
@@ -85,4 +85,5 @@ abstract class Enqueue
     {
         return $this->inlines;
     }
+
 }

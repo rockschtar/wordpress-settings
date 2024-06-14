@@ -14,6 +14,8 @@ use Rockschtar\WordPress\Settings\Fields\UploadFile;
 use Rockschtar\WordPress\Settings\Fields\UploadMedia;
 use Rockschtar\WordPress\Settings\Models\SettingsPage;
 
+use Rockschtar\WordPress\Settings\Utils\PathUtil;
+use Rockschtar\WordPress\Settings\Utils\PluginVersion;
 use function call_user_func;
 use function is_array;
 
@@ -154,14 +156,19 @@ class SettingsController
                     add_action('admin_enqueue_scripts', 'wp_enqueue_media');
                     add_action('admin_enqueue_scripts', static function () {
 
+                        $enqueueSrcPath = RWPS_PLUGIN_DIR . '/js/UploadMedia.js';
 
-                        $asset = include RWPS_PLUGIN_DIR . '/dist/wp/UploadMedia.asset.php';
+                        if (PathUtil::isPublicPath($enqueueSrcPath)) {
+                            $src = RWPS_PLUGIN_URL . '/js/UploadMedia.js';
+                        } else {
+                            $src = admin_url('?action=rwps-load-script&script=UploadMedia.js');
+                        }
 
                         wp_enqueue_script(
                             'rwps-upload-media',
-                            RWPS_PLUGIN_URL . '/dist/wp/UploadMedia.js',
-                            $asset['dependencies'],
-                            $asset['version'],
+                            $src
+                            ['jquery'],
+                            PluginVersion::get(),
                             true
                         );
                     });
