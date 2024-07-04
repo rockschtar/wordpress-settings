@@ -36,6 +36,7 @@ class AjaxButton extends Button
         }
 
         $enqueue = new EnqueueScript('rwps-ajax-button', $src, PluginVersion::get(), ['jquery']);
+        $enqueue->addLocalize('rwps_ajax_button', ['nonce' => wp_create_nonce('rwps-ajax-button-nonce')]);
 
         $this->addEnqueue($enqueue);
     }
