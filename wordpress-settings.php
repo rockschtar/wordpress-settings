@@ -16,6 +16,9 @@
 
 define('RWPS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('RWPS_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('RWPS_PLUGIN_RELATIVE_DIR', dirname(plugin_basename(__FILE__)));
+define('RWPS_PLUGIN_RELATIVE_FILE', dirname(plugin_basename(__FILE__)) . '/' . basename(__FILE__));
+
 const RWPS_PLUGIN_FILE = __FILE__;
 
 if (file_exists(RWPS_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php')) {

@@ -3,6 +3,7 @@
 namespace Rockschtar\WordPress\Settings\Controller;
 
 use Closure;
+use Composer\InstalledVersions;
 use JetBrains\PhpStorm\NoReturn;
 use Rockschtar\WordPress\Settings\Enqueue\AddInlineScript;
 use Rockschtar\WordPress\Settings\Enqueue\Enqueue;
@@ -33,6 +34,7 @@ class SettingsController
         add_action('admin_init', $this->addSettingsSections(...));
         add_action('admin_init', $this->addSettingsFields(...));
         add_action('wp_ajax_rwps_delete_fileupload', $this->ajaxDeleteFileUpload(...));
+        add_filter('plugin_row_meta', $this->pluginRowMeta(...), 10, 2);
 
         foreach ($this->page->getSections() as $section) {
             foreach ($section->getFields() as $field) {
@@ -53,6 +55,31 @@ class SettingsController
             $this->adminHooks();
         }
     }
+
+    private function pluginRowMeta(array $pluginMeta, string $pluginFile): array
+    {
+        if ($pluginFile !== RWPS_PLUGIN_RELATIVE_FILE) {
+            return $pluginMeta;
+        }
+
+        $packageName = 'validio/wordpress-mailjet';
+
+        if (class_exists('Composer\InstalledVersions')) {
+            if (InstalledVersions::isInstalled($packageName)) {
+                $version = InstalledVersions::getPrettyVersion($packageName);
+
+                foreach ($pluginMeta as $index => $meta) {
+                    if (str_starts_with($meta, "Version")) {
+                        $pluginMeta[$index] = "Version $version";
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $pluginMeta;
+    }
+
 
     public static function registerSettingsPage(SettingsPage $page): SettingsController
     {
