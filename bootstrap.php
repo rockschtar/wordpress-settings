@@ -25,7 +25,7 @@ if (function_exists('add_action')) {
         add_action('admin_action_rwps-load-script', static function () {
             header('Content-Type: application/javascript');
             $script = $_GET['script'] ?? '';
-            $file = __DIR__ . '/dist/wp/' . $script;
+            $file = __DIR__ . '/js/' . $script;
             readfile($file);
             exit;
 
