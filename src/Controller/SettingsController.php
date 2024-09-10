@@ -193,7 +193,7 @@ class SettingsController
 
                         wp_enqueue_script(
                             'rwps-upload-media',
-                            $src
+                            $src,
                             ['jquery'],
                             PluginVersion::get(),
                             true
