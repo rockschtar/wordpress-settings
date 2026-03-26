@@ -3,6 +3,12 @@
   "license": "MIT",
   "description": "WordPress Settings Utility/Helper for usage with roots/bedrock (mu-plugin)",
   "type": "wordpress-muplugin",
+  "funding": [
+    {
+      "type": "custom",
+      "url": "https://paypal.me/StefanHelmer"
+    }
+  ],
   "require": {
     "php": ">=8.3",
     "ext-fileinfo": "*"
