@@ -327,7 +327,6 @@ class SettingsController
                 $page->getIcon(),
                 $page->getPosition()
             );
-
         } else {
             $this->hookSuffix = add_submenu_page(
                 $this->page
