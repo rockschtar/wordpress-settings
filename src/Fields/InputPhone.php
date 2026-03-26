@@ -43,6 +43,7 @@ class InputPhone extends Input
         return $this;
     }
 
+    #[\Override]
     public function attributes(): array
     {
         $attributes = [];

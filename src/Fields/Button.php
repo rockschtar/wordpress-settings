@@ -4,9 +4,9 @@ namespace Rockschtar\WordPress\Settings\Fields;
 
 abstract class Button extends Field
 {
-    public const POSITION_FORM = 'form';
-    public const POSITION_BEFORE_SUBMIT = 'before_submit';
-    public const POSITION_AFTER_SUBMIT = 'after_submit';
+    public const string POSITION_FORM = 'form';
+    public const string POSITION_BEFORE_SUBMIT = 'before_submit';
+    public const string POSITION_AFTER_SUBMIT = 'after_submit';
 
     private ?string $position = self::POSITION_FORM;
 
@@ -53,14 +53,17 @@ abstract class Button extends Field
         return $this;
     }
 
+    #[\Override]
     public function output($currentValue, array $args = []): string
     {
+        $id          = esc_attr($this->getId());
+        $buttonLabel = esc_html($this->getButtonLabel());
+
         return <<<HTML
-            <button 
-                type="button" 
-                id="{$this->getId()}"
-                class="button 
-                button-secondary rwps-ajax-button rwps-ajax-button-{$this->getId()}">{$this->getButtonLabel()}
+            <button
+                type="button"
+                id="$id"
+                class="button button-secondary rwps-ajax-button rwps-ajax-button-$id">$buttonLabel
             </button>
         HTML;
     }

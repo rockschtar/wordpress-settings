@@ -1,16 +1,19 @@
-<!-- docs/_sidebar.md -->
 * [Home](/)
-- [Textfield](/fields/textfield) 
--      Email
-	 - Password   
-	 - Number   
-	 - Url
--  [Checkbox](/fields/checkbox)
- - Checkbox List
- - Radio  
- - Select Box  
- - Select2 Box  
- - Textarea  
- - WYSIWYG  
- - Upload  
- - AjaxButton  
+* [Getting Started](/getting-started)
+* [Settings Page](/settings-page)
+* [Enqueue Assets](/enqueue)
+* **Fields**
+* [InputText](/fields/input-text)
+* [InputNumber](/fields/input-number)
+* [InputPhone](/fields/input-phone)
+* [InputUrl](/fields/input-url)
+* [Textarea](/fields/textarea)
+* [WYSIWYG](/fields/wysiwyg)
+* [CheckBox](/fields/checkbox)
+* [CheckBoxList](/fields/checkbox-list)
+* [Radio](/fields/radio)
+* [SelectBox](/fields/select-box)
+* [UploadFile](/fields/upload-file)
+* [UploadMedia](/fields/upload-media)
+* [Custom](/fields/custom)
+* [AjaxButton](/fields/ajax-button)

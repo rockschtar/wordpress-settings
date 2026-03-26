@@ -8,6 +8,7 @@ class Custom extends Field
 
     private ?string $content = null;
 
+    #[\Override]
     public function output($currentValue, array $args = []): string
     {
         if ($this->contentCallback === null) {

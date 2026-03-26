@@ -17,68 +17,46 @@ class InputNumber extends Input
         parent::__construct($id, InputType::number);
     }
 
-
-    /**
-     * @return float|null
-     */
     public function getMin(): ?float
     {
         return $this->min;
     }
 
-    /**
-     * @param float|null $min
-     * @return InputNumber
-     */
     public function setMin(?float $min): InputNumber
     {
         $this->min = $min;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getMax(): ?float
     {
         return $this->max;
     }
 
-    /**
-     * @param float|null $max
-     * @return InputNumber
-     */
     public function setMax(?float $max): InputNumber
     {
         $this->max = $max;
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getStep(): ?float
     {
         return $this->step;
     }
 
-    /**
-     * @param float|null $step
-     * @return InputNumber
-     */
     public function setStep(?float $step): InputNumber
     {
         $this->step = $step;
         return $this;
     }
 
-
+    #[\Override]
     public function attributes(): array
     {
         return [
-            'min' => $this->getMin(),
-            'max' => $this->getMax(),
-            'step' => $this->getStep()
+            'min'  => $this->getMin(),
+            'max'  => $this->getMax(),
+            'step' => $this->getStep(),
         ];
     }
 }

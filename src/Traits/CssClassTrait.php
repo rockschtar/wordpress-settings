@@ -4,9 +4,6 @@ namespace Rockschtar\WordPress\Settings\Traits;
 
 trait CssClassTrait
 {
-    /**
-     * @var String[]
-     */
     private array $cssClasses = [];
 
     public function addCssClass(string ...$cssClass): static

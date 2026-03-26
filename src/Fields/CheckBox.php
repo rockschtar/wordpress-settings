@@ -16,6 +16,7 @@ class CheckBox extends Field
 
     private mixed $value = null;
 
+    #[\Override]
     public function output($currentValue, array $args = []): string
     {
 

@@ -36,11 +36,13 @@ class UploadFile extends Field
         }
 
         $enqueue = new EnqueueScript('rwps-upload-file', $src, PluginVersion::get(), ['jquery']);
+        $enqueue->addLocalize('rwps_upload_file', ['nonce' => wp_create_nonce('rwps-delete-fileupload-nonce')]);
 
         $this->addEnqueue($enqueue);
         parent::__construct($id);
     }
 
+    #[\Override]
     public function output($currentValue, array $args = []): string
     {
 

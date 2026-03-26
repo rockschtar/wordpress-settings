@@ -4,10 +4,12 @@
   "description": "WordPress Settings Utility/Helper for usage with roots/bedrock (mu-plugin)",
   "type": "wordpress-muplugin",
   "require": {
-    "php": ">=8.2",
+    "php": ">=8.3",
     "ext-fileinfo": "*"
   },
   "require-dev": {
+    "phpunit/phpunit": "^11",
+    "brain/monkey": "^2.6",
     "squizlabs/php_codesniffer": "^3.9"
   },
   "autoload": {
@@ -15,5 +17,8 @@
       "Rockschtar\\WordPress\\Settings\\": "src/",
       "Rockschtar\\WordPress\\Settings\\Tests\\": "tests/"
     }
+  },
+  "scripts": {
+    "test": "phpunit"
   }
 }

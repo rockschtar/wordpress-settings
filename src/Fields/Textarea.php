@@ -75,6 +75,7 @@ class Textarea extends Field
         return $this;
     }
 
+    #[\Override]
     public function output($currentValue, array $args = []): string
     {
 

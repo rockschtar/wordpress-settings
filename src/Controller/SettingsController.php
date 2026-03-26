@@ -3,8 +3,6 @@
 namespace Rockschtar\WordPress\Settings\Controller;
 
 use Closure;
-use Composer\InstalledVersions;
-use JetBrains\PhpStorm\NoReturn;
 use Rockschtar\WordPress\Settings\Enqueue\AddInlineScript;
 use Rockschtar\WordPress\Settings\Enqueue\Enqueue;
 use Rockschtar\WordPress\Settings\Enqueue\EnqueueScript;
@@ -24,7 +22,7 @@ class SettingsController
 {
     private SettingsPage $page;
 
-    private string $hookSuffix;
+    private string $hookSuffix = '';
 
     private function __construct(SettingsPage $page)
     {
@@ -34,7 +32,6 @@ class SettingsController
         add_action('admin_init', $this->addSettingsSections(...));
         add_action('admin_init', $this->addSettingsFields(...));
         add_action('wp_ajax_rwps_delete_fileupload', $this->ajaxDeleteFileUpload(...));
-        add_filter('plugin_row_meta', $this->pluginRowMeta(...), 10, 2);
 
         foreach ($this->page->getSections() as $section) {
             foreach ($section->getFields() as $field) {
@@ -55,31 +52,6 @@ class SettingsController
             $this->adminHooks();
         }
     }
-
-    private function pluginRowMeta(array $pluginMeta, string $pluginFile): array
-    {
-        if ($pluginFile !== RWPS_PLUGIN_RELATIVE_FILE) {
-            return $pluginMeta;
-        }
-
-        $packageName = 'validio/wordpress-mailjet';
-
-        if (class_exists('Composer\InstalledVersions')) {
-            if (InstalledVersions::isInstalled($packageName)) {
-                $version = InstalledVersions::getPrettyVersion($packageName);
-
-                foreach ($pluginMeta as $index => $meta) {
-                    if (str_starts_with($meta, "Version")) {
-                        $pluginMeta[$index] = "Version $version";
-                        break;
-                    }
-                }
-            }
-        }
-
-        return $pluginMeta;
-    }
-
 
     public static function registerSettingsPage(SettingsPage $page): SettingsController
     {
@@ -217,12 +189,25 @@ class SettingsController
         }
     }
 
-    #[NoReturn]
-    private function ajaxDeleteFileUpload(): void
+    private function ajaxDeleteFileUpload(): never
     {
-        $option = $_POST['option'];
+        check_ajax_referer('rwps-delete-fileupload-nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions', 403);
+        }
+
+        $option = sanitize_key($_POST['option'] ?? '');
+
+        if (empty($option)) {
+            wp_send_json_error('Invalid option');
+        }
+
         $option_value = get_option($option);
-        unlink($option_value['file']);
+
+        if (is_array($option_value) && isset($option_value['file']) && file_exists($option_value['file'])) {
+            unlink($option_value['file']);
+        }
 
         wp_send_json_success();
     }
@@ -343,20 +328,6 @@ class SettingsController
                 $page->getPosition()
             );
 
-            /*foreach($page->getSubPages() as $subPage) {
-
-                $subPageCallback = $subPage->getCallback() ?? $this->outputPage(...);
-
-                add_submenu_page(
-                    $page->getId(),
-                    $subPage->getPageTitle(),
-                    $subPage->getMenuTitle(),
-                    $subPage->getCapability(),
-                    $subPage->getId(),
-                    $subPageCallback,
-                    $subPage->getPosition()
-                );
-            }*/
         } else {
             $this->hookSuffix = add_submenu_page(
                 $this->page
@@ -520,9 +491,11 @@ class SettingsController
             }
         }
 
+        $pageTitle = esc_html($this->page->getPageTitle());
+
         $output = <<<HTML
             <div class="wrap rwps-settings-wrap">
-                <h1>{$this->page->getPageTitle()}</h1>
+                <h1>$pageTitle</h1>
                 $settingsErrors
                 <form method="POST" action="options.php" enctype="multipart/form-data">
                     $settingsFields

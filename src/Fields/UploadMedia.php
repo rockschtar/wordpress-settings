@@ -15,6 +15,7 @@ class UploadMedia extends Field
 
     private string $removeButtonText = 'Remove';
 
+    #[\Override]
     public function output($currentValue, array $args = []): string
     {
         $fieldId = $this->getId();

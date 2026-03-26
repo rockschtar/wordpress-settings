@@ -4,7 +4,7 @@ namespace Rockschtar\WordPress\Settings\Utils;
 
 class PathUtil
 {
-    public static function isPublicPath($path): bool
+    public static function isPublicPath(string $path): bool
     {
         $documentRoot = $_SERVER['DOCUMENT_ROOT'];
 
