@@ -21,6 +21,16 @@ lando npx <args>
 
 Do NOT run `composer`, `vendor/bin/phpcs`, `vendor/bin/phpunit`, `npm`, or `node` directly outside of Lando.
 
+## Decision Making
+
+Always ask before:
+- Deleting files or directories
+- Merging or closing pull requests
+- Creating or publishing releases
+- Making changes with broader impact (refactoring, renaming, architectural changes)
+
+When in doubt, propose the approach and wait for confirmation.
+
 ## Coding Standards
 
 All PHP code in `src/` must pass **PSR-12** as configured in `phpcs.xml`. Run PHPCS before finishing any PHP task:
