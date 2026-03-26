@@ -14,24 +14,34 @@ if (function_exists('plugin_dir_url')) {
 }
 
 if (function_exists('add_action')) {
-    global $rwps_actions_added;
+    static $actionsAdded = false;
 
-    if (!$rwps_actions_added) {
+    if (!$actionsAdded) {
 
         add_action('wp_loaded', static function () {
             do_action('rswp_create_settings');
         }, 1);
 
         add_action('admin_action_rwps-load-script', static function () {
-            header('Content-Type: application/javascript');
-            $script = $_GET['script'] ?? '';
+            $allowed = ['AjaxButton.js', 'UploadMedia.js', 'UploadFile.js'];
+            $script = basename($_GET['script'] ?? '');
+
+            if (!in_array($script, $allowed, true)) {
+                wp_die('Not allowed', '', ['response' => 403]);
+            }
+
             $file = __DIR__ . '/js/' . $script;
+
+            if (!file_exists($file)) {
+                wp_die('Not found', '', ['response' => 404]);
+            }
+
+            header('Content-Type: application/javascript');
             readfile($file);
             exit;
-
         });
 
-        $rwps_actions_added = true;
+        $actionsAdded = true;
     }
 }
 

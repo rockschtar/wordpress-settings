@@ -4,24 +4,14 @@ namespace Rockschtar\WordPress\Settings\Traits;
 
 trait DisabledTrait
 {
-    /**
-     * @var bool
-     */
-    private $disabled = false;
+    private bool $disabled = false;
 
-    /**
-     * @return bool
-     */
     public function isDisabled(): bool
     {
         return $this->disabled;
     }
 
-    /**
-     * @param bool $disabled
-     * @return static
-     */
-    public function setDisabled(bool $disabled)
+    public function setDisabled(bool $disabled): static
     {
         $this->disabled = $disabled;
         return $this;

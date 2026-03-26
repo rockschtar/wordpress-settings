@@ -11,6 +11,7 @@ class InputUrl extends Input
         parent::__construct($id, InputType::url);
     }
 
+    #[\Override]
     public function attributes(): array
     {
         return [];

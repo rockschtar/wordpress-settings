@@ -1,0 +1,12 @@
+# Files excluded from Composer package installs (git archive / export)
+
+demo/            export-ignore
+tests/           export-ignore
+.github/         export-ignore
+CLAUDE.md        export-ignore
+phpunit.xml      export-ignore
+phpunit.xml.dist export-ignore
+.distignore      export-ignore
+.eslintrc.json   export-ignore
+package.json     export-ignore
+package-lock.json export-ignore

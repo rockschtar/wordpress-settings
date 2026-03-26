@@ -9,7 +9,7 @@ jQuery(document).ready(function ($) {
         const buttonText = button.html()
         const labelWait = button.data('wait-text')
         const labelSuccess = button.data('label-success')
-        const labelError = button.data('label-success')
+        const labelError = button.data('label-error')
         const callbackSuccess = button.data('callback-success')
         const callbackError = button.data('callback-error')
         const callbackDone = button.data('callback-done')

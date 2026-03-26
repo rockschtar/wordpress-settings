@@ -6,7 +6,7 @@
  * Plugin URI:   https://eracer.de
  * Description:  WordPress Settings Library as Plugin
  * Version:      develop
- * Requires PHP: 8.2
+ * Requires PHP: 8.3
  * Requires at least: 6.4
  * Author: Stefan Helmer
  * Author URI: https://eracer.de

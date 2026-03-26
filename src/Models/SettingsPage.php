@@ -184,8 +184,7 @@ class SettingsPage
 
     public function addField(Field $field): SettingsPage
     {
-        $section = $this->getOrCreateDefaultSection($index);
-        $section->addField($field);
+        $this->getOrCreateDefaultSection()->addField($field);
 
         return $this;
     }

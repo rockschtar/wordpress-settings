@@ -14,6 +14,7 @@ class WYSIWYG extends Field
 
     private ?int $height = null;
 
+    #[\Override]
     public function output($currentValue, array $args = []): string
     {
         ob_start();

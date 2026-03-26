@@ -42,6 +42,17 @@ abstract class Input extends Field
         return $this;
     }
 
+    public function getInputType(): InputType
+    {
+        return $this->inputType;
+    }
+
+    public function setInputType(InputType $inputType): static
+    {
+        $this->inputType = $inputType;
+        return $this;
+    }
+
 
     public function getSize(): ?int
     {
@@ -118,6 +129,7 @@ abstract class Input extends Field
 
     abstract public function attributes(): array;
 
+    #[\Override]
     public function output(mixed $currentValue, array $args = []): string
     {
         $readonly = $this->isReadonly() ? 'readonly' : '';

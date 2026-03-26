@@ -2,7 +2,7 @@
 
 namespace Rockschtar\WordPress\Settings\Enqueue;
 
-class AddInlineScript extends AddInlineStyle
+class AddInlineScript extends AddInline
 {
     private string $position;
 
