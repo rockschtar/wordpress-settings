@@ -23,7 +23,7 @@
     "*.{js,jsx}": "eslint"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^27.2.5",
+    "@wordpress/scripts": "^34.0.0",
     "eslint": "^8.23.0",
     "eslint-config-prettier": "^8.10.0",
     "eslint-config-prettier-standard": "^4.0.1",
